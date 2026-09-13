@@ -31,7 +31,7 @@ export const Hero: Block = {
       defaultValue: 'imageRight',
       admin: {
         description:
-          'Image background overrides the Appearance surface above with light text over a dark scrim, so it stays legible over any photo.',
+          'Image background overrides the Appearance surface above with light text over a dark overlay, so it stays legible over any photo.',
       },
       options: [
         { label: 'Image right', value: 'imageRight' },
@@ -41,8 +41,8 @@ export const Hero: Block = {
       ],
     },
     {
-      name: 'scrimCoverage',
-      label: 'Scrim coverage',
+      name: 'overlayCoverage',
+      label: 'Overlay coverage',
       type: 'radio',
       defaultValue: 'full',
       admin: {

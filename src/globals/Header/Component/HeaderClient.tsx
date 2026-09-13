@@ -241,7 +241,7 @@ export function HeaderClient({ initialHeader }: { initialHeader: Header }) {
           </div>
 
           <div
-            className={`header__scrim ${open ? 'header__scrim--visible' : ''}`}
+            className={`header__overlay ${open ? 'header__overlay--visible' : ''}`}
             onClick={close}
             aria-hidden
           />

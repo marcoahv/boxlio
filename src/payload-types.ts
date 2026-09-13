@@ -156,13 +156,13 @@ export interface HeroBlock {
    */
   image?: (string | null) | Media;
   /**
-   * Image background overrides the Appearance surface above with light text over a dark scrim, so it stays legible over any photo.
+   * Image background overrides the Appearance surface above with light text over a dark overlay, so it stays legible over any photo.
    */
   layout?: ('imageRight' | 'imageLeft' | 'backgroundImage' | 'textOnly') | null;
   /**
    * Only applies to the Image background layout.
    */
-  scrimCoverage?: ('full' | 'content') | null;
+  overlayCoverage?: ('full' | 'content') | null;
   links?:
     | {
         label: string;

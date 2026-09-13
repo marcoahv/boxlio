@@ -26,17 +26,17 @@ export function Hero(props: HeroBlock) {
     subheading,
     image,
     layout,
-    scrimCoverage,
+    overlayCoverage,
     links,
   } = props
   const isBackgroundImage = layout === 'backgroundImage'
   const hasImage =
     layout !== 'textOnly' && !isBackgroundImage && isDoc<Media>(image)
   const hasBackgroundImage = isBackgroundImage && isDoc<Media>(image)
-  const scrimOverWholeImage =
-    hasBackgroundImage && scrimCoverage !== 'content'
-  const scrimOverContentOnly =
-    hasBackgroundImage && scrimCoverage === 'content'
+  const overlayOverWholeImage =
+    hasBackgroundImage && overlayCoverage !== 'content'
+  const overlayOverContentOnly =
+    hasBackgroundImage && overlayCoverage === 'content'
 
   return (
     <Section
@@ -53,7 +53,7 @@ export function Hero(props: HeroBlock) {
             className="ui-hero-bg"
             priority
           />
-          {scrimOverWholeImage && <div className="ui-hero-scrim" aria-hidden />}
+          {overlayOverWholeImage && <div className="ui-hero-overlay" aria-hidden />}
         </>
       )}
       <Container
@@ -63,7 +63,7 @@ export function Hero(props: HeroBlock) {
         <div
           className={[
             'flex flex-col gap-10',
-            scrimOverContentOnly ? 'ui-hero-scrim-content w-fit' : '',
+            overlayOverContentOnly ? 'ui-hero-overlay-content w-fit' : '',
             hasImage
               ? 'atMedium:flex-row atMedium:items-center atMedium:gap-16'
               : '',

@@ -226,7 +226,7 @@
      wins over the four rules above, regardless of its own Surface: an
      arbitrary photo can't guarantee the same contrast a flat Surface color
      can, so the header defaults to the same fixed light color the section's
-     own text uses (--color-on-scrim, see _hero.css). Requires
+     own text uses (--color-on-overlay, see _hero.css). Requires
      data-position='fixed': a static header sits in normal document flow
      above the first section rather than floating over it (see the Position
      section's own comment on why "transparent at top" has no visual effect
@@ -237,7 +237,7 @@
      declaration-order tie-break. */
   body:has(main .ui-section:first-child[data-has-background-image])
     .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled) {
-    --header-fg: var(--color-on-scrim);
+    --header-fg: var(--color-on-overlay);
   }
 
   /* Logo mirror of the four --header-fg overrides above. All four surfaces
@@ -426,15 +426,15 @@
     }
   }
 
-  /* Scrim behind the open drawer. Mobile only — there is no drawer above
+  /* Overlay behind the open drawer. Mobile only — there is no drawer above
      atMedium, so it must never intercept clicks there. */
-  .header__scrim {
+  .header__overlay {
     position: fixed;
     inset: var(--header-height-current, var(--header-height-normal)) 0
       0 0;
     z-index: -1;
 
-    background-color: var(--color-scrim);
+    background-color: var(--color-overlay);
     opacity: 0;
     visibility: hidden;
     transition:
@@ -446,7 +446,7 @@
     }
   }
 
-  .header__scrim--visible {
+  .header__overlay--visible {
     opacity: 1;
     visibility: visible;
   }
