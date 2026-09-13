@@ -13,7 +13,7 @@ import type { HeroBlock, Media } from '@/payload-types'
  * Reference implementation for a block.
  *
  * The shape every block follows: read appearance off the block data, hand it
- * to <Section>/<Container>, and compose primitives inside. No colours, no
+ * to <Section>/<Container>, and compose primitives inside. No colors, no
  * breakpoints, no padding decisions live here — those belong to the token
  * system, which is why a palette change re-brands this block for free.
  */

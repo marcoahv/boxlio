@@ -78,11 +78,11 @@ there anyway so every raw literal lives in one place.
 
 This is the core of the system.
 
-**Palette — primitive.** Raw colour values, and the only place a literal colour belongs (`_base-tokens.css`). `--color-primary: #d6c1a1`.
+**Palette — primitive.** Raw color values, and the only place a literal color belongs (`_base-tokens.css`). `--color-primary: #d6c1a1`.
 
 **Semantic — roles.** What components actually use (`_alias-tokens.css`). `--color-surface`, `--color-on-surface`, `--color-action`.
 
-Components reference **only** the semantic tier. Swapping the palette then re-brands the whole site without touching a component. A block that says `bg-primary` is welded to one colour; a block that says `bg-surface-muted` follows the brand.
+Components reference **only** the semantic tier. Swapping the palette then re-brands the whole site without touching a component. A block that says `bg-primary` is welded to one color; a block that says `bg-surface-muted` follows the brand.
 
 Surfaces and their foregrounds are defined **as pairs** — picking `surface-muted` also determines `on-surface-muted`, so text can never end up unreadable on its own background. Every dark-mode value is its own named palette step too — never an inline literal buried inside a `light-dark()` call — so a role's derivation in `_alias-tokens.css` is always a pure reference back to `_base-tokens.css`. `surface-muted` ("Primary color" in the admin) and `surface-accent` ("Secondary color") are the deliberate exception: they resolve to a single fixed value — the primary/secondary brand color plus dark text — in both color schemes, unlike `default`/`inverse`, which still flip with `light-dark()`.
 
@@ -194,7 +194,7 @@ every one of them lives — its `@import` list is the map.
 
 **A new element utility** — create `elements/_badge.css` with `@utility ui-badge { … }`, import it in `index.css`. Build from tokens, never literals.
 
-**A new token** — a raw value (a new palette colour, radius, type-scale number, layout dimension) goes in the right `@theme static` section of `_base-tokens.css`. A derived value (references another custom property — a new semantic role, a shadow, a font-family alias) goes in `_alias-tokens.css`, and must point at `_base-tokens.css`, never contain its own inline literal.
+**A new token** — a raw value (a new palette color, radius, type-scale number, layout dimension) goes in the right `@theme static` section of `_base-tokens.css`. A derived value (references another custom property — a new semantic role, a shadow, a font-family alias) goes in `_alias-tokens.css`, and must point at `_base-tokens.css`, never contain its own inline literal.
 
 **A new block** — create `src/blocks/<Name>/{config.ts,Component.tsx}` and add both to `src/blocks/registry.ts`. Nothing else changes: `payload.config.ts`, the Pages and Posts collections, `RenderBlocks`, and the rich-text converters all derive from that one file. Spread `appearanceField()` into the config so the block inherits the standard surface/spacing/width controls, then hand those to `<Section>`.
 

@@ -3,9 +3,9 @@
    `logo` and `logoDark` (Logo.tsx) are both rendered as real <img> elements
    at all times; `.ui-logo__img--logo-dark` starts hidden here, and
    _header.css toggles which one is visible based on the header's surface,
-   the OS colour scheme, and — while the bar is transparent — the section
-   underneath it. No masking or recolouring: unlike the old single-asset
-   mask approach, each asset is used as-is, so a multi-colour logo works
+   the OS color scheme, and — while the bar is transparent — the section
+   underneath it. No masking or recoloring: unlike the old single-asset
+   mask approach, each asset is used as-is, so a multi-color logo works
    fine here. */
 
 @layer components {

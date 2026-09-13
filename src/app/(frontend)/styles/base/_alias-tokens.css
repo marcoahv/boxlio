@@ -8,7 +8,7 @@
 =============================================*/
 
 /* The vocabulary blocks and components actually use. Every token names a ROLE
-   ("the muted surface", "text on the action colour"), never a colour.
+   ("the muted surface", "text on the action color"), never a color.
 
    Two rules make brand-swapping safe:
 
@@ -104,7 +104,7 @@
 
   /* --- Overlays ---
      Derived with color-mix() rather than written as literals, so both follow a
-     palette swap and both colour schemes without a second definition. */
+     palette swap and both color schemes without a second definition. */
 
   /* Dims the page behind an open mobile drawer. */
   --color-overlay: color-mix(
@@ -132,7 +132,7 @@
 }
 
 /* Gradients stay out of the --color-* namespace: Tailwind builds bg-*, text-*
-   AND border-* from every colour token, and a gradient value breaks the latter
+   AND border-* from every color token, and a gradient value breaks the latter
    two. Define them as utilities instead. */
 @utility ui-gradient-primary {
   background-image: linear-gradient(

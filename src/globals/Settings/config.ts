@@ -69,7 +69,7 @@ export const Settings: GlobalConfig = {
       admin: {
         position: 'sidebar',
         description:
-          "Optional. Shown when the visitor's browser prefers a dark colour scheme. Falls back to the main icon.",
+          "Optional. Shown when the visitor's browser prefers a dark color scheme. Falls back to the main icon.",
       },
     },
   ],

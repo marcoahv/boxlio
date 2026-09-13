@@ -866,7 +866,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface Header {
   id: string;
   /**
-   * Background, and the matching text colour.
+   * Background, and the matching text color.
    */
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   /**
@@ -882,7 +882,7 @@ export interface Header {
    */
   height?: ('compact' | 'normal' | 'tall') | null;
   /**
-   * Start transparent so the first block shows through, then fade to the surface on scroll. Pick a surface whose text colour reads against that block.
+   * Start transparent so the first block shows through, then fade to the surface on scroll. Pick a surface whose text color reads against that block.
    */
   transparentAtTop?: boolean | null;
   /**
@@ -891,7 +891,7 @@ export interface Header {
   showThemeToggle?: boolean | null;
   logo: string | Media;
   /**
-   * Optional. Shown wherever the header background is dark — for a Default surface that’s the visitor’s dark colour scheme, but for an Inverse surface it’s the opposite (light colour scheme). Falls back to the main logo.
+   * Optional. Shown wherever the header background is dark — for a Default surface that’s the visitor’s dark color scheme, but for an Inverse surface it’s the opposite (light color scheme). Falls back to the main logo.
    */
   logoDark?: (string | null) | Media;
   navLinks?:
@@ -945,7 +945,7 @@ export interface Setting {
    */
   icon: string | Media;
   /**
-   * Optional. Shown when the visitor's browser prefers a dark colour scheme. Falls back to the main icon.
+   * Optional. Shown when the visitor's browser prefers a dark color scheme. Falls back to the main icon.
    */
   iconDark?: (string | null) | Media;
   updatedAt?: string | null;

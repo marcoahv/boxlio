@@ -15,7 +15,7 @@
   /* --- Surface ---
      Sets --header-bg/--header-fg rather than background-color/color directly,
      so the transparent and scrolled-overlay states below can still read the
-     chosen colours through color-mix() instead of hardcoding one surface. */
+     chosen colors through color-mix() instead of hardcoding one surface. */
 
   .header[data-surface='default'] {
     --header-bg: var(--color-surface);
@@ -195,7 +195,7 @@
   /* --- Adopting the surface underneath ---
      While the bar is transparent it is sitting on the first section's
      background, so it must take that section's foreground or the logo and
-     links can end up invisible. --header-fg alone recolours the nav text,
+     links can end up invisible. --header-fg alone recolors the nav text,
      since links inherit it; the logo images are separate real assets, so
      they need their own mirrored override block below.
 
@@ -454,7 +454,7 @@
   /* --- The single nav list --- */
 
   /* Mobile: a panel that slides down from under the bar. Uses the page's own
-     surface, not a hardcoded colour — that stays legible whichever surface the
+     surface, not a hardcoded color — that stays legible whichever surface the
      header itself is set to. */
   .header__nav {
     position: absolute;

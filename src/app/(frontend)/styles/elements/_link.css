@@ -14,15 +14,15 @@
   white-space: nowrap;
   overflow: hidden;
 
-  /* Inherits rather than naming a colour. Every surface already sets `color`
+  /* Inherits rather than naming a color. Every surface already sets `color`
      to its own paired foreground, so a link is legible wherever it lands —
      a header bar, an inverse section, the mobile drawer — without a rule per
-     context. A fixed colour here was why header links stayed near-black on
+     context. A fixed color here was why header links stayed near-black on
      dark surfaces. */
   color: inherit;
 
-  /* Relative to whatever colour was inherited, for the same reason: a fixed
-     brand colour reads on light surfaces and disappears on dark ones. */
+  /* Relative to whatever color was inherited, for the same reason: a fixed
+     brand color reads on light surfaces and disappears on dark ones. */
   &:hover {
     color: color-mix(in srgb, currentColor 70%, transparent);
     text-decoration-color: currentColor;

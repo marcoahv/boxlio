@@ -6,7 +6,7 @@ import { isDoc } from '@/utilities/isDoc'
  * Surface-aware logo.
  *
  * Renders two real logo assets (`logo` and `logoDark`) and lets CSS in
- * _header.css decide which is visible for the current surface, OS colour
+ * _header.css decide which is visible for the current surface, OS color
  * scheme, and — while the bar is transparent — the section underneath it.
  * `logoDark` falls back to `logo` when the editor hasn't uploaded one, so a
  * header never ends up with a missing image.

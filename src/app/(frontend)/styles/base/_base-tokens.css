@@ -10,7 +10,7 @@
 *            Palette — primitive tokens
 =============================================*/
 
-/* Raw colour values, and the ONLY place a literal colour is allowed.
+/* Raw color values, and the ONLY place a literal color is allowed.
    Components must never reference these directly — they reference the
    semantic roles in _alias-tokens.css, which point here. That indirection is what
    lets a brand swap change these values without breaking contrast.

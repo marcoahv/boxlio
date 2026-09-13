@@ -32,10 +32,10 @@ export const WIDTH_OPTIONS: Option[] = [
 /**
  * The shared look-and-feel controls every block exposes.
  *
- * Deliberately constrained: editors pick semantic ROLES, never colours or
+ * Deliberately constrained: editors pick semantic ROLES, never colors or
  * pixel values. `surface: 'muted'` resolves through the token system, so it
  * stays on-brand after a palette change and carries its own matching text
- * colour. Off-brand pages are unrepresentable by construction.
+ * color. Off-brand pages are unrepresentable by construction.
  *
  * Values map 1:1 onto the <Section> primitive's props.
  *
@@ -107,7 +107,7 @@ export const headerAppearanceField = (): Field[] => [
             defaultValue: 'default',
             admin: {
               width: '50%',
-              description: 'Background, and the matching text colour.',
+              description: 'Background, and the matching text color.',
             },
             options: SURFACE_OPTIONS,
           },
@@ -159,7 +159,7 @@ export const headerAppearanceField = (): Field[] => [
         defaultValue: true,
         admin: {
           description:
-            'Start transparent so the first block shows through, then fade to the surface on scroll. Pick a surface whose text colour reads against that block.',
+            'Start transparent so the first block shows through, then fade to the surface on scroll. Pick a surface whose text color reads against that block.',
         },
       },
       {
