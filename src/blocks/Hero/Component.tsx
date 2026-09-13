@@ -26,16 +26,44 @@ export function Hero(props: HeroBlock) {
     subheading,
     image,
     layout,
+    scrimCoverage,
     links,
   } = props
-  const hasImage = layout !== 'textOnly' && isDoc<Media>(image)
+  const isBackgroundImage = layout === 'backgroundImage'
+  const hasImage =
+    layout !== 'textOnly' && !isBackgroundImage && isDoc<Media>(image)
+  const hasBackgroundImage = isBackgroundImage && isDoc<Media>(image)
+  const scrimOverWholeImage =
+    hasBackgroundImage && scrimCoverage !== 'content'
+  const scrimOverContentOnly =
+    hasBackgroundImage && scrimCoverage === 'content'
 
   return (
-    <Section surface={surface} spacing={spacing}>
-      <Container width={width}>
+    <Section
+      surface={surface}
+      spacing={spacing}
+      hasBackgroundImage={hasBackgroundImage}
+    >
+      {hasBackgroundImage && (
+        <>
+          <MediaImage
+            image={image as Media}
+            fill
+            radius="none"
+            className="ui-hero-bg"
+            priority
+          />
+          {scrimOverWholeImage && <div className="ui-hero-scrim" aria-hidden />}
+        </>
+      )}
+      <Container
+        width={width}
+        className={hasBackgroundImage ? 'ui-hero-content' : undefined}
+      >
         <div
           className={[
             'flex flex-col gap-10',
+            scrimOverContentOnly ? 'ui-hero-scrim-content w-fit' : '',
             hasImage
               ? 'atMedium:flex-row atMedium:items-center atMedium:gap-16'
               : '',

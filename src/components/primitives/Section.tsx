@@ -10,6 +10,16 @@ export type SectionProps = {
   className?: string
   id?: string
   as?: 'section' | 'header' | 'footer' | 'article' | 'aside' | 'div'
+  /**
+   * Set when the section renders its own full-bleed background image (e.g.
+   * Hero's "Image background" layout) behind its content. A transparent
+   * <Header> sitting on top of this section, when it's the page's first,
+   * adopts fixed light text instead of this section's own Surface
+   * foreground — see _header.css's data-has-background-image rule — since
+   * an arbitrary photo can't guarantee the same contrast a flat Surface
+   * color can.
+   */
+  hasBackgroundImage?: boolean
 }
 
 /**
@@ -30,6 +40,7 @@ export function Section({
   className,
   id,
   as: Tag = 'section',
+  hasBackgroundImage,
 }: SectionProps) {
   return (
     <Tag
@@ -37,6 +48,7 @@ export function Section({
       className={['ui-section', className].filter(Boolean).join(' ')}
       data-surface={surface ?? 'default'}
       data-spacing={spacing ?? 'normal'}
+      data-has-background-image={hasBackgroundImage ? 'true' : undefined}
     >
       {children}
     </Tag>

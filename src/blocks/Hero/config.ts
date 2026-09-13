@@ -20,15 +20,39 @@ export const Hero: Block = {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
+      admin: {
+        description:
+          'Shown beside the text (Image left/right) or as a full-bleed background (Image background).',
+      },
     },
     {
       name: 'layout',
       type: 'radio',
       defaultValue: 'imageRight',
+      admin: {
+        description:
+          'Image background overrides the Appearance surface above with light text over a dark scrim, so it stays legible over any photo.',
+      },
       options: [
         { label: 'Image right', value: 'imageRight' },
         { label: 'Image left', value: 'imageLeft' },
+        { label: 'Image background', value: 'backgroundImage' },
         { label: 'Text only', value: 'textOnly' },
+      ],
+    },
+    {
+      name: 'scrimCoverage',
+      label: 'Scrim coverage',
+      type: 'radio',
+      defaultValue: 'full',
+      admin: {
+        description: 'Only applies to the Image background layout.',
+        condition: (_, siblingData) =>
+          siblingData?.layout === 'backgroundImage',
+      },
+      options: [
+        { label: 'Whole image', value: 'full' },
+        { label: 'Text area only', value: 'content' },
       ],
     },
     {

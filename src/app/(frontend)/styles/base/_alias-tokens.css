@@ -112,6 +112,12 @@
     var(--color-neutral-1000) 50%,
     transparent
   );
+  /* Text over --color-scrim (e.g. the Hero background-image layout). Fixed,
+     not a light-dark() pair like the surface tokens above: the scrim itself
+     doesn't change with the color scheme, so the text over it can't either -
+     a light-dark() pair here would flip to dark text in dark mode, going
+     unreadable against the still-dark scrim. */
+  --color-on-scrim: var(--color-neutral-100);
 
   /* --- Feedback --- */
 

@@ -151,8 +151,18 @@ export interface HeroBlock {
   width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   heading: string;
   subheading?: string | null;
+  /**
+   * Shown beside the text (Image left/right) or as a full-bleed background (Image background).
+   */
   image?: (string | null) | Media;
-  layout?: ('imageRight' | 'imageLeft' | 'textOnly') | null;
+  /**
+   * Image background overrides the Appearance surface above with light text over a dark scrim, so it stays legible over any photo.
+   */
+  layout?: ('imageRight' | 'imageLeft' | 'backgroundImage' | 'textOnly') | null;
+  /**
+   * Only applies to the Image background layout.
+   */
+  scrimCoverage?: ('full' | 'content') | null;
   links?:
     | {
         label: string;

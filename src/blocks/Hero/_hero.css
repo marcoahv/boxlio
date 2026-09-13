@@ -1,0 +1,54 @@
+/* Hero block: the optional full-bleed background-image layout.
+   @layer components, not @utility — see the note at the top of _section.css. */
+
+@layer components {
+  /* Fills the whole <Section> (already position: relative; overflow: hidden)
+     rather than the narrower <Container>, so the photo runs edge to edge
+     behind the text. */
+  .ui-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* Dims the background photo so text stays legible regardless of what the
+     editor uploads - same token that dims the page behind the mobile nav
+     drawer (see _header.css's .header__scrim). */
+  .ui-hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background-color: var(--color-scrim);
+  }
+
+  .ui-hero-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Overrides .ui-section[data-surface='...']'s own `color` (_section.css) -
+     needs the compound selector to match its specificity, since Hero no
+     longer forces a `surface` prop just to get light text (that broke both
+     the Hero's own text and the transparent Header's adopted foreground in
+     dark mode - see --color-on-scrim's comment in _alias-tokens.css). Text
+     over the scrim must stay legible no matter what Surface the editor
+     picked or which color scheme is active. */
+  .ui-section .ui-hero-content {
+    color: var(--color-on-scrim);
+  }
+
+  /* Scrim coverage: "text area only" - darkens just the text block instead
+     of the whole photo (that's .ui-hero-scrim above). Same token, applied as
+     a padded, rounded panel behind the text instead of a full-bleed layer.
+     border-radius matches --radius-image (Settings -> Image Corner Radius)
+     so the panel rounds the same as the images it sits over. */
+  .ui-hero-scrim-content {
+    background-color: var(--color-scrim);
+    border-radius: var(--radius-image);
+    padding: 2rem;
+
+    @variant atMedium {
+      padding: 3rem;
+    }
+  }
+}

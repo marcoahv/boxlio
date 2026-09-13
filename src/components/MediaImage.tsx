@@ -15,6 +15,13 @@ export type MediaImageProps = {
    * diverge from that setting.
    */
   radius?: 'none' | 'sm' | 'site' | 'lg'
+  /**
+   * Renders in next/image's `fill` mode (absolutely positioned, covers its
+   * parent via `object-fit: cover`) instead of the default intrinsic
+   * width/height image. The parent must be a positioned element sized to
+   * whatever area the image should cover.
+   */
+  fill?: boolean
 }
 
 const RADIUS = {
@@ -38,6 +45,7 @@ export function MediaImage({
   imgClassName,
   priority,
   radius = 'site',
+  fill = false,
 }: MediaImageProps) {
   const resolved = getMediaSize(image, size)
   if (!resolved?.url) return null
@@ -49,11 +57,18 @@ export function MediaImage({
   return (
     <div className={className}>
       <Image
-        className={['ui-img h-auto', RADIUS[radius], imgClassName].filter(Boolean).join(' ')}
+        className={[
+          fill ? 'ui-img-cover' : 'ui-img h-auto',
+          RADIUS[radius],
+          imgClassName,
+        ]
+          .filter(Boolean)
+          .join(' ')}
         src={resolved.url}
         alt={image.alt || ''}
-        width={resolved.width ?? 1280}
-        height={resolved.height ?? 720}
+        {...(fill
+          ? { fill: true as const }
+          : { width: resolved.width ?? 1280, height: resolved.height ?? 720 })}
         blurDataURL={blur}
         placeholder={blur ? 'blur' : 'empty'}
         priority={priority}
