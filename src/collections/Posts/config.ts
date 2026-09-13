@@ -145,7 +145,7 @@ export const Posts: CollectionConfig = {
             {
               type: 'group',
               name: 'headerAppearance',
-              label: 'Header section',
+              label: 'Hero section',
               admin: {
                 description: 'The title, meta row, and banner image at the top of the post.',
               },
