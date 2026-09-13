@@ -27,6 +27,8 @@ export function Hero(props: HeroBlock) {
     image,
     layout,
     overlayCoverage,
+    overlayColor,
+    overlayOpacity,
     links,
   } = props
   const isBackgroundImage = layout === 'backgroundImage'
@@ -37,12 +39,27 @@ export function Hero(props: HeroBlock) {
     hasBackgroundImage && overlayCoverage !== 'content'
   const overlayOverContentOnly =
     hasBackgroundImage && overlayCoverage === 'content'
+  const resolvedOverlayColor = overlayColor ?? 'dark'
+  const resolvedOverlayOpacity = overlayOpacity ?? 'medium'
+  const overlayModifierClasses = [
+    resolvedOverlayColor !== 'dark'
+      ? `ui-hero-overlay--${resolvedOverlayColor}`
+      : '',
+    resolvedOverlayOpacity !== 'medium'
+      ? `ui-hero-overlay-opacity--${resolvedOverlayOpacity}`
+      : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <Section
       surface={surface}
       spacing={spacing}
       hasBackgroundImage={hasBackgroundImage}
+      hasDarkOverlayText={
+        overlayOverWholeImage && resolvedOverlayColor === 'light'
+      }
     >
       {hasBackgroundImage && (
         <>
@@ -53,17 +70,37 @@ export function Hero(props: HeroBlock) {
             className="ui-hero-bg"
             priority
           />
-          {overlayOverWholeImage && <div className="ui-hero-overlay" aria-hidden />}
+          {overlayOverWholeImage && (
+            <div
+              className={['ui-hero-overlay', overlayModifierClasses]
+                .filter(Boolean)
+                .join(' ')}
+              aria-hidden
+            />
+          )}
         </>
       )}
       <Container
         width={width}
-        className={hasBackgroundImage ? 'ui-hero-content' : undefined}
+        className={
+          hasBackgroundImage
+            ? [
+                'ui-hero-content',
+                resolvedOverlayColor === 'light' ? 'ui-hero-content--on-light' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
+            : undefined
+        }
       >
         <div
           className={[
             'flex flex-col gap-10',
-            overlayOverContentOnly ? 'ui-hero-overlay-content w-fit' : '',
+            overlayOverContentOnly
+              ? ['ui-hero-overlay-content', 'w-fit', overlayModifierClasses]
+                  .filter(Boolean)
+                  .join(' ')
+              : '',
             hasImage
               ? 'atMedium:flex-row atMedium:items-center atMedium:gap-16'
               : '',

@@ -56,6 +56,41 @@ export const Hero: Block = {
       ],
     },
     {
+      name: 'overlayColor',
+      label: 'Overlay color',
+      type: 'radio',
+      defaultValue: 'dark',
+      admin: {
+        description: 'Only applies to the Image background layout.',
+        condition: (_, siblingData) =>
+          siblingData?.layout === 'backgroundImage',
+      },
+      options: [
+        { label: 'Dark', value: 'dark' },
+        { label: 'Light', value: 'light' },
+        { label: 'Primary', value: 'primary' },
+        { label: 'Secondary', value: 'secondary' },
+      ],
+    },
+    {
+      name: 'overlayOpacity',
+      label: 'Overlay opacity',
+      type: 'radio',
+      defaultValue: 'medium',
+      admin: {
+        description: 'Only applies to the Image background layout.',
+        condition: (_, siblingData) =>
+          siblingData?.layout === 'backgroundImage',
+      },
+      options: [
+        { label: 'None', value: 'none' },
+        { label: 'Light', value: 'light' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Strong', value: 'strong' },
+        { label: 'Solid', value: 'solid' },
+      ],
+    },
+    {
       name: 'links',
       type: 'array',
       maxRows: 2,

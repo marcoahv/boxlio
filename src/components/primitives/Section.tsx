@@ -20,6 +20,15 @@ export type SectionProps = {
    * color can.
    */
   hasBackgroundImage?: boolean
+  /**
+   * Set alongside hasBackgroundImage when the section's own text needs
+   * fixed DARK text over its background image (e.g. Hero's "Light" overlay
+   * color) instead of the default fixed light text. Lets a transparent
+   * Header floating over this section (see _header.css) match the same
+   * fixed pairing, never theme-relative - same reasoning as
+   * hasBackgroundImage itself.
+   */
+  hasDarkOverlayText?: boolean
 }
 
 /**
@@ -41,6 +50,7 @@ export function Section({
   id,
   as: Tag = 'section',
   hasBackgroundImage,
+  hasDarkOverlayText,
 }: SectionProps) {
   return (
     <Tag
@@ -49,6 +59,9 @@ export function Section({
       data-surface={surface ?? 'default'}
       data-spacing={spacing ?? 'normal'}
       data-has-background-image={hasBackgroundImage ? 'true' : undefined}
+      data-overlay-text-color={
+        hasBackgroundImage && hasDarkOverlayText ? 'dark' : undefined
+      }
     >
       {children}
     </Tag>

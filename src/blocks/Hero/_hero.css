@@ -11,14 +11,55 @@
     z-index: 0;
   }
 
+  /* Shared by the full-bleed overlay and the "text area only" panel below:
+     a solid tint color mixed at an adjustable strength, so Overlay
+     color/opacity compose freely instead of needing one rule per
+     combination. Defaults (dark, 50%) match the overlay's original,
+     pre-control look exactly, which is what keeps every already-saved Hero
+     block pixel-identical. */
+  .ui-hero-overlay,
+  .ui-hero-overlay-content {
+    --hero-overlay-color: var(--color-overlay-tint-dark);
+    --hero-overlay-alpha: 50%;
+    background-color: color-mix(
+      in srgb,
+      var(--hero-overlay-color) var(--hero-overlay-alpha),
+      transparent
+    );
+  }
+
   /* Dims the background photo so text stays legible regardless of what the
-     editor uploads - same token that dims the page behind the mobile nav
-     drawer (see _header.css's .header__overlay). */
+     editor uploads - same token family that dims the page behind the mobile
+     nav drawer (see _header.css's .header__overlay, which uses the
+     original fixed --color-overlay directly rather than this adjustable
+     composition). */
   .ui-hero-overlay {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background-color: var(--color-overlay);
+  }
+
+  .ui-hero-overlay--light {
+    --hero-overlay-color: var(--color-overlay-tint-light);
+  }
+  .ui-hero-overlay--primary {
+    --hero-overlay-color: var(--color-overlay-tint-primary);
+  }
+  .ui-hero-overlay--secondary {
+    --hero-overlay-color: var(--color-overlay-tint-secondary);
+  }
+
+  .ui-hero-overlay-opacity--none {
+    --hero-overlay-alpha: 0%;
+  }
+  .ui-hero-overlay-opacity--light {
+    --hero-overlay-alpha: 25%;
+  }
+  .ui-hero-overlay-opacity--strong {
+    --hero-overlay-alpha: 75%;
+  }
+  .ui-hero-overlay-opacity--solid {
+    --hero-overlay-alpha: 100%;
   }
 
   .ui-hero-content {
@@ -36,14 +77,20 @@
   .ui-section .ui-hero-content {
     color: var(--color-on-overlay);
   }
+  /* Only the Light overlay color needs dark text; Dark/Primary/Secondary all
+     keep the rule above (fixed light text). Same specificity note as above -
+     three classes so it reliably outranks the two-class rule it overrides. */
+  .ui-section .ui-hero-content.ui-hero-content--on-light {
+    color: var(--color-on-overlay-light);
+  }
 
   /* Overlay coverage: "text area only" - darkens just the text block instead
-     of the whole photo (that's .ui-hero-overlay above). Same token, applied
-     as a padded, rounded panel behind the text instead of a full-bleed
-     layer. border-radius matches --radius-image (Settings -> Image Corner
-     Radius) so the panel rounds the same as the images it sits over. */
+     of the whole photo (that's .ui-hero-overlay above). Same color-mix
+     composition, applied as a padded, rounded panel behind the text instead
+     of a full-bleed layer. border-radius matches --radius-image (Settings ->
+     Image Corner Radius) so the panel rounds the same as the images it sits
+     over. */
   .ui-hero-overlay-content {
-    background-color: var(--color-overlay);
     border-radius: var(--radius-image);
     padding: 2rem;
 

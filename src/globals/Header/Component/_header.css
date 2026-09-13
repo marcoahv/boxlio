@@ -240,6 +240,19 @@
     --header-fg: var(--color-on-overlay);
   }
 
+  /* Light overlay color -> the Hero's own text goes dark
+     (.ui-hero-content--on-light in _hero.css), so a Fixed, transparent
+     Header floating over it must match with the same fixed dark text -
+     never theme-relative, for the same reason the rule above isn't. The
+     extra [data-overlay-text-color='dark'] attribute (one more attribute
+     selector inside the :has() argument) makes this rule strictly more
+     specific than the rule above, so it wins outright whenever both match -
+     no declaration-order tie-break needed. */
+  body:has(main .ui-section:first-child[data-has-background-image][data-overlay-text-color='dark'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled) {
+    --header-fg: var(--color-on-overlay-light);
+  }
+
   /* Logo mirror of the four --header-fg overrides above. All four surfaces
      are written explicitly (not the 2-rule shortcut in "--- Logo ---" above)
      because here the header's OWN data-surface rule is always also in play

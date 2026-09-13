@@ -119,6 +119,24 @@
      dark mode, going unreadable against the still-dark overlay. */
   --color-on-overlay: var(--color-neutral-100);
 
+  /* Solid tint colors for the Hero background-image layout's adjustable
+     Overlay color/opacity controls. Kept separate from --color-overlay
+     above (which stays a fixed 50% mix, used as-is by the mobile drawer):
+     these need an editor-adjustable opacity instead of one baked-in ratio,
+     applied via _hero.css's --hero-overlay-alpha custom property. Each is
+     fixed, not a light-dark() pair, for the same reason --color-overlay is -
+     it must read the same regardless of the site's color scheme. */
+  --color-overlay-tint-dark: var(--color-neutral-1000);
+  --color-overlay-tint-light: var(--color-neutral-0);
+  /* Reuses the same fixed "-dark" brand shades _button.css already treats
+     as dark enough for fixed light text (see --color-on-surface-muted-hover
+     above), rather than the lighter base --color-primary/--color-secondary. */
+  --color-overlay-tint-primary: var(--color-primary-dark);
+  --color-overlay-tint-secondary: var(--color-secondary-dark);
+  /* Dark-text counterpart for --color-overlay-tint-light; dark/primary/
+     secondary all reuse --color-on-overlay (light) above. */
+  --color-on-overlay-light: var(--color-neutral-900);
+
   /* --- Feedback --- */
 
   --color-danger: var(--color-red);

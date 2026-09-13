@@ -163,6 +163,14 @@ export interface HeroBlock {
    * Only applies to the Image background layout.
    */
   overlayCoverage?: ('full' | 'content') | null;
+  /**
+   * Only applies to the Image background layout.
+   */
+  overlayColor?: ('dark' | 'light' | 'primary' | 'secondary') | null;
+  /**
+   * Only applies to the Image background layout.
+   */
+  overlayOpacity?: ('none' | 'light' | 'medium' | 'strong' | 'solid') | null;
   links?:
     | {
         label: string;
