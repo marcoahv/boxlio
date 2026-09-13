@@ -20,7 +20,7 @@ type PostPreviewProps = {
   >
   variant?: 'featured' | 'header'
   showLink?: boolean
-  imageSize?: 'fullSize' | 'card'
+  imageSize?: 'thumbnail' | 'fullSize' | 'card'
   className?: string
 }
 
@@ -41,34 +41,11 @@ export function PostPreview({
     summary,
     slug,
   } = post
-  // The header variant renders as a full-width banner below its meta row,
-  // overriding the featured variant's side-by-side row at atMedium+ - `flex-col`
-  // and `items-stretch` win regardless of source order because utilities
-  // always beat @layer components (see styles/README.md's "Elements vs.
-  // sections"); items-stretch overrides the row layout's leftover
-  // align-items: flex-start so the lone content child still fills the width.
-  const classNames = [
-    'post-preview',
-    variant === 'header' ? 'flex-col items-stretch' : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ')
-
-  const banner = isDoc<Media>(featuredImage) && (
-    <MediaImage
-      image={featuredImage}
-      size={imageSize}
-      className="w-full"
-      imgClassName="w-full aspect-video object-cover"
-    />
-  )
+  const classNames = ['post-preview', className].filter(Boolean).join(' ')
 
   const content = (
     <div className={classNames}>
-      {variant === 'featured' && isDoc<Media>(featuredImage) && (
-        <MediaImage image={featuredImage} size={imageSize} />
-      )}
+      {isDoc<Media>(featuredImage) && <MediaImage image={featuredImage} size={imageSize} />}
       <div className="post-preview__content">
         {variant === 'featured' && <Heading level={3}>{title}</Heading>}
         <div className="post-preview__meta">
@@ -94,7 +71,6 @@ export function PostPreview({
             </span>
           )}
         </div>
-        {variant === 'header' && banner}
         {summary && <p className="post-preview__summary">{summary}</p>}
       </div>
     </div>

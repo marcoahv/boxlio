@@ -35,7 +35,8 @@ export const Hero: Block = {
       name: 'links',
       type: 'array',
       maxRows: 2,
-      labels: { singular: 'Link', plural: 'Links' },
+      label: 'Buttons',
+      labels: { singular: 'Button', plural: 'Buttons' },
       fields: [
         { name: 'label', type: 'text', required: true },
         { name: 'url', type: 'text', required: true },

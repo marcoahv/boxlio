@@ -44,7 +44,7 @@ export function PostClient({ initialData }: { initialData: Post }) {
         <Container width={data.headerAppearance?.width}>
           <Stack gap="lg">
             <Heading level={1}>{data.title}</Heading>
-            <PostPreview post={data} variant="header" showLink={false} imageSize="fullSize" />
+            <PostPreview post={data} variant="header" showLink={false} imageSize="thumbnail" />
           </Stack>
         </Container>
       </Section>
