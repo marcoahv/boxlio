@@ -366,12 +366,12 @@ export interface User {
  */
 export interface Page {
   id: string;
+  title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
-  title: string;
   featuredImage: string | Media;
   blocks?: (HeroBlock | FeatureGridBlock | CallToActionBlock | RichTextBlock | TableBlock)[] | null;
   /**
@@ -695,9 +695,9 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  title?: T;
   generateSlug?: T;
   slug?: T;
-  title?: T;
   featuredImage?: T;
   blocks?: T | {};
   blogBlocks?:

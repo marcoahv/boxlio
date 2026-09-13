@@ -29,7 +29,6 @@ export const Pages: CollectionConfig = {
     delete: ({ req }) => Boolean(req.user),
   },
   fields: [
-    slugField(),
     {
       type: 'tabs',
       tabs: [
@@ -41,6 +40,12 @@ export const Pages: CollectionConfig = {
               name: 'title',
               required: true,
             },
+            slugField({
+              overrides: (field) => {
+                field.admin = {}
+                return field
+              },
+            }),
             {
               type: 'upload',
               name: 'featuredImage',
