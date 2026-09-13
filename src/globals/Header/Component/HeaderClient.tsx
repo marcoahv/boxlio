@@ -180,55 +180,61 @@ export function HeaderClient({ initialHeader }: { initialHeader: Header }) {
 
               {socialLinks && socialLinks.length > 0 && (
                 <ul className="header__social">
-                  {socialLinks.map((item) => (
-                    <li key={item.id}>
-                      <Link
-                        className="ui-link"
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={item.platform}
-                        onClick={close}
-                      >
-                        {isDoc<Media>(item.icon) && item.icon.url && (
-                          <Image
-                            src={item.icon.url}
-                            alt=""
-                            width={24}
-                            height={24}
-                            aria-hidden
-                          />
-                        )}
-                      </Link>
-                    </li>
-                  ))}
+                  {socialLinks.map((item) => {
+                    if (!item.url) return null
+                    return (
+                      <li key={item.id}>
+                        <Link
+                          className="ui-link"
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={item.platform}
+                          onClick={close}
+                        >
+                          {isDoc<Media>(item.icon) && item.icon.url && (
+                            <Image
+                              src={item.icon.url}
+                              alt=""
+                              width={24}
+                              height={24}
+                              aria-hidden
+                            />
+                          )}
+                        </Link>
+                      </li>
+                    )
+                  })}
                 </ul>
               )}
 
               {ctaButtons && ctaButtons.length > 0 && (
                 <ul className="header__actions">
-                  {ctaButtons.map((item) => (
-                    <li key={item.id}>
-                      <Link
-                        href={item.url}
-                        className={[
-                          'ui-btn',
-                          {
-                            outline: 'ui-btn-outline',
-                            ghost: 'ui-btn-ghost',
-                          }[item.variant ?? ''],
-                          item.color === 'secondary'
-                            ? 'ui-btn-secondary'
-                            : '',
-                        ]
-                          .filter(Boolean)
-                          .join(' ')}
-                        onClick={close}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  ))}
+                  {ctaButtons.map((item) => {
+                    if (!item.url) return null
+                    return (
+                      <li key={item.id}>
+                        <Link
+                          href={item.url}
+                          className={[
+                            'ui-btn',
+                            {
+                              outline: 'ui-btn-outline',
+                              ghost: 'ui-btn-ghost',
+                            }[item.variant ?? ''],
+                            item.color === 'secondary'
+                              ? 'ui-btn-secondary'
+                              : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                          onClick={close}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    )
+                  })}
                 </ul>
               )}
             </nav>
