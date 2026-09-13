@@ -82,6 +82,30 @@
     display: block;
   }
 
+  /* The other two combinations, previously left to the plain fallback in
+     elements/_logo.css (logo=block, logo-dark=none). That fallback only
+     gives the right answer when the OS scheme agrees with data-theme -
+     @media (prefers-color-scheme) always reflects the real OS setting and
+     ignores data-theme entirely, so an explicit-light visitor on a
+     dark-OS device (or explicit-dark on a light-OS device) fell through to
+     the OS-driven rule above instead, flipping the logo while --header-fg
+     (a light-dark() token, which DOES respect data-theme's color-scheme)
+     correctly stayed put. Explicit rules for all four combinations, same
+     as the adoption mirror below already does, removes the gap. */
+  html[data-theme='light'] .header[data-surface='default'] .ui-logo__img--logo {
+    display: block;
+  }
+  html[data-theme='light'] .header[data-surface='default'] .ui-logo__img--logo-dark {
+    display: none;
+  }
+
+  html[data-theme='dark'] .header[data-surface='inverse'] .ui-logo__img--logo {
+    display: block;
+  }
+  html[data-theme='dark'] .header[data-surface='inverse'] .ui-logo__img--logo-dark {
+    display: none;
+  }
+
   /* --- Position --- */
 
   .header[data-position='fixed'] {
@@ -374,6 +398,32 @@
     .ui-logo__img--logo-dark,
   body:has(main .ui-section:first-child[data-surface='accent'])
     .header[data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo-dark {
+    display: none;
+  }
+
+  /* Logo mirror of the background-image --header-fg rules above. Both are
+     fixed pairings, not theme-relative (see --color-on-overlay's comment),
+     so unlike the Surface-based logo mirror above this needs no light/dark
+     media-query variants - one rule per case is enough. */
+  body:has(main .ui-section:first-child[data-has-background-image])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo {
+    display: none;
+  }
+  body:has(main .ui-section:first-child[data-has-background-image])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo-dark {
+    display: block;
+  }
+
+  body:has(main .ui-section:first-child[data-has-background-image][data-overlay-text-color='dark'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo {
+    display: block;
+  }
+  body:has(main .ui-section:first-child[data-has-background-image][data-overlay-text-color='dark'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: none;
   }
