@@ -17,8 +17,11 @@
 
    `@theme static` (not plain `@theme`) because Tailwind tree-shakes theme
    tokens nothing references in source. These are a public contract meant to
-   be overridden at runtime by the Theme global, so they must always be
-   emitted, referenced or not. */
+   be overridden at runtime, so they must always be emitted, referenced or
+   not. The Primary/Secondary values below are overridden by the Settings
+   global's Site Colors tab, via an inline style on <html> in layout.tsx
+   (see src/globals/Settings/config.ts and src/custom/color/Component.tsx) -
+   these literals remain the fallback and each field's defaultValue. */
 
 @theme static {
   /* Primary */

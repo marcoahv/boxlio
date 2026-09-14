@@ -65,6 +65,17 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       data-image-shadow={settings.imageShadow ?? 'none'}
       data-button-shadow={settings.buttonShadow ?? 'none'}
       data-card-shadow={settings.cardShadow ?? 'none'}
+      // Arbitrary hex values, unlike the enum-driven data-* attributes above -
+      // an inline style on <html> overrides _base-tokens.css's :root rule for
+      // the same six custom properties (same element, higher specificity).
+      style={{
+        '--color-primary': settings.primaryColor ?? '#d6c1a1',
+        '--color-primary-light': settings.primaryColorLight ?? '#e2dbcf',
+        '--color-primary-dark': settings.primaryColorDark ?? '#b2905c',
+        '--color-secondary': settings.secondaryColor ?? '#49b7d2',
+        '--color-secondary-light': settings.secondaryColorLight ?? '#9fd0dc',
+        '--color-secondary-dark': settings.secondaryColorDark ?? '#137c95',
+      } as React.CSSProperties}
       // The theme-init script below sets data-theme on this element before
       // hydration runs, so React sees an attribute the server render didn't
       // produce. That is intentional (it's what avoids a flash of the wrong

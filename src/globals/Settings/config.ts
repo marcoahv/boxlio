@@ -1,5 +1,29 @@
 import { type GlobalConfig } from 'payload'
 import { revalidateGlobal } from '@/globals/hooks/revalidateGlobal'
+import { isHexColor } from '@/utilities/color'
+
+const HEX_VALIDATION_ERROR = 'Enter a valid hex color (e.g. #d6c1a1).'
+
+const colorField = ({
+  name,
+  label,
+  defaultValue,
+}: {
+  name: string
+  label: string
+  defaultValue: string
+}) => ({
+  name,
+  label,
+  type: 'text' as const,
+  defaultValue,
+  admin: {
+    components: {
+      Field: '@/custom/color/Component.tsx#ColorPickerField',
+    },
+  },
+  validate: (value: unknown) => (isHexColor(value) ? true : HEX_VALIDATION_ERROR),
+})
 
 export const Settings: GlobalConfig = {
   slug: 'settings',
@@ -141,6 +165,55 @@ export const Settings: GlobalConfig = {
                 description:
                   'Controls the resting drop shadow applied to cards across the site (separate from the existing hover shadow).',
               },
+            },
+          ],
+        },
+        {
+          label: 'Site Colors',
+          fields: [
+            {
+              type: 'collapsible',
+              label: 'Primary',
+              admin: { initCollapsed: false },
+              fields: [
+                colorField({
+                  name: 'primaryColor',
+                  label: 'Primary Color',
+                  defaultValue: '#d6c1a1',
+                }),
+                colorField({
+                  name: 'primaryColorLight',
+                  label: 'Primary Color (Light)',
+                  defaultValue: '#e2dbcf',
+                }),
+                colorField({
+                  name: 'primaryColorDark',
+                  label: 'Primary Color (Dark)',
+                  defaultValue: '#b2905c',
+                }),
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Secondary',
+              admin: { initCollapsed: false },
+              fields: [
+                colorField({
+                  name: 'secondaryColor',
+                  label: 'Secondary Color',
+                  defaultValue: '#49b7d2',
+                }),
+                colorField({
+                  name: 'secondaryColorLight',
+                  label: 'Secondary Color (Light)',
+                  defaultValue: '#9fd0dc',
+                }),
+                colorField({
+                  name: 'secondaryColorDark',
+                  label: 'Secondary Color (Dark)',
+                  defaultValue: '#137c95',
+                }),
+              ],
             },
           ],
         },

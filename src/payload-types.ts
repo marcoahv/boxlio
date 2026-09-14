@@ -972,6 +972,12 @@ export interface Setting {
    * Controls the resting drop shadow applied to cards across the site (separate from the existing hover shadow).
    */
   cardShadow?: ('none' | 'sm' | 'md' | 'lg') | null;
+  primaryColor?: string | null;
+  primaryColorLight?: string | null;
+  primaryColorDark?: string | null;
+  secondaryColor?: string | null;
+  secondaryColorLight?: string | null;
+  secondaryColorDark?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1056,6 +1062,12 @@ export interface SettingsSelect<T extends boolean = true> {
   imageShadow?: T;
   buttonShadow?: T;
   cardShadow?: T;
+  primaryColor?: T;
+  primaryColorLight?: T;
+  primaryColorDark?: T;
+  secondaryColor?: T;
+  secondaryColorLight?: T;
+  secondaryColorDark?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

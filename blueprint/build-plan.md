@@ -176,3 +176,8 @@ cleaned-up checkbox version before generating the project overview.
   `siteDescription`, `gtmCode`, and the site icons stay non-reactive -
   head-only/favicon fields never get live-preview reactivity, same rule
   already applied to `meta` on Pages/Posts/blog
+- [x] 21. **Site Colors control** - editor-controlled Settings tab for the
+  site's primary and secondary brand colors and their light/dark shades (the
+  six `--color-primary`/`-light`/`-dark` and `--color-secondary`/`-light`/
+  `-dark` tokens), wired via the same field -> runtime CSS custom property
+  pattern as feature 13's image/button corner radius

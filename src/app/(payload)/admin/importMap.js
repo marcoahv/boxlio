@@ -33,6 +33,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { TableCellsStyle as TableCellsStyle_1ea95dc9239b3ca29f7e5f5e3a0f82fe } from '@/custom/table/Component.tsx'
 import { FixedToolbarFeatureClient as FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ArrayRowLabel as ArrayRowLabel_f5e6ec638918f6f93eea6c71a5faff4c } from '@/custom/label/Component.tsx'
+import { ColorPickerField as ColorPickerField_491b22dd89466645351af6ff3c72408c } from '@/custom/color/Component.tsx'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -72,6 +73,7 @@ export const importMap = {
   "@/custom/table/Component.tsx#TableCellsStyle": TableCellsStyle_1ea95dc9239b3ca29f7e5f5e3a0f82fe,
   "@payloadcms/richtext-lexical/client#FixedToolbarFeatureClient": FixedToolbarFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/custom/label/Component.tsx#ArrayRowLabel": ArrayRowLabel_f5e6ec638918f6f93eea6c71a5faff4c,
+  "@/custom/color/Component.tsx#ColorPickerField": ColorPickerField_491b22dd89466645351af6ff3c72408c,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
