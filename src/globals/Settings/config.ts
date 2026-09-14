@@ -3,6 +3,7 @@ import { revalidateGlobal } from '@/globals/hooks/revalidateGlobal'
 
 export const Settings: GlobalConfig = {
   slug: 'settings',
+  label: 'Site Settings',
   hooks: {
     afterChange: [revalidateGlobal],
   },
