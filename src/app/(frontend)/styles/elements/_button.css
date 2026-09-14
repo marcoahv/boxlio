@@ -20,6 +20,7 @@
   font-weight: var(--font-weight-regular);
   text-decoration: none;
   border: none;
+  border-radius: var(--radius-button);
 
   transition: all 0.3s ease 0s;
 

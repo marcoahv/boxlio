@@ -192,6 +192,35 @@ html[data-image-radius='xl'] {
 }
 
 /*=============================================
+*             Button radius
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Image radius above
+   (Settings.buttonRadius -> layout.tsx's data-button-radius on <html>),
+   rooted at <html> so the resulting custom property cascades to every
+   button regardless of nesting depth. */
+
+:root {
+  --radius-button: var(--radius-none);
+}
+
+html[data-button-radius='none'] {
+  --radius-button: var(--radius-none);
+}
+html[data-button-radius='sm'] {
+  --radius-button: var(--radius-sm);
+}
+html[data-button-radius='md'] {
+  --radius-button: var(--radius-md);
+}
+html[data-button-radius='lg'] {
+  --radius-button: var(--radius-lg);
+}
+html[data-button-radius='xl'] {
+  --radius-button: var(--radius-xl);
+}
+
+/*=============================================
 *                Shadows
 =============================================*/
 

@@ -51,6 +51,22 @@ export const Settings: GlobalConfig = {
       },
     },
     {
+      name: 'buttonRadius',
+      type: 'select',
+      label: 'Button Corner Radius',
+      defaultValue: 'none',
+      options: [
+        { label: 'None', value: 'none' },
+        { label: 'Small', value: 'sm' },
+        { label: 'Medium', value: 'md' },
+        { label: 'Large', value: 'lg' },
+        { label: 'Extra Large', value: 'xl' },
+      ],
+      admin: {
+        description: 'Controls how rounded button corners are across the site.',
+      },
+    },
+    {
       name: 'icon',
       label: 'Site Icon',
       type: 'upload',

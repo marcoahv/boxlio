@@ -949,6 +949,10 @@ export interface Setting {
    */
   imageRadius?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
   /**
+   * Controls how rounded button corners are across the site.
+   */
+  buttonRadius?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  /**
    * The small mark used as the browser tab favicon. Usually square, e.g. 32×32 or 64×64.
    */
   icon: string | Media;
@@ -1034,6 +1038,7 @@ export interface SettingsSelect<T extends boolean = true> {
   siteDescription?: T;
   gtmCode?: T;
   imageRadius?: T;
+  buttonRadius?: T;
   icon?: T;
   iconDark?: T;
   updatedAt?: T;
