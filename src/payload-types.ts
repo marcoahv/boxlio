@@ -945,14 +945,6 @@ export interface Setting {
    */
   gtmCode?: string | null;
   /**
-   * Controls how rounded image corners are across the site.
-   */
-  imageRadius?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-  /**
-   * Controls how rounded button corners are across the site.
-   */
-  buttonRadius?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
-  /**
    * The small mark used as the browser tab favicon. Usually square, e.g. 32×32 or 64×64.
    */
   icon: string | Media;
@@ -960,6 +952,14 @@ export interface Setting {
    * Optional. Shown when the visitor's browser prefers a dark color scheme. Falls back to the main icon.
    */
   iconDark?: (string | null) | Media;
+  /**
+   * Controls how rounded image corners are across the site.
+   */
+  imageRadius?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  /**
+   * Controls how rounded button corners are across the site.
+   */
+  buttonRadius?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1037,10 +1037,10 @@ export interface SettingsSelect<T extends boolean = true> {
   siteName?: T;
   siteDescription?: T;
   gtmCode?: T;
-  imageRadius?: T;
-  buttonRadius?: T;
   icon?: T;
   iconDark?: T;
+  imageRadius?: T;
+  buttonRadius?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
