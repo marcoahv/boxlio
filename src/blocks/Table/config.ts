@@ -37,6 +37,12 @@ export const Table: Block = {
           minRows: 1,
           required: true,
           labels: { singular: 'Cell', plural: 'Cells' },
+          admin: {
+            className: 'ui-table-cells-field',
+            components: {
+              afterInput: ['@/custom/table/Component.tsx#TableCellsStyle'],
+            },
+          },
           fields: [
             {
               name: 'content',

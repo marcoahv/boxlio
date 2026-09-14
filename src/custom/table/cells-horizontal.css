@@ -1,0 +1,17 @@
+/* Scoped to the Table block's cells field only (admin.className below) - the
+   package's own Array field styles are in @layer payload-default, so these
+   un-layered rules win without needing extra specificity. */
+.ui-table-cells-field > .array-field__draggable-rows {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+/* ArrayRow wraps each row's Collapsible (the element actually carrying
+   .array-field__row) in an unclassed div for the drag transform/ref - that
+   div, not .array-field__row, is the real flex item here, so it has to be
+   targeted directly for a flex-basis to take effect. */
+.ui-table-cells-field > .array-field__draggable-rows > div {
+  flex: 1 1 220px;
+  min-width: 220px;
+}
