@@ -34,6 +34,9 @@ export const Settings: GlobalConfig = {
   fields: [
     {
       type: 'tabs',
+      admin: {
+        className: 'settings-tabs',
+      },
       tabs: [
         {
           label: 'Information',
@@ -81,7 +84,7 @@ export const Settings: GlobalConfig = {
           ],
         },
         {
-          label: 'Corner Radius',
+          label: 'Corners',
           fields: [
             {
               name: 'imageRadius',
@@ -169,7 +172,7 @@ export const Settings: GlobalConfig = {
           ],
         },
         {
-          label: 'Site Colors',
+          label: 'Colors',
           fields: [
             {
               type: 'collapsible',

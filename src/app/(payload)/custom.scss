@@ -1,0 +1,48 @@
+// Admin-wide overrides. Unlayered rules here already win over Payload's own
+// `@layer payload-default` styles, so no !important is needed.
+
+// 35% narrower than Payload's default --nav-width (275px x 0.65). Kept above
+// Payload's own small-break (768px) so the mobile full-width nav is untouched.
+@media (min-width: 769px) {
+  :root {
+    --nav-width: 178.75px;
+  }
+}
+
+// Narrows the Site Settings global's tabs field (admin.className: 'settings-tabs'
+// in src/globals/Settings/config.ts) into a single narrow column instead of
+// stretching full page width. Tabs stay in Payload's default horizontal row;
+// only the overall width is constrained. Scoped to that class so Posts/Pages
+// tabs are untouched.
+.settings-tabs {
+  @media (min-width: 769px) {
+    max-width: 640px;
+  }
+}
+
+// With Live Preview on, Payload's own layout gives the iframe a fixed 60%
+// width and lets the fields column flex-shrink to fill whatever's left - so
+// the fields column never actually matches the 640px cap above, and the
+// iframe never gets more than its fixed 60% even though the fields need far
+// less room than that. Fix: pin the fields column to a fixed width that fits
+// the capped field, and let the iframe grow to fill everything else instead
+// of being capped at 60%. Scoped to Site Settings specifically
+// (`global-edit--settings`, the class Payload's own edit view puts on its
+// root element for this global) so Posts/Pages/other live-preview-enabled
+// docs are untouched. Gated above Payload's own mid-break (1024px), where
+// the iframe stacks below the fields instead of sitting beside them.
+@media (min-width: 1025px) {
+  .global-edit--settings.collection-edit--is-live-previewing .collection-edit__main {
+    flex: 0 0 700px;
+    width: 700px;
+  }
+
+  .global-edit--settings.collection-edit--is-live-previewing .document-fields__edit {
+    padding-right: var(--base);
+  }
+
+  .global-edit--settings.collection-edit--is-live-previewing .live-preview-window {
+    flex: 1 1 auto;
+    width: auto;
+  }
+}
