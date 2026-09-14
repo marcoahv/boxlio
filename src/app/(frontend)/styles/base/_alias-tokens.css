@@ -230,12 +230,89 @@ html[data-button-radius='xl'] {
    predates this token (see components/_card.css). */
 
 @theme static {
+  --shadow-none: none;
   --shadow-sm: 0 0.2rem 0.8rem
     color-mix(in srgb, var(--color-neutral-1000) 10%, transparent);
   --shadow-md: 0 0.4rem 1.6rem
     color-mix(in srgb, var(--color-neutral-1000) 15%, transparent);
   --shadow-lg: 0 0.8rem 2.4rem
     color-mix(in srgb, var(--color-neutral-1000) 20%, transparent);
+}
+
+/*=============================================
+*             Image shadow
+=============================================*/
+
+/* Site-wide, editor-controlled (Settings.imageShadow -> layout.tsx's
+   data-image-shadow on <html>). Same field -> data-attribute -> CSS pattern
+   as Image radius above, rooted at <html> so the resulting custom property
+   cascades to every image regardless of nesting depth. */
+
+:root {
+  --shadow-image: var(--shadow-none);
+}
+
+html[data-image-shadow='none'] {
+  --shadow-image: var(--shadow-none);
+}
+html[data-image-shadow='sm'] {
+  --shadow-image: var(--shadow-sm);
+}
+html[data-image-shadow='md'] {
+  --shadow-image: var(--shadow-md);
+}
+html[data-image-shadow='lg'] {
+  --shadow-image: var(--shadow-lg);
+}
+
+/*=============================================
+*             Button shadow
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Image shadow above
+   (Settings.buttonShadow -> layout.tsx's data-button-shadow on <html>). */
+
+:root {
+  --shadow-button: var(--shadow-none);
+}
+
+html[data-button-shadow='none'] {
+  --shadow-button: var(--shadow-none);
+}
+html[data-button-shadow='sm'] {
+  --shadow-button: var(--shadow-sm);
+}
+html[data-button-shadow='md'] {
+  --shadow-button: var(--shadow-md);
+}
+html[data-button-shadow='lg'] {
+  --shadow-button: var(--shadow-lg);
+}
+
+/*=============================================
+*             Card shadow
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Image shadow above
+   (Settings.cardShadow -> layout.tsx's data-card-shadow on <html>). This is
+   a RESTING shadow, independent of .card's existing :hover box-shadow in
+   _card.css - that hover effect predates this token and stays as-is. */
+
+:root {
+  --shadow-card: var(--shadow-none);
+}
+
+html[data-card-shadow='none'] {
+  --shadow-card: var(--shadow-none);
+}
+html[data-card-shadow='sm'] {
+  --shadow-card: var(--shadow-sm);
+}
+html[data-card-shadow='md'] {
+  --shadow-card: var(--shadow-md);
+}
+html[data-card-shadow='lg'] {
+  --shadow-card: var(--shadow-lg);
 }
 
 /*=============================================

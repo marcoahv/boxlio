@@ -960,6 +960,18 @@ export interface Setting {
    * Controls how rounded button corners are across the site.
    */
   buttonRadius?: ('none' | 'sm' | 'md' | 'lg' | 'xl') | null;
+  /**
+   * Controls the drop shadow applied to images across the site.
+   */
+  imageShadow?: ('none' | 'sm' | 'md' | 'lg') | null;
+  /**
+   * Controls the drop shadow applied to buttons across the site.
+   */
+  buttonShadow?: ('none' | 'sm' | 'md' | 'lg') | null;
+  /**
+   * Controls the resting drop shadow applied to cards across the site (separate from the existing hover shadow).
+   */
+  cardShadow?: ('none' | 'sm' | 'md' | 'lg') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1041,6 +1053,9 @@ export interface SettingsSelect<T extends boolean = true> {
   iconDark?: T;
   imageRadius?: T;
   buttonRadius?: T;
+  imageShadow?: T;
+  buttonShadow?: T;
+  cardShadow?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

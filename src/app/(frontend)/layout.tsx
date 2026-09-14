@@ -62,6 +62,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       className={`${fontVariables} font-primary`}
       data-image-radius={settings.imageRadius ?? 'md'}
       data-button-radius={settings.buttonRadius ?? 'none'}
+      data-image-shadow={settings.imageShadow ?? 'none'}
+      data-button-shadow={settings.buttonShadow ?? 'none'}
+      data-card-shadow={settings.cardShadow ?? 'none'}
       // The theme-init script below sets data-theme on this element before
       // hydration runs, so React sees an attribute the server render didn't
       // produce. That is intentional (it's what avoids a flash of the wrong

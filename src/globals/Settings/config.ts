@@ -93,6 +93,57 @@ export const Settings: GlobalConfig = {
             },
           ],
         },
+        {
+          label: 'Shadows',
+          fields: [
+            {
+              name: 'imageShadow',
+              type: 'select',
+              label: 'Image Shadow',
+              defaultValue: 'none',
+              options: [
+                { label: 'None', value: 'none' },
+                { label: 'Small', value: 'sm' },
+                { label: 'Medium', value: 'md' },
+                { label: 'Large', value: 'lg' },
+              ],
+              admin: {
+                description: 'Controls the drop shadow applied to images across the site.',
+              },
+            },
+            {
+              name: 'buttonShadow',
+              type: 'select',
+              label: 'Button Shadow',
+              defaultValue: 'none',
+              options: [
+                { label: 'None', value: 'none' },
+                { label: 'Small', value: 'sm' },
+                { label: 'Medium', value: 'md' },
+                { label: 'Large', value: 'lg' },
+              ],
+              admin: {
+                description: 'Controls the drop shadow applied to buttons across the site.',
+              },
+            },
+            {
+              name: 'cardShadow',
+              type: 'select',
+              label: 'Card Shadow',
+              defaultValue: 'none',
+              options: [
+                { label: 'None', value: 'none' },
+                { label: 'Small', value: 'sm' },
+                { label: 'Medium', value: 'md' },
+                { label: 'Large', value: 'lg' },
+              ],
+              admin: {
+                description:
+                  'Controls the resting drop shadow applied to cards across the site (separate from the existing hover shadow).',
+              },
+            },
+          ],
+        },
       ],
     },
   ],

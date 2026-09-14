@@ -16,6 +16,13 @@ export type MediaImageProps = {
    */
   radius?: 'none' | 'sm' | 'site' | 'lg'
   /**
+   * Shadow token to apply. `site` (default) follows the editor-controlled
+   * sitewide setting (Settings -> Image Shadow); `none`/`sm`/`lg` are
+   * explicit overrides for a call site that deliberately wants to diverge
+   * from that setting.
+   */
+  shadow?: 'none' | 'sm' | 'site' | 'lg'
+  /**
    * Renders in next/image's `fill` mode (absolutely positioned, covers its
    * parent via `object-fit: cover`) instead of the default intrinsic
    * width/height image. The parent must be a positioned element sized to
@@ -29,6 +36,13 @@ const RADIUS = {
   sm: 'rounded-[var(--radius-sm)]',
   site: 'rounded-[var(--radius-image)]',
   lg: 'rounded-[var(--radius-lg)]',
+} as const
+
+const SHADOW = {
+  none: 'shadow-[var(--shadow-none)]',
+  sm: 'shadow-[var(--shadow-sm)]',
+  site: 'shadow-[var(--shadow-image)]',
+  lg: 'shadow-[var(--shadow-lg)]',
 } as const
 
 /**
@@ -45,6 +59,7 @@ export function MediaImage({
   imgClassName,
   priority,
   radius = 'site',
+  shadow = 'site',
   fill = false,
 }: MediaImageProps) {
   const resolved = getMediaSize(image, size)
@@ -60,6 +75,7 @@ export function MediaImage({
         className={[
           fill ? 'ui-img-cover' : 'ui-img h-auto',
           RADIUS[radius],
+          SHADOW[shadow],
           imgClassName,
         ]
           .filter(Boolean)
