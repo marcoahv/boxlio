@@ -49,7 +49,7 @@ export const Settings: GlobalConfig = {
               name: 'siteName',
               type: 'text',
               required: true,
-              defaultValue: 'Site Builder',
+              defaultValue: 'Boxlio',
             },
             {
               name: 'siteDescription',

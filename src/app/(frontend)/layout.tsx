@@ -12,7 +12,7 @@ import type { Media } from '@/payload-types'
 import { themeInitScript } from '@/utilities/theme'
 import { fontVariables } from './fonts'
 
-const FALLBACK_NAME = 'Site Builder'
+const FALLBACK_NAME = 'Boxlio'
 const FALLBACK_DESCRIPTION = 'A site built with the site builder.'
 
 /** Builds one favicon entry from a header icon field, or null if unset. */

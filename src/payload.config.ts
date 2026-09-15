@@ -24,7 +24,7 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 /** Shown in admin titles and OG tags. Override per project via env. */
-const SITE_NAME = process.env.SITE_NAME || 'Site Builder'
+const SITE_NAME = process.env.SITE_NAME || 'Boxlio'
 
 export default buildConfig({
   admin: {

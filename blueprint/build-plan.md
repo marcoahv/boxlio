@@ -191,14 +191,16 @@ cleaned-up checkbox version before generating the project overview.
   and replace the default Payload admin logo/icon with one rendered from the
   already-uploaded `Settings.icon`, so a cloned site's admin panel reflects
   its brand without a separate admin-only asset upload
-- [ ] 24. **Role-based access control** - add a `roles` field to `Users` (e.g.
-  admin/editor) plus per-collection/global `access` functions and
-  field-level `admin.condition` gating (e.g. restricting Settings' Colors
-  tab to admins), replacing today's single-role "any authenticated user can
-  edit everything" model
 - [x] 25. **Main heading size override** - a new Settings -> Typography field
   ("Additional sizes for Main Headings": Default/Display/Large Display) that
   lets editors optionally scale up just the site's actual page-level `<h1>`
   elements (Hero heading, Post title) beyond the normal Heading Scale range,
   via the same field -> `data-*` attribute -> CSS custom property ->
   live-preview-sync pattern as every other Typography/Whitespace control
+- [x] 26. **Rename the project to Boxlio** - rebrand the template's own
+  identity (`package.json`'s name, the default site-name fallback used across
+  `payload.config.ts`/`layout.tsx`/`generateMeta.ts`/Settings' `siteName`
+  default, `.env.example`'s docs, and the project overview) from
+  "Site Builder"/`payload-builder` to "Boxlio"; renaming the external GitHub
+  repository itself is a separate, explicit follow-up action, not part of
+  this code change

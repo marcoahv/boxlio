@@ -1,6 +1,6 @@
-# Site Builder - Project Overview
+# Boxlio - Project Overview
 
-<!-- blueprint:source-hash 91f7053be9c31bf9d7f38f465ef24eab18882f27e06c11016bd790bca2ecde88 -->
+<!-- blueprint:source-hash 48cacbfee3690524145691f429a338c6b25bc8b6d662caa04cea191bdbc4695d -->
 
 > A reusable Payload CMS + Next.js template, kept as a template repository and
 > cloned fresh for each new site, rather than shipped as one specific product.
@@ -187,7 +187,7 @@ the two roles above.
 
 ### Settings (global, `settings`)
 
-- **Information tab** - `siteName` (text, required, default "Site Builder"),
+- **Information tab** - `siteName` (text, required, default "Boxlio"),
   `siteDescription` (textarea), `gtmCode` (text, Google Tag Manager),
   `icon`/`iconDark` (uploads -> Media, required/optional) - the browser-tab
   favicon; `icon` is also planned to drive the admin panel's own logo

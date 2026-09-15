@@ -41,7 +41,7 @@ export const generateMeta = async (args: {
       title,
       description,
       url: canonicalUrl || serverUrl,
-      siteName: settings.siteName || 'Site Builder',
+      siteName: settings.siteName || 'Boxlio',
       ...(ogImage && { image: [{ url: ogImage }] }),
       locale: 'en_US',
       type: 'website',
