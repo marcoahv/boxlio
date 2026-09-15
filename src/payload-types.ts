@@ -383,7 +383,7 @@ export interface Page {
   featuredImage: string | Media;
   blocks?: (HeroBlock | FeatureGridBlock | CallToActionBlock | RichTextBlock | TableBlock)[] | null;
   /**
-   * Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Layout tab) above them for a heading.
+   * Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Content tab) above them for a heading.
    */
   blogBlocks?: (FeaturedPostBlock | BlogListingBlock)[] | null;
   meta?: {

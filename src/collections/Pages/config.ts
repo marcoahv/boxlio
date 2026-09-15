@@ -55,7 +55,7 @@ export const Pages: CollectionConfig = {
           ],
         },
         {
-          label: 'Layout',
+          label: 'Content',
           fields: [
             {
               name: 'blocks',
@@ -69,7 +69,7 @@ export const Pages: CollectionConfig = {
           ],
         },
         {
-          label: 'Blog Content',
+          label: 'Blog Blocks',
           admin: {
             // Only the "blog" page reads blogBlocks (see blog/page.tsx) —
             // hide the whole tab everywhere else rather than leave editors
@@ -84,7 +84,7 @@ export const Pages: CollectionConfig = {
               blocks: [FeaturedPost, BlogListing],
               admin: {
                 description:
-                  'Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Layout tab) above them for a heading.',
+                  'Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Content tab) above them for a heading.',
               },
             },
           ],

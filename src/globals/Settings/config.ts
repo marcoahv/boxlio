@@ -261,7 +261,7 @@ export const Settings: GlobalConfig = {
               options: [
                 { label: 'Compact', value: 'sm' },
                 { label: 'Default', value: 'md' },
-                { label: 'Bold', value: 'lg' },
+                { label: 'Large', value: 'lg' },
               ],
               admin: {
                 description: 'Scales heading sizes (h1-h6) up or down across the site.',
