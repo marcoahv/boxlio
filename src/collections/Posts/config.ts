@@ -23,6 +23,7 @@ export const Posts: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     hideAPIURL: process.env.NODE_ENV !== 'development',
+    group: 'Content',
   },
   hooks: {
     afterRead: [populateAuthor],

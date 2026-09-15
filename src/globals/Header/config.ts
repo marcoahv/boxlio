@@ -5,6 +5,9 @@ import { linkField } from '@/fields/link'
 
 export const Header: GlobalConfig = {
   slug: 'header',
+  admin: {
+    group: 'Site Identity',
+  },
   hooks: {
     afterChange: [revalidateGlobal],
   },

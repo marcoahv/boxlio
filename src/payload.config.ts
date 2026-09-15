@@ -32,6 +32,12 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      graphics: {
+        Icon: '@/custom/admin-branding/Component.tsx#AdminIcon',
+        Logo: '@/custom/admin-branding/Component.tsx#AdminLogo',
+      },
+    },
     meta: {
       titleSuffix: ` - ${SITE_NAME}`,
       description: `Content management for ${SITE_NAME}`,
@@ -68,7 +74,7 @@ export default buildConfig({
           defaultFromName: process.env.EMAIL_FROM_NAME || SITE_NAME,
         })
       : undefined,
-  collections: [Users, Media, Pages, Posts, Categories],
+  collections: [Users, Pages, Posts, Categories, Media],
   globals: [Header, Settings, Footer],
   // Registered globally so collections can reference blocks by slug.
   // See src/blocks/registry.ts.

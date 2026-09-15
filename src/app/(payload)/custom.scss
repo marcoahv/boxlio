@@ -1,6 +1,18 @@
 // Admin-wide overrides. Unlayered rules here already win over Payload's own
 // `@layer payload-default` styles, so no !important is needed.
 
+// Enlarges the branded nav icon (AdminIcon, admin.components.graphics.Icon
+// in src/payload.config.ts, rendered via AppHeader -> StepNav) from Payload's
+// default 18px (16px below its own mid-break at max-width: 1024px) to a
+// fixed 40px - the default size reads fine for Payload's own abstract glyph
+// but is too small for an uploaded logo image. One unconditional rule beats
+// both of Payload's layered variants at every viewport, no media query
+// needed.
+.step-nav__home {
+  width: 40px;
+  height: 40px;
+}
+
 // 35% narrower than Payload's default --nav-width (275px x 0.65). Kept above
 // Payload's own small-break (768px) so the mobile full-width nav is untouched.
 @media (min-width: 769px) {

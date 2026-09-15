@@ -29,6 +29,9 @@ const colorField = ({
 export const Settings: GlobalConfig = {
   slug: 'settings',
   label: 'Site Settings',
+  admin: {
+    group: 'Site Identity',
+  },
   hooks: {
     afterChange: [revalidateGlobal],
   },

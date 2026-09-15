@@ -17,6 +17,7 @@ export const Pages: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
+    group: 'Content',
   },
   hooks: {
     afterChange: [updatePage],

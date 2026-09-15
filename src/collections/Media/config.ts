@@ -4,6 +4,9 @@ import { generateBlurData } from '@/collections/Media/hooks/generateBlurData'
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  admin: {
+    group: 'Content',
+  },
   // Governs every relationship population that doesn't explicitly override it -
   // notably @payloadcms/live-preview's mergeData, which has no way to pass its
   // own `populate`/`select`. Omitting `sizes`/`blurDataUrl` here means Live

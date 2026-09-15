@@ -186,7 +186,7 @@ cleaned-up checkbox version before generating the project overview.
   (container width), wired via the same field -> `data-*` attribute -> CSS
   custom property -> live-preview-sync pattern as Corners/Shadows/Colors
   (features 13/20/21)
-- [ ] 23. **Admin nav grouping & Settings-driven logo** - group the admin nav
+- [x] 23. **Admin nav grouping & Settings-driven logo** - group the admin nav
   via `admin.group` (e.g. Pages/Posts/Categories vs. Header/Settings/Footer)
   and replace the default Payload admin logo/icon with one rendered from the
   already-uploaded `Settings.icon`, so a cloned site's admin panel reflects
