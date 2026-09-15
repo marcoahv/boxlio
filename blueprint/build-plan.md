@@ -196,3 +196,9 @@ cleaned-up checkbox version before generating the project overview.
   field-level `admin.condition` gating (e.g. restricting Settings' Colors
   tab to admins), replacing today's single-role "any authenticated user can
   edit everything" model
+- [x] 25. **Main heading size override** - a new Settings -> Typography field
+  ("Additional sizes for Main Headings": Default/Display/Large Display) that
+  lets editors optionally scale up just the site's actual page-level `<h1>`
+  elements (Hero heading, Post title) beyond the normal Heading Scale range,
+  via the same field -> `data-*` attribute -> CSS custom property ->
+  live-preview-sync pattern as every other Typography/Whitespace control

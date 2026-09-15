@@ -953,6 +953,10 @@ export interface Setting {
    */
   headingScale?: ('sm' | 'md' | 'lg') | null;
   /**
+   * Optionally scales the site's two page-level headings (the Hero heading and a blog post's title) beyond Heading Scale's normal size. Default leaves them at the size Heading Scale already produces; Display and Large Display override them larger, still adjusted by Heading Scale on top. Other headings and rich-text content are unaffected.
+   */
+  mainHeadingSize?: ('default' | 'display' | 'display-lg') | null;
+  /**
    * Sets the width of the header bar's contents, site-wide.
    */
   headerWidth?: ('narrow' | 'default' | 'wide' | 'full') | null;
@@ -1073,6 +1077,7 @@ export interface SettingsSelect<T extends boolean = true> {
   headingFont?: T;
   bodyFont?: T;
   headingScale?: T;
+  mainHeadingSize?: T;
   headerWidth?: T;
   headerHeight?: T;
   heroWidth?: T;

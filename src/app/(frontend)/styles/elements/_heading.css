@@ -9,12 +9,12 @@
   line-height: 1;
   font-family: var(--font-heading, var(--font-primary));
 
-  font-size: calc(var(--text-h1-mobile) * var(--heading-scale, 1));
+  font-size: calc(var(--heading-1-mobile) * var(--heading-scale, 1));
   @media (width >= theme(--breakpoint-atMedium)) {
-    font-size: calc(var(--text-h1-tablet) * var(--heading-scale, 1));
+    font-size: calc(var(--heading-1-tablet) * var(--heading-scale, 1));
   }
   @media (width >= theme(--breakpoint-atLarge)) {
-    font-size: calc(var(--text-h1-desktop) * var(--heading-scale, 1));
+    font-size: calc(var(--heading-1-desktop) * var(--heading-scale, 1));
   }
 }
 

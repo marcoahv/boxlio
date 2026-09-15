@@ -10,6 +10,7 @@ import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
  * `<html data-button-radius>`, the `data-*-shadow` attributes, the six
  * `--color-primary`/`--color-secondary` custom properties, and the
  * `data-heading-font`/`data-body-font`/`data-heading-scale`/
+ * `data-main-heading-size`/
  * `data-container-scale`/`data-section-scale`/`data-hero-width`/
  * `data-hero-spacing`/`data-rich-text-width`/`data-rich-text-spacing`
  * attributes in sync with Settings during a live-preview session, the same
@@ -35,6 +36,7 @@ export function SettingsLivePreviewSync({ initialSettings }: { initialSettings: 
     headingFont,
     bodyFont,
     headingScale,
+    mainHeadingSize,
     containerScale,
     sectionScale,
     heroWidth,
@@ -115,6 +117,10 @@ export function SettingsLivePreviewSync({ initialSettings }: { initialSettings: 
   useEffect(() => {
     document.documentElement.setAttribute('data-heading-scale', headingScale ?? 'md')
   }, [headingScale])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-main-heading-size', mainHeadingSize ?? 'default')
+  }, [mainHeadingSize])
 
   useEffect(() => {
     document.documentElement.setAttribute('data-container-scale', containerScale ?? 'md')

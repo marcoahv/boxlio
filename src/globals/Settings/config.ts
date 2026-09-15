@@ -267,6 +267,21 @@ export const Settings: GlobalConfig = {
                 description: 'Scales heading sizes (h1-h6) up or down across the site.',
               },
             },
+            {
+              name: 'mainHeadingSize',
+              type: 'select',
+              label: 'Additional Sizes for Main Headings',
+              defaultValue: 'default',
+              options: [
+                { label: 'Default', value: 'default' },
+                { label: 'Display', value: 'display' },
+                { label: 'Large Display', value: 'display-lg' },
+              ],
+              admin: {
+                description:
+                  "Optionally scales the site's two page-level headings (the Hero heading and a blog post's title) beyond Heading Scale's normal size. Default leaves them at the size Heading Scale already produces; Display and Large Display override them larger, still adjusted by Heading Scale on top. Other headings and rich-text content are unaffected.",
+              },
+            },
           ],
         },
         {

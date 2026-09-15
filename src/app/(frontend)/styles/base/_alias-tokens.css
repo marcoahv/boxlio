@@ -403,6 +403,35 @@ html[data-heading-scale='lg'] {
 }
 
 /*=============================================
+*        Main heading size override
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Heading scale above
+   (Settings.mainHeadingSize -> layout.tsx's data-main-heading-size on
+   <html>). Indirection layer consumed only by _heading.css's ui-heading-1 -
+   defaults to the normal --text-h1-* tokens, switched to one of
+   _base-tokens.css's --text-h1-display*-* tokens when the override is
+   active. Still multiplied by --heading-scale in ui-heading-1's calc(), so
+   the two controls compose rather than one replacing the other. */
+
+:root {
+  --heading-1-mobile: var(--text-h1-mobile);
+  --heading-1-tablet: var(--text-h1-tablet);
+  --heading-1-desktop: var(--text-h1-desktop);
+}
+
+html[data-main-heading-size='display'] {
+  --heading-1-mobile: var(--text-h1-display-mobile);
+  --heading-1-tablet: var(--text-h1-display-tablet);
+  --heading-1-desktop: var(--text-h1-display-desktop);
+}
+html[data-main-heading-size='display-lg'] {
+  --heading-1-mobile: var(--text-h1-display-lg-mobile);
+  --heading-1-tablet: var(--text-h1-display-lg-tablet);
+  --heading-1-desktop: var(--text-h1-display-lg-desktop);
+}
+
+/*=============================================
 *        Container width scale
 =============================================*/
 

@@ -94,6 +94,18 @@
   --text-h1-tablet: 4.8rem;
   --text-h1-desktop: 6rem;
 
+  /* Main Heading Size overrides (Settings.mainHeadingSize) - desktop values
+     reuse --text-7xl/-8xl as their own independent literals; mobile/tablet
+     interpolated at the same ~0.6x/~0.8x-of-desktop ratio the h1-h3 scale
+     above uses, rounded to this file's 0.2rem granularity. */
+  --text-h1-display-mobile: 4.4rem;
+  --text-h1-display-tablet: 5.8rem;
+  --text-h1-display-desktop: 7.2rem;
+
+  --text-h1-display-lg-mobile: 5.8rem;
+  --text-h1-display-lg-tablet: 7.6rem;
+  --text-h1-display-lg-desktop: 9.6rem;
+
   --text-h2-mobile: 3rem;
   --text-h2-tablet: 3.6rem;
   --text-h2-desktop: 4.8rem;
