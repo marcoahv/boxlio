@@ -33,23 +33,21 @@ export function PostClient({ initialData }: { initialData: Post }) {
   return (
     <>
       {data.breadcrumbs?.show !== false && (
-        <Breadcrumbs
-          items={breadcrumbs}
-          surface={data.breadcrumbs?.surface}
-          spacing={data.breadcrumbs?.spacing}
-          width={data.breadcrumbs?.width}
-        />
+        <Breadcrumbs items={breadcrumbs} surface={data.breadcrumbs?.surface} />
       )}
-      <Section surface={data.headerAppearance?.surface} spacing={data.headerAppearance?.spacing}>
-        <Container width={data.headerAppearance?.width}>
+      <Section surface={data.headerAppearance?.surface}>
+        <Container>
           <Stack gap="lg">
             <Heading level={1}>{data.title}</Heading>
             <PostPreview post={data} variant="header" showLink={false} imageSize="thumbnail" />
           </Stack>
         </Container>
       </Section>
-      <Section surface={data.bodyAppearance?.surface} spacing={data.bodyAppearance?.spacing}>
-        <Container width={data.bodyAppearance?.width}>
+      {/* Width/spacing come from Settings (--rich-text-max-width/-space, via
+          the ui-rich-text-* marker classes), shared with RichTextBlock's own
+          Section/Container - see _section.css. */}
+      <Section surface={data.bodyAppearance?.surface} className="ui-rich-text-section">
+        <Container className="ui-rich-text-container">
           <div className="ui-prose">
             <RichText data={data.body} />
           </div>

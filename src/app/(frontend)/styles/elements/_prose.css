@@ -17,30 +17,46 @@
       margin-block-start: 1.5em;
     }
 
+    /* font-size is computed via calc() against --heading-scale
+       (Settings.headingScale, see _alias-tokens.css), same mechanism as
+       _heading.css's ui-heading-N utilities - this is a second, independent
+       heading consumer since rich text has no class hooks to share those
+       utilities with. */
+
     h1 {
-      font-size: var(--text-h2-mobile);
+      font-size: calc(var(--text-h2-mobile) * var(--heading-scale, 1));
       line-height: 1.1;
-      @apply atLarge:text-h2-desktop;
+      font-family: var(--font-heading, var(--font-primary));
+      @media (width >= theme(--breakpoint-atLarge)) {
+        font-size: calc(var(--text-h2-desktop) * var(--heading-scale, 1));
+      }
     }
 
     h2 {
-      font-size: var(--text-h3-mobile);
+      font-size: calc(var(--text-h3-mobile) * var(--heading-scale, 1));
       line-height: 1.15;
-      @apply atLarge:text-h3-desktop;
+      font-family: var(--font-heading, var(--font-primary));
+      @media (width >= theme(--breakpoint-atLarge)) {
+        font-size: calc(var(--text-h3-desktop) * var(--heading-scale, 1));
+      }
     }
 
     h3 {
-      font-size: var(--text-h4-mobile);
+      font-size: calc(var(--text-h4-mobile) * var(--heading-scale, 1));
       line-height: 1.2;
-      @apply atLarge:text-h4-desktop;
+      font-family: var(--font-heading, var(--font-primary));
+      @media (width >= theme(--breakpoint-atLarge)) {
+        font-size: calc(var(--text-h4-desktop) * var(--heading-scale, 1));
+      }
     }
 
     h4,
     h5,
     h6 {
-      font-size: var(--text-h5-mobile);
+      font-size: calc(var(--text-h5-mobile) * var(--heading-scale, 1));
       line-height: 1.2;
       font-weight: var(--font-weight-semibold);
+      font-family: var(--font-heading, var(--font-primary));
     }
 
     /* Headings sit tighter to the text they introduce than to what precedes. */

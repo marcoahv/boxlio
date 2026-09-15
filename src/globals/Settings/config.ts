@@ -1,6 +1,7 @@
 import { type GlobalConfig } from 'payload'
 import { revalidateGlobal } from '@/globals/hooks/revalidateGlobal'
 import { isHexColor } from '@/utilities/color'
+import { WIDTH_OPTIONS, SPACING_OPTIONS } from '@/fields/appearance'
 
 const HEX_VALIDATION_ERROR = 'Enter a valid hex color (e.g. #d6c1a1).'
 
@@ -216,6 +217,181 @@ export const Settings: GlobalConfig = {
                   label: 'Secondary Color (Dark)',
                   defaultValue: '#137c95',
                 }),
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Typography',
+          fields: [
+            {
+              name: 'headingFont',
+              type: 'select',
+              label: 'Heading Font',
+              defaultValue: 'primary',
+              options: [
+                { label: 'Primary', value: 'primary' },
+                { label: 'Secondary', value: 'secondary' },
+                { label: 'Tertiary', value: 'tertiary' },
+              ],
+              admin: {
+                description: "Controls which of the site's three preloaded fonts headings use.",
+              },
+            },
+            {
+              name: 'bodyFont',
+              type: 'select',
+              label: 'Body Font',
+              defaultValue: 'primary',
+              options: [
+                { label: 'Primary', value: 'primary' },
+                { label: 'Secondary', value: 'secondary' },
+                { label: 'Tertiary', value: 'tertiary' },
+              ],
+              admin: {
+                description:
+                  "Controls which of the site's three preloaded fonts body text uses.",
+              },
+            },
+            {
+              name: 'headingScale',
+              type: 'select',
+              label: 'Heading Scale',
+              defaultValue: 'md',
+              options: [
+                { label: 'Compact', value: 'sm' },
+                { label: 'Default', value: 'md' },
+                { label: 'Bold', value: 'lg' },
+              ],
+              admin: {
+                description: 'Scales heading sizes (h1-h6) up or down across the site.',
+              },
+            },
+          ],
+        },
+        {
+          label: 'Whitespace',
+          fields: [
+            {
+              type: 'collapsible',
+              label: 'Header',
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: 'headerWidth',
+                  type: 'select',
+                  label: 'Width',
+                  defaultValue: 'default',
+                  options: WIDTH_OPTIONS,
+                  admin: {
+                    description: "Sets the width of the header bar's contents, site-wide.",
+                  },
+                },
+                {
+                  name: 'headerHeight',
+                  type: 'select',
+                  label: 'Height',
+                  defaultValue: 'normal',
+                  options: [
+                    { label: 'Compact', value: 'compact' },
+                    { label: 'Default', value: 'normal' },
+                    { label: 'Tall', value: 'tall' },
+                  ],
+                  admin: {
+                    description: 'Sets the height of the header bar, site-wide.',
+                  },
+                },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Hero',
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: 'heroWidth',
+                  type: 'select',
+                  label: 'Width',
+                  defaultValue: 'default',
+                  options: WIDTH_OPTIONS,
+                  admin: {
+                    description: 'Sets the width of every Hero block, site-wide.',
+                  },
+                },
+                {
+                  name: 'heroSpacing',
+                  type: 'select',
+                  label: 'Spacing',
+                  defaultValue: 'normal',
+                  options: SPACING_OPTIONS,
+                  admin: {
+                    description: 'Sets the vertical spacing of every Hero block, site-wide.',
+                  },
+                },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Sections',
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: 'containerScale',
+                  type: 'select',
+                  label: 'Width',
+                  defaultValue: 'md',
+                  options: [
+                    { label: 'Narrow', value: 'sm' },
+                    { label: 'Default', value: 'md' },
+                    { label: 'Wide', value: 'lg' },
+                  ],
+                  admin: {
+                    description: "Scales every section's width, site-wide.",
+                  },
+                },
+                {
+                  name: 'sectionScale',
+                  type: 'select',
+                  label: 'Spacing',
+                  defaultValue: 'md',
+                  options: [
+                    { label: 'Compact', value: 'sm' },
+                    { label: 'Default', value: 'md' },
+                    { label: 'Loose', value: 'lg' },
+                  ],
+                  admin: {
+                    description: "Scales every section's vertical spacing, site-wide.",
+                  },
+                },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Rich Text',
+              admin: { initCollapsed: false },
+              fields: [
+                {
+                  name: 'richTextWidth',
+                  type: 'select',
+                  label: 'Width',
+                  defaultValue: 'narrow',
+                  options: WIDTH_OPTIONS,
+                  admin: {
+                    description:
+                      "Sets the width of rich text content, site-wide - both the Rich Text block and a post's own body. Narrower by default, for readability.",
+                  },
+                },
+                {
+                  name: 'richTextSpacing',
+                  type: 'select',
+                  label: 'Spacing',
+                  defaultValue: 'normal',
+                  options: SPACING_OPTIONS,
+                  admin: {
+                    description:
+                      "Sets the vertical spacing of rich text content, site-wide - both the Rich Text block and a post's own body.",
+                  },
+                },
               ],
             },
           ],

@@ -1,6 +1,6 @@
 # Site Builder - Project Overview
 
-<!-- blueprint:source-hash 808d2ba29b8a5c3f605029b5ede3713687ef698cccdf2631767df1566dca6978 -->
+<!-- blueprint:source-hash 4962ac952aba4c518b5a526f11e760fac067daf0b47c1995878065be2087137b -->
 
 > A reusable Payload CMS + Next.js template, kept as a template repository and
 > cloned fresh for each new site, rather than shipped as one specific product.
@@ -17,7 +17,9 @@ Payload install.
 
 - **The template maintainer** - clones this repo per new site and extends it.
 - **A given site's content editors** - use the Payload admin to manage pages,
-  posts, and site-wide settings.
+  posts, and site-wide settings. A planned admin/editor role split (feature
+  24, not yet built) will restrict some site-wide controls, e.g. branding, to
+  admins only.
 - **A given site's visitors** - the public frontend.
 
 Not an end-user-facing product on its own; "users" of any one deployment are
@@ -87,10 +89,23 @@ the two roles above.
     `/blog` listing page's own Pages document.
 20. **Settings live preview** (shipped) - extends live preview to the
     `Settings` global's visibly-rendered fields (`siteName`, `imageRadius`).
-21. **Site Colors control** (next) - editor-controlled Settings tab for the
+21. **Site Colors control** (shipped) - editor-controlled Settings tab for the
     site's primary and secondary brand colors and their light/dark shades,
     wired via the same field -> runtime CSS custom property pattern as
     feature 13's corner radius control.
+22. **Settings typography/spacing tab** (next) - editor-controlled Settings
+    tab for site-wide typography (font family, heading scale) and/or spacing
+    (container width), extending the Corners/Shadows/Colors pattern.
+23. **Admin nav grouping & Settings-driven logo** (next) - group the admin
+    nav (e.g. content vs. site-identity globals) and replace the default
+    Payload admin logo/icon with one rendered from the already-uploaded
+    `Settings.icon`, so a cloned site's admin panel reflects its brand
+    without a separate admin-only asset upload.
+24. **Role-based access control** (next) - add a `roles` field to `Users`
+    (e.g. admin/editor) plus per-collection/global access functions and
+    field-level conditions (e.g. restricting the Settings Colors tab to
+    admins), replacing today's single-role "any authenticated user can edit
+    everything" model.
 
 ## Data model
 
@@ -143,7 +158,11 @@ the two roles above.
 ### Users (`users`)
 
 - `name` (text, required)
-- Payload auth (email/password) - the only access-control gate in the project
+- Payload auth (email/password) - currently the only access-control gate in
+  the project; every authenticated user has full write access
+- `roles` (select, planned - feature 24, not yet built) - will introduce an
+  admin/editor distinction, backing per-collection/global access functions
+  and field-level conditions
 
 ### Header (global, `header`)
 
@@ -171,21 +190,25 @@ the two roles above.
 - **Information tab** - `siteName` (text, required, default "Site Builder"),
   `siteDescription` (textarea), `gtmCode` (text, Google Tag Manager),
   `icon`/`iconDark` (uploads -> Media, required/optional) - the browser-tab
-  favicon
+  favicon; `icon` is also planned to drive the admin panel's own logo
+  (feature 23, not yet built)
 - **Corner Radius tab** - `imageRadius`, `buttonRadius` (select:
   none/sm/md/lg/xl)
 - **Shadows tab** - `imageShadow`, `buttonShadow`, `cardShadow` (select:
   none/sm/md/lg)
-- **Site Colors tab** (feature 21, not yet built) - primary/secondary brand
-  colors and their light/dark shades
+- **Site Colors tab** - `primary`/`secondary` groups, each with `base`/
+  `light`/`dark` hex-color fields (six tokens total: `--color-primary`/
+  `-light`/`-dark`, `--color-secondary`/`-light`/`-dark`)
+- **Typography/Spacing tab** (feature 22, not yet built) - planned font
+  family/heading-scale and/or container-width controls
 
-> Lock: every Settings site-wide style control (radius, shadow, and the
-> planned colors) follows the same pattern - a field on this global, mirrored
-> onto a `data-*` attribute (or inline custom property) on `<html>` in
-> `layout.tsx`, consumed by a CSS custom property in
+> Lock: every Settings site-wide style control (radius, shadow, colors, and
+> the planned typography/spacing) follows the same pattern - a field on this
+> global, mirrored onto a `data-*` attribute (or inline custom property) on
+> `<html>` in `layout.tsx`, consumed by a CSS custom property in
 > `styles/base/_alias-tokens.css`, and kept in sync during live preview by
-> `SettingsLivePreviewSync.tsx`. Later style controls should extend this
-> pattern, not invent a new one.
+> `SettingsLivePreviewSync.tsx`. Later style controls, including feature 22,
+> should extend this pattern, not invent a new one.
 
 ### Blocks (embedded in `Pages.blocks` and `Posts.body`, via
 `src/blocks/registry.ts`)
@@ -249,14 +272,16 @@ only semantic roles, never raw palette values, in block-level appearance
 controls), light/dark via `light-dark()` as the OS-driven default, and
 editor-controlled appearance so content editors pick semantic roles rather
 than colors or pixel values *at the block level*. Site-wide style controls
-(corner radius, shadows, and the planned Site Colors) are the deliberate
-exception to that rule at the Settings level - see the Settings data model
-note above.
+(corner radius, shadows, and colors, with typography/spacing planned next)
+are the deliberate exception to that rule at the Settings level - see the
+Settings data model note above.
 
-Features 10-20 above have all shipped: the Phase 7 legacy port, the portable
-branding token system, corner radius and shadow controls, the manual dark
-mode toggle, and live preview across every editable document type. Next up
-(feature 21): editor-controlled primary/secondary brand colors in Settings.
+Features 10-21 above have all shipped: the Phase 7 legacy port, the portable
+branding token system, corner radius/shadow/color controls, the manual dark
+mode toggle, and live preview across every editable document type. Next up:
+feature 22 (typography/spacing controls in Settings), feature 23 (admin nav
+grouping and a Settings-driven admin logo), and feature 24 (role-based access
+control distinguishing admin vs. editor).
 
 - `/` and `/[slug]` - block-rendered pages (frontend)
 - `/blog` and `/blog/[slug]` - blog listing and detail pages
@@ -279,18 +304,21 @@ identity); `S3_API`/`S3_BUCKET`/`S3_ACCESS_KEY_ID`/`S3_SECRET_ACCESS_KEY`/
 
 ## Open questions
 
-> `project-plan.md` §3 and §7 describe the project as still mid-way through
+> `project-plan.md` §3 and §7 still describe the project as mid-way through
 > the Phase 7 legacy port, with "new product features... deliberately on
-> hold until that styling-system work lands." `build-plan.md` shows that
-> port, the token system, and ten further features (12-20: button variants,
-> corner radius, shadows, dark mode, live preview across every global, blog
-> content blocks) already shipped, plus a new feature 21 just added. Update
-> `project-plan.md` §3/§7's status narrative to match, or confirm the "on
-> hold" framing no longer applies, then re-run `/overview`.
+> hold until that styling-system work lands." `build-plan.md` now shows that
+> port, the token system, and thirteen further features (12-21: button
+> variants, corner radius, shadows, dark mode, live preview across every
+> global, blog content blocks, site colors) already shipped, plus three new
+> features just queued (22 typography/spacing, 23 admin nav/logo, 24
+> role-based access control). Update `project-plan.md` §3/§7's status
+> narrative to match current reality, or confirm the "on hold" framing no
+> longer applies, then re-run `/overview`.
 
-> `project-plan.md` §4 lists only `siteName`/`siteDescription`/`gtmCode` on
-> `settings` and doesn't mention the `footer` global at all. The Data model
-> section above reflects the actual current schema (icon/iconDark, corner
-> radius, shadows, and the Footer global), derived from the repository and
-> from build-plan.md's own feature descriptions; consider folding that detail
-> back into `project-plan.md` §4 so the two plans stay in sync.
+> `project-plan.md` §4 still lists only `siteName`/`siteDescription`/
+> `gtmCode` on `settings` and doesn't mention the `footer` global, the
+> Settings icon/corner-radius/shadow/color fields, or the planned `roles`
+> field on `users` (feature 24). The Data model section above reflects the
+> actual current and planned schema, derived from build-plan.md's feature
+> descriptions and the repository. Consider folding this detail back into
+> `project-plan.md` §4 so the two plans stay in sync.

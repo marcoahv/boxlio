@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
-import type { Header, Media } from '@/payload-types'
+import type { Header, Media, Setting } from '@/payload-types'
 import { isDoc } from '@/utilities/isDoc'
 import { hrefForNavLink } from '@/utilities/navLink'
 import { Container } from '@/components/primitives'
@@ -15,10 +15,22 @@ import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
 import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
 
-export function HeaderClient({ initialHeader }: { initialHeader: Header }) {
+export function HeaderClient({
+  initialHeader,
+  initialSettings,
+}: {
+  initialHeader: Header
+  initialSettings: Setting
+}) {
   const header = useScopedLivePreview<Header>({
     target: { type: 'global', globalSlug: 'header' },
     initialData: initialHeader,
+    serverURL: getServerSideURL(),
+    depth: 2,
+  })
+  const { headerWidth, headerHeight } = useScopedLivePreview<Setting>({
+    target: { type: 'global', globalSlug: 'settings' },
+    initialData: initialSettings,
     serverURL: getServerSideURL(),
     depth: 2,
   })
@@ -38,9 +50,7 @@ export function HeaderClient({ initialHeader }: { initialHeader: Header }) {
     socialLinks,
     ctaButtons,
     surface,
-    width,
     position,
-    height,
     transparentAtTop,
     showThemeToggle,
   } = header
@@ -112,10 +122,10 @@ export function HeaderClient({ initialHeader }: { initialHeader: Header }) {
       className={`header ${scrolled ? 'header--scrolled' : ''}`}
       data-surface={surface ?? 'default'}
       data-position={position ?? 'fixed'}
-      data-height={height ?? 'normal'}
+      data-height={headerHeight ?? 'normal'}
       data-transparent={tracksScroll}
     >
-      <Container width={width}>
+      <Container width={headerWidth}>
         <div className="header__bar">
           <Logo
             logo={logo}

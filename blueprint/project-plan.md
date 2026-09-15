@@ -22,7 +22,9 @@ empty Payload install.
 The developer(s) maintaining this template and reusing it to launch new sites.
 Not an end-user-facing product on its own; the "users" of a given deployment
 are that site's own content editors (via the Payload admin) and visitors (via
-the public frontend).
+the public frontend). Planned: a role distinction (admin vs. editor) within
+the Payload admin, restricting sensitive controls like site branding to
+admins (build plan item 24).
 
 ## 3. Features - What does the MVP need?
 

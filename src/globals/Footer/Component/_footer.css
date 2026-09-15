@@ -36,20 +36,24 @@
     border-block-start: 1px solid var(--color-border);
   }
 
+  /* tight/normal/loose are scaled by --section-scale, matching
+     _section.css's .ui-section[data-spacing=...] cascade exactly - see the
+     note there. 'none' stays 0rem. */
+
   .footer[data-spacing='none'] {
     --footer-space: 0rem;
   }
 
   .footer[data-spacing='tight'] {
-    --footer-space: var(--space-section-tight);
+    --footer-space: calc(var(--space-section-tight) * var(--section-scale, 1));
   }
 
   .footer[data-spacing='normal'] {
-    --footer-space: var(--space-section);
+    --footer-space: calc(var(--space-section) * var(--section-scale, 1));
   }
 
   .footer[data-spacing='loose'] {
-    --footer-space: var(--space-section-loose);
+    --footer-space: calc(var(--space-section-loose) * var(--section-scale, 1));
   }
 
   .footer > .ui-container {

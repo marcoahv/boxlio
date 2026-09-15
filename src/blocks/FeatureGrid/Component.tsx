@@ -12,12 +12,12 @@ const COLUMNS = {
 
 /** Repeater block: proves the array-field shape against the primitives. */
 export function FeatureGrid(props: FeatureGridBlock) {
-  const { surface, spacing, width, heading, intro, columns, features } = props
+  const { surface, heading, intro, columns, features } = props
   if (!features?.length) return null
 
   return (
-    <Section surface={surface} spacing={spacing}>
-      <Container width={width}>
+    <Section surface={surface}>
+      <Container>
         <Stack gap="lg">
           {(heading || intro) && (
             <Stack gap="sm" className="max-w-[70ch]">

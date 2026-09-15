@@ -20,8 +20,6 @@ import type { HeroBlock, Media } from '@/payload-types'
 export function Hero(props: HeroBlock) {
   const {
     surface,
-    spacing,
-    width,
     heading,
     subheading,
     image,
@@ -55,7 +53,7 @@ export function Hero(props: HeroBlock) {
   return (
     <Section
       surface={surface}
-      spacing={spacing}
+      className="ui-hero-section"
       hasBackgroundImage={hasBackgroundImage}
       hasDarkOverlayText={
         overlayOverWholeImage && resolvedOverlayColor === 'light'
@@ -81,8 +79,8 @@ export function Hero(props: HeroBlock) {
         </>
       )}
       <Container
-        width={width}
-        className={
+        className={[
+          'ui-hero-container',
           hasBackgroundImage
             ? [
                 'ui-hero-content',
@@ -90,8 +88,10 @@ export function Hero(props: HeroBlock) {
               ]
                 .filter(Boolean)
                 .join(' ')
-            : undefined
-        }
+            : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
       >
         <div
           className={[

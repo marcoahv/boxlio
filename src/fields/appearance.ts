@@ -18,7 +18,7 @@ export const SURFACE_OPTIONS: Option[] = [
 export const SPACING_OPTIONS: Option[] = [
   { label: 'None', value: 'none' },
   { label: 'Tight', value: 'tight' },
-  { label: 'Normal', value: 'normal' },
+  { label: 'Default', value: 'normal' },
   { label: 'Loose', value: 'loose' },
 ]
 
@@ -26,7 +26,7 @@ export const WIDTH_OPTIONS: Option[] = [
   { label: 'Narrow', value: 'narrow' },
   { label: 'Default', value: 'default' },
   { label: 'Wide', value: 'wide' },
-  { label: 'Full bleed', value: 'full' },
+  { label: 'Full Screen', value: 'full' },
 ]
 
 /**
@@ -39,55 +39,30 @@ export const WIDTH_OPTIONS: Option[] = [
  *
  * Values map 1:1 onto the <Section> primitive's props.
  *
+ * No collapsible wrapper - `width`/`spacing` moved to Settings, so `surface`
+ * is the only field left here, and a collapsible around a single field adds
+ * a click with no grouping benefit.
+ *
  * Usage:
  *   fields: [ ...appearanceField(), { name: 'heading', type: 'text' } ]
  */
 export const appearanceField = (): Field[] => [
   {
-    type: 'collapsible',
-    label: 'Appearance',
-    admin: {
-      initCollapsed: true,
-      description: 'How this section sits on the page.',
-    },
-    fields: [
-      {
-        type: 'row',
-        fields: [
-          {
-            name: 'surface',
-            type: 'select',
-            defaultValue: 'default',
-            admin: { width: '33%' },
-            options: SURFACE_OPTIONS,
-          },
-          {
-            name: 'spacing',
-            type: 'select',
-            defaultValue: 'normal',
-            admin: { width: '33%' },
-            options: SPACING_OPTIONS,
-          },
-          {
-            name: 'width',
-            type: 'select',
-            defaultValue: 'default',
-            admin: { width: '33%' },
-            options: WIDTH_OPTIONS,
-          },
-        ],
-      },
-    ],
+    name: 'surface',
+    type: 'select',
+    defaultValue: 'default',
+    options: SURFACE_OPTIONS,
   },
 ]
 
 /**
  * Appearance controls for the header.
  *
- * Shares `surface` and `width` with blocks, but swaps `spacing` — a header has
- * a bar height, not section padding — and adds the two controls only a header
- * needs: how it scrolls, and whether it starts transparent over the first
- * block.
+ * Shares `surface` with blocks. `width`/`height` moved to Settings (see
+ * Settings/config.ts's Whitespace tab - Header group) - swaps `spacing` for
+ * `height` in that move, same as it always did, a header has a bar height,
+ * not section padding. Still adds the two controls only a header needs: how
+ * it scrolls, and whether it starts transparent over the first block.
  */
 export const headerAppearanceField = (): Field[] => [
   {
@@ -99,58 +74,25 @@ export const headerAppearanceField = (): Field[] => [
     },
     fields: [
       {
-        type: 'row',
-        fields: [
-          {
-            name: 'surface',
-            type: 'select',
-            defaultValue: 'default',
-            admin: {
-              width: '50%',
-              description: 'Background, and the matching text color.',
-            },
-            options: SURFACE_OPTIONS,
-          },
-          {
-            name: 'width',
-            type: 'select',
-            defaultValue: 'default',
-            admin: { width: '50%', description: 'How wide the bar contents run.' },
-            options: WIDTH_OPTIONS,
-          },
-        ],
+        name: 'surface',
+        type: 'select',
+        defaultValue: 'default',
+        admin: {
+          description: 'Background, and the matching text color.',
+        },
+        options: SURFACE_OPTIONS,
       },
       {
-        type: 'row',
-        fields: [
-          {
-            name: 'position',
-            type: 'select',
-            defaultValue: 'fixed',
-            admin: {
-              width: '50%',
-              description:
-                'Fixed stays in view while the page scrolls. Static scrolls away with the rest of the page.',
-            },
-            options: [
-              { label: 'Fixed', value: 'fixed' },
-              { label: 'Static', value: 'static' },
-            ],
-          },
-          {
-            name: 'height',
-            type: 'select',
-            defaultValue: 'normal',
-            admin: {
-              width: '50%',
-              description: 'How tall the header bar is.',
-            },
-            options: [
-              { label: 'Compact', value: 'compact' },
-              { label: 'Normal', value: 'normal' },
-              { label: 'Tall', value: 'tall' },
-            ],
-          },
+        name: 'position',
+        type: 'select',
+        defaultValue: 'fixed',
+        admin: {
+          description:
+            'Fixed stays in view while the page scrolls. Static scrolls away with the rest of the page.',
+        },
+        options: [
+          { label: 'Fixed', value: 'fixed' },
+          { label: 'Static', value: 'static' },
         ],
       },
       {
@@ -199,30 +141,10 @@ export const breadcrumbsField = (): Field[] => [
         label: 'Show breadcrumbs',
       },
       {
-        type: 'row',
-        fields: [
-          {
-            name: 'surface',
-            type: 'select',
-            defaultValue: 'muted',
-            admin: { width: '33%' },
-            options: SURFACE_OPTIONS,
-          },
-          {
-            name: 'spacing',
-            type: 'select',
-            defaultValue: 'tight',
-            admin: { width: '33%' },
-            options: SPACING_OPTIONS,
-          },
-          {
-            name: 'width',
-            type: 'select',
-            defaultValue: 'default',
-            admin: { width: '33%' },
-            options: WIDTH_OPTIONS,
-          },
-        ],
+        name: 'surface',
+        type: 'select',
+        defaultValue: 'muted',
+        options: SURFACE_OPTIONS,
       },
     ],
   },

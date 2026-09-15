@@ -24,8 +24,6 @@ export function BlogListing(
 ) {
   const {
     surface,
-    spacing,
-    width,
     heading,
     categories,
     blogs,
@@ -37,8 +35,8 @@ export function BlogListing(
   if (blogs.docs.length === 0) return null
 
   return (
-    <Section surface={surface ?? 'muted'} spacing={spacing}>
-      <Container width={width}>
+    <Section surface={surface ?? 'muted'}>
+      <Container>
         <Stack gap="lg">
           <Heading>{heading || 'More Posts'}</Heading>
           <CategoryFilter categories={categories.docs} currentCategory={categoryParam} />

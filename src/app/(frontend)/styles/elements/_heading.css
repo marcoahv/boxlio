@@ -1,28 +1,49 @@
+/* font-size is computed via calc() against --heading-scale (Settings.headingScale,
+   see _alias-tokens.css), so the responsive breakpoint values below use plain
+   @media rules (sourced from _base-tokens.css's --breakpoint-atMedium/atLarge)
+   instead of the @apply atMedium:text-h*-tablet sugar used elsewhere in this
+   styles system - @apply can't parameterize the utility it applies with calc(). */
+
 @utility ui-heading-1 {
   font-weight: var(--font-weight-regular);
   line-height: 1;
+  font-family: var(--font-heading, var(--font-primary));
 
-  font-size: var(--text-h1-mobile);
-  @apply atMedium:text-h1-tablet;
-  @apply atLarge:text-h1-desktop;
+  font-size: calc(var(--text-h1-mobile) * var(--heading-scale, 1));
+  @media (width >= theme(--breakpoint-atMedium)) {
+    font-size: calc(var(--text-h1-tablet) * var(--heading-scale, 1));
+  }
+  @media (width >= theme(--breakpoint-atLarge)) {
+    font-size: calc(var(--text-h1-desktop) * var(--heading-scale, 1));
+  }
 }
 
 @utility ui-heading-2 {
   font-weight: var(--font-weight-regular);
   line-height: 1;
+  font-family: var(--font-heading, var(--font-primary));
 
-  font-size: var(--text-h2-mobile);
-  @apply atMedium:text-h2-tablet;
-  @apply atLarge:text-h2-desktop;
+  font-size: calc(var(--text-h2-mobile) * var(--heading-scale, 1));
+  @media (width >= theme(--breakpoint-atMedium)) {
+    font-size: calc(var(--text-h2-tablet) * var(--heading-scale, 1));
+  }
+  @media (width >= theme(--breakpoint-atLarge)) {
+    font-size: calc(var(--text-h2-desktop) * var(--heading-scale, 1));
+  }
 }
 
 @utility ui-heading-3 {
   font-weight: var(--font-weight-regular);
   line-height: 1;
+  font-family: var(--font-heading, var(--font-primary));
 
-  font-size: var(--text-h3-mobile);
-  @apply atMedium:text-h3-tablet;
-  @apply atLarge:text-h3-desktop;
+  font-size: calc(var(--text-h3-mobile) * var(--heading-scale, 1));
+  @media (width >= theme(--breakpoint-atMedium)) {
+    font-size: calc(var(--text-h3-tablet) * var(--heading-scale, 1));
+  }
+  @media (width >= theme(--breakpoint-atLarge)) {
+    font-size: calc(var(--text-h3-desktop) * var(--heading-scale, 1));
+  }
 }
 
 /* h4-h6 step straight from mobile to desktop: at these sizes a tablet
@@ -31,23 +52,32 @@
 @utility ui-heading-4 {
   font-weight: var(--font-weight-regular);
   line-height: 1.2;
+  font-family: var(--font-heading, var(--font-primary));
 
-  font-size: var(--text-h4-mobile);
-  @apply atLarge:text-h4-desktop;
+  font-size: calc(var(--text-h4-mobile) * var(--heading-scale, 1));
+  @media (width >= theme(--breakpoint-atLarge)) {
+    font-size: calc(var(--text-h4-desktop) * var(--heading-scale, 1));
+  }
 }
 
 @utility ui-heading-5 {
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
+  font-family: var(--font-heading, var(--font-primary));
 
-  font-size: var(--text-h5-mobile);
-  @apply atLarge:text-h5-desktop;
+  font-size: calc(var(--text-h5-mobile) * var(--heading-scale, 1));
+  @media (width >= theme(--breakpoint-atLarge)) {
+    font-size: calc(var(--text-h5-desktop) * var(--heading-scale, 1));
+  }
 }
 
 @utility ui-heading-6 {
   font-weight: var(--font-weight-medium);
   line-height: 1.2;
+  font-family: var(--font-heading, var(--font-primary));
 
-  font-size: var(--text-h6-mobile);
-  @apply atLarge:text-h6-desktop;
+  font-size: calc(var(--text-h6-mobile) * var(--heading-scale, 1));
+  @media (width >= theme(--breakpoint-atLarge)) {
+    font-size: calc(var(--text-h6-desktop) * var(--heading-scale, 1));
+  }
 }

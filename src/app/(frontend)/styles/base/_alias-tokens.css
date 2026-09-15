@@ -329,3 +329,216 @@ html[data-card-shadow='lg'] {
   --font-secondary: var(--font-vollkorn), serif;
   --font-tertiary: var(--font-doto), sans-serif;
 }
+
+/*=============================================
+*        Heading font
+=============================================*/
+
+/* Site-wide, editor-controlled (Settings.headingFont -> layout.tsx's
+   data-heading-font on <html>). Same field -> data-attribute -> CSS pattern
+   as Image radius above, rooted at <html> so the resulting custom property
+   cascades to every heading regardless of nesting depth. Consumed by
+   _heading.css's ui-heading-N utilities and _prose.css's rich-text h1-h6
+   rules (rich text is a second, independent consumer - see that file). */
+
+:root {
+  --font-heading: var(--font-primary);
+}
+
+html[data-heading-font='primary'] {
+  --font-heading: var(--font-primary);
+}
+html[data-heading-font='secondary'] {
+  --font-heading: var(--font-secondary);
+}
+html[data-heading-font='tertiary'] {
+  --font-heading: var(--font-tertiary);
+}
+
+/*=============================================
+*        Body font
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Heading font above
+   (Settings.bodyFont -> layout.tsx's data-body-font on <html>). Consumed by
+   _reset.css's body rule; font-family inherits, so this becomes the default
+   for everything except headings, which override it via --font-heading. */
+
+:root {
+  --font-body: var(--font-primary);
+}
+
+html[data-body-font='primary'] {
+  --font-body: var(--font-primary);
+}
+html[data-body-font='secondary'] {
+  --font-body: var(--font-secondary);
+}
+html[data-body-font='tertiary'] {
+  --font-body: var(--font-tertiary);
+}
+
+/*=============================================
+*        Heading scale
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Heading font above
+   (Settings.headingScale -> layout.tsx's data-heading-scale on <html>).
+   Resolves to one of _base-tokens.css's shared --scale-sm/-md/-lg tokens;
+   _heading.css and _prose.css multiply their heading font-sizes by this via
+   calc(). */
+
+:root {
+  --heading-scale: var(--scale-md);
+}
+
+html[data-heading-scale='sm'] {
+  --heading-scale: var(--scale-sm);
+}
+html[data-heading-scale='md'] {
+  --heading-scale: var(--scale-md);
+}
+html[data-heading-scale='lg'] {
+  --heading-scale: var(--scale-lg);
+}
+
+/*=============================================
+*        Container width scale
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Heading font above
+   (Settings.containerScale -> layout.tsx's data-container-scale on <html>).
+   A density multiplier layered on top of each block's own Container width
+   pick (Container.tsx's narrow/default/wide/full), not a replacement for
+   it - see _section.css. */
+
+:root {
+  --container-scale: var(--scale-md);
+}
+
+html[data-container-scale='sm'] {
+  --container-scale: var(--scale-sm);
+}
+html[data-container-scale='md'] {
+  --container-scale: var(--scale-md);
+}
+html[data-container-scale='lg'] {
+  --container-scale: var(--scale-lg);
+}
+
+/*=============================================
+*        Section spacing scale
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Container width scale above
+   (Settings.sectionScale -> layout.tsx's data-section-scale on <html>).
+   Consumed by BOTH _section.css's .ui-section[data-spacing=...] cascade AND
+   _footer.css's independent .footer[data-spacing=...] cascade - Footer does
+   not render through <Section> and hand-rolls its own copy, so both need
+   this token. */
+
+:root {
+  --section-scale: var(--scale-md);
+}
+
+html[data-section-scale='sm'] {
+  --section-scale: var(--scale-sm);
+}
+html[data-section-scale='md'] {
+  --section-scale: var(--scale-md);
+}
+html[data-section-scale='lg'] {
+  --section-scale: var(--scale-lg);
+}
+
+/*=============================================
+*        Hero width / spacing
+=============================================*/
+
+/* Site-wide, editor-controlled (Settings.heroWidth/heroSpacing ->
+   layout.tsx's data-hero-width/data-hero-spacing on <html>). Unlike the
+   scale tokens above, these are literal preset picks (not multipliers) -
+   they replace Hero's former per-instance width/spacing fields. Consumed by
+   _section.css's .ui-hero-container/.ui-hero-section override rules, which
+   still compose with --container-scale/--section-scale like every other
+   width/spacing consumer. */
+
+:root {
+  --hero-max-width: calc(114rem * var(--container-scale, 1));
+}
+
+html[data-hero-width='narrow'] {
+  --hero-max-width: calc(72rem * var(--container-scale, 1));
+}
+html[data-hero-width='default'] {
+  --hero-max-width: calc(114rem * var(--container-scale, 1));
+}
+html[data-hero-width='wide'] {
+  --hero-max-width: calc(144rem * var(--container-scale, 1));
+}
+html[data-hero-width='full'] {
+  --hero-max-width: none;
+}
+
+:root {
+  --hero-space: calc(var(--space-section) * var(--section-scale, 1));
+}
+
+html[data-hero-spacing='none'] {
+  --hero-space: 0rem;
+}
+html[data-hero-spacing='tight'] {
+  --hero-space: calc(var(--space-section-tight) * var(--section-scale, 1));
+}
+html[data-hero-spacing='normal'] {
+  --hero-space: calc(var(--space-section) * var(--section-scale, 1));
+}
+html[data-hero-spacing='loose'] {
+  --hero-space: calc(var(--space-section-loose) * var(--section-scale, 1));
+}
+
+/*=============================================
+*        Rich text width / spacing
+=============================================*/
+
+/* Same field -> data-attribute -> CSS pattern as Hero width/spacing above
+   (Settings.richTextWidth/richTextSpacing -> layout.tsx's
+   data-rich-text-width/data-rich-text-spacing on <html>). Two independent
+   consumers share this one source: RichTextBlock's own Section/Container,
+   and a Post's bodyAppearance Section/Container - same relationship
+   --heading-scale already has with _heading.css and _prose.css. Defaults to
+   'narrow' (not 'default'), a deliberate readability choice. */
+
+:root {
+  --rich-text-max-width: calc(72rem * var(--container-scale, 1));
+}
+
+html[data-rich-text-width='narrow'] {
+  --rich-text-max-width: calc(72rem * var(--container-scale, 1));
+}
+html[data-rich-text-width='default'] {
+  --rich-text-max-width: calc(114rem * var(--container-scale, 1));
+}
+html[data-rich-text-width='wide'] {
+  --rich-text-max-width: calc(144rem * var(--container-scale, 1));
+}
+html[data-rich-text-width='full'] {
+  --rich-text-max-width: none;
+}
+
+:root {
+  --rich-text-space: calc(var(--space-section) * var(--section-scale, 1));
+}
+
+html[data-rich-text-spacing='none'] {
+  --rich-text-space: 0rem;
+}
+html[data-rich-text-spacing='tight'] {
+  --rich-text-space: calc(var(--space-section-tight) * var(--section-scale, 1));
+}
+html[data-rich-text-spacing='normal'] {
+  --rich-text-space: calc(var(--space-section) * var(--section-scale, 1));
+}
+html[data-rich-text-spacing='loose'] {
+  --rich-text-space: calc(var(--space-section-loose) * var(--section-scale, 1));
+}

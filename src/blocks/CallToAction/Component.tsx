@@ -8,12 +8,12 @@ import type { CallToActionBlock } from '@/payload-types'
  * that stays legible after any palette change.
  */
 export function CallToAction(props: CallToActionBlock) {
-  const { surface, spacing, width, heading, body, align, links } = props
+  const { surface, heading, body, align, links } = props
   const centered = align !== 'left'
 
   return (
-    <Section surface={surface ?? 'inverse'} spacing={spacing ?? 'tight'}>
-      <Container width={width ?? 'narrow'}>
+    <Section surface={surface ?? 'inverse'} spacing="tight">
+      <Container width="narrow">
         <Stack gap="md" align={centered ? 'center' : 'start'}>
           <Heading level={2} className={centered ? 'text-center' : undefined}>
             {heading}

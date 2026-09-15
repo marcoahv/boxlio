@@ -24,7 +24,7 @@ export function FooterClient({
   logo: string | Media
   initialSettings: Setting
 }) {
-  const { navLinks, surface, spacing, width } = useScopedLivePreview<Footer>({
+  const { navLinks, surface } = useScopedLivePreview<Footer>({
     target: { type: 'global', globalSlug: 'footer' },
     initialData: initialFooter,
     serverURL: getServerSideURL(),
@@ -38,12 +38,8 @@ export function FooterClient({
   })
 
   return (
-    <footer
-      className="footer"
-      data-surface={surface ?? 'default'}
-      data-spacing={spacing ?? 'normal'}
-    >
-      <Container width={width}>
+    <footer className="footer" data-surface={surface ?? 'default'} data-spacing="normal">
+      <Container>
         <Logo logo={logo} className="footer__logo" />
 
         {navLinks && navLinks.length > 0 && (

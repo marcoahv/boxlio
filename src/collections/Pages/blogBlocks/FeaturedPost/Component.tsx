@@ -12,13 +12,13 @@ import type { FeaturedPostBlock, Post } from '@/payload-types'
 export function FeaturedPost(
   props: FeaturedPostBlock & { heroPost: Post | null | undefined; featuredBlog: Post | null },
 ) {
-  const { surface, spacing, width, heroPost, featuredBlog } = props
+  const { surface, heroPost, featuredBlog } = props
 
   if (!isDoc<Post>(heroPost)) return null
 
   return (
-    <Section surface={surface} spacing={spacing}>
-      <Container width={width}>
+    <Section surface={surface}>
+      <Container>
         <Stack gap="md">
           <Heading>{featuredBlog ? 'Featured post' : 'Latest post'}</Heading>
           <PostPreview post={heroPost} imageSize={'fullSize'} />

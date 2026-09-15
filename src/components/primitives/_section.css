@@ -39,22 +39,52 @@
      Each variant publishes its value as --section-space rather than setting
      padding directly, so other rules can build on the editor's choice instead
      of re-deriving it. The fixed-header overlay in globals/Header/Component/_header.css adds
-     the header's height to this value on the first section. */
+     the header's height to this value on the first section.
+
+     tight/normal/loose are scaled by --section-scale (Settings.sectionScale,
+     see _alias-tokens.css) - a site-wide density multiplier. 'none' stays
+     0rem: scaling zero is meaningless. globals/Footer/Component/_footer.css hand-rolls
+     an independent copy of this same cascade (Footer doesn't render through
+     <Section>) and must stay wrapped in the same --section-scale multiplier.
+
+     Most blocks have no per-instance spacing choice anymore (removed site-
+     wide in favor of consistency) and simply render data-spacing='normal',
+     Section's own default - the rules below cover that case like any other.
+     Hero and rich text ARE still independently adjustable, but from Settings
+     (--hero-space/--rich-text-space) rather than a per-instance field - see
+     the override rules below, which must win over these generic ones. */
 
   .ui-section[data-spacing='none'] {
     --section-space: 0rem;
   }
 
   .ui-section[data-spacing='tight'] {
-    --section-space: var(--space-section-tight);
+    --section-space: calc(var(--space-section-tight) * var(--section-scale, 1));
   }
 
   .ui-section[data-spacing='normal'] {
-    --section-space: var(--space-section);
+    --section-space: calc(var(--space-section) * var(--section-scale, 1));
   }
 
   .ui-section[data-spacing='loose'] {
-    --section-space: var(--space-section-loose);
+    --section-space: calc(var(--space-section-loose) * var(--section-scale, 1));
+  }
+
+  /* Hero/Rich Text overrides. Two classes + one attribute-presence selector
+     (matches any data-spacing value, since Hero/RichTextBlock/Post body no
+     longer pass a per-instance spacing prop at all - Section's own default
+     always renders data-spacing='normal') = specificity (0,3,0), which beats
+     every generic rule above (0,2,0) unconditionally, regardless of source
+     order. Must stay inside this @layer components block - an unlayered
+     override would "work" today but make these unoverridable by any
+     @layer utilities class, breaking this file's own layering invariant. */
+
+  .ui-hero-section.ui-section[data-spacing] {
+    --section-space: var(--hero-space);
+  }
+
+  .ui-rich-text-section.ui-section[data-spacing] {
+    --section-space: var(--rich-text-space);
   }
 
   .ui-section {
@@ -72,20 +102,50 @@
     @apply atMedium:px-[4rem];
   }
 
+  /* max-width is scaled by --container-scale (Settings.containerScale, see
+     _alias-tokens.css) - a site-wide density multiplier. [data-width='full']
+     stays untouched below: scaling max-width: none is meaningless.
+
+     Most blocks have no per-instance width choice anymore and simply render
+     data-width='default', Container's own default. Hero and rich text are
+     still independently adjustable, but from Settings - see the override
+     rules below, which must win over these generic ones. */
+
   .ui-container[data-width='narrow'] {
-    max-width: 72rem;
+    max-width: calc(72rem * var(--container-scale, 1));
   }
 
   .ui-container[data-width='default'] {
-    max-width: 114rem;
+    max-width: calc(114rem * var(--container-scale, 1));
   }
 
   .ui-container[data-width='wide'] {
-    max-width: 144rem;
+    max-width: calc(144rem * var(--container-scale, 1));
   }
 
   .ui-container[data-width='full'] {
     max-width: none;
+    padding-inline: 0;
+  }
+
+  /* Hero/Rich Text overrides - same specificity reasoning as the spacing
+     overrides above: 2 classes + 1 attribute-presence selector = (0,3,0),
+     beats every generic [data-width='X'] rule's (0,2,0) unconditionally.
+     Must stay inside this @layer components block. */
+
+  .ui-hero-container.ui-container[data-width] {
+    max-width: var(--hero-max-width);
+  }
+
+  .ui-rich-text-container.ui-container[data-width] {
+    max-width: var(--rich-text-max-width);
+  }
+
+  html[data-hero-width='full'] .ui-hero-container.ui-container[data-width] {
+    padding-inline: 0;
+  }
+
+  html[data-rich-text-width='full'] .ui-rich-text-container.ui-container[data-width] {
     padding-inline: 0;
   }
 }

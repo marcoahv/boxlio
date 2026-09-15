@@ -1,4 +1,4 @@
-import { Container, Section, type Surface, type Spacing, type Width } from '@/components/primitives'
+import { Container, Section, type Surface } from '@/components/primitives'
 import { getServerSideURL } from '@/utilities/getUrl'
 import Link from 'next/link'
 
@@ -10,21 +10,14 @@ type BreadcrumbItem = {
 type BreadcrumbsProps = {
   items: BreadcrumbItem[]
   surface?: Surface | null
-  spacing?: Spacing | null
-  width?: Width | null
 }
 
 /**
- * Defaults are local, not Section's/Container's own - they match how
- * breadcrumbs already looked before appearance became editor-configurable,
- * so an existing post with no stored value renders identically.
+ * Spacing/width are fixed, not editor-configurable - they match how
+ * breadcrumbs have always looked (site-wide consistency, not a per-instance
+ * choice).
  */
-export function Breadcrumbs({
-  items,
-  surface = 'muted',
-  spacing = 'tight',
-  width,
-}: BreadcrumbsProps) {
+export function Breadcrumbs({ items, surface = 'muted' }: BreadcrumbsProps) {
   const serverUrl = getServerSideURL()
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -41,8 +34,8 @@ export function Breadcrumbs({
     <>
       {/* Must render before the <script> below - _header.css's fixed-header
           clearance targets `.ui-section:first-child` inside <main>. */}
-      <Section surface={surface} spacing={spacing}>
-        <Container width={width}>
+      <Section surface={surface} spacing="tight">
+        <Container width="default">
           <nav aria-label="Breadcrumb">
             <ol className="breadcrumbs__list">
               {items.map((item, index) => (

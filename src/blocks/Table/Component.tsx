@@ -5,15 +5,15 @@ import type { TableBlock as TableBlockProps } from '@/payload-types'
 /** General N-column table: rows and cells are both free-form arrays, so
  * column count is whatever the editor keeps consistent across rows. */
 export function Table(props: TableBlockProps) {
-  const { surface, spacing, width, heading, hasHeaderRow, rows } = props
+  const { surface, heading, hasHeaderRow, rows } = props
   if (!rows?.length) return null
 
   const headerRow = hasHeaderRow ? rows[0] : null
   const bodyRows = hasHeaderRow ? rows.slice(1) : rows
 
   return (
-    <Section surface={surface} spacing={spacing}>
-      <Container width={width}>
+    <Section surface={surface}>
+      <Container>
         {heading && (
           <Heading level={2} className="mb-6">
             {heading}

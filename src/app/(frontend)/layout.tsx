@@ -65,6 +65,15 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       data-image-shadow={settings.imageShadow ?? 'none'}
       data-button-shadow={settings.buttonShadow ?? 'none'}
       data-card-shadow={settings.cardShadow ?? 'none'}
+      data-heading-font={settings.headingFont ?? 'primary'}
+      data-body-font={settings.bodyFont ?? 'primary'}
+      data-heading-scale={settings.headingScale ?? 'md'}
+      data-container-scale={settings.containerScale ?? 'md'}
+      data-section-scale={settings.sectionScale ?? 'md'}
+      data-hero-width={settings.heroWidth ?? 'default'}
+      data-hero-spacing={settings.heroSpacing ?? 'normal'}
+      data-rich-text-width={settings.richTextWidth ?? 'narrow'}
+      data-rich-text-spacing={settings.richTextSpacing ?? 'normal'}
       // Arbitrary hex values, unlike the enum-driven data-* attributes above -
       // an inline style on <html> overrides _base-tokens.css's :root rule for
       // the same six custom properties (same element, higher specificity).

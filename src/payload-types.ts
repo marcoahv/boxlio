@@ -147,8 +147,6 @@ export interface UserAuthOperations {
  */
 export interface HeroBlock {
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   heading: string;
   subheading?: string | null;
   /**
@@ -247,8 +245,6 @@ export interface Media {
  */
 export interface FeatureGridBlock {
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   heading?: string | null;
   intro?: string | null;
   columns?: ('2' | '3' | '4') | null;
@@ -268,8 +264,6 @@ export interface FeatureGridBlock {
  */
 export interface CallToActionBlock {
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   heading: string;
   body?: string | null;
   align?: ('center' | 'left') | null;
@@ -290,8 +284,6 @@ export interface CallToActionBlock {
  */
 export interface RichTextBlock {
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   content: {
     root: {
       type: string;
@@ -317,8 +309,6 @@ export interface RichTextBlock {
  */
 export interface TableBlock {
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   heading?: string | null;
   /**
    * Style the first row as column headings instead of a normal row.
@@ -418,8 +408,6 @@ export interface Page {
  */
 export interface FeaturedPostBlock {
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'featuredPost';
@@ -430,8 +418,6 @@ export interface FeaturedPostBlock {
  */
 export interface BlogListingBlock {
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   heading?: string | null;
   id?: string | null;
   blockName?: string | null;
@@ -466,24 +452,18 @@ export interface Post {
   breadcrumbs?: {
     show?: boolean | null;
     surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-    spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-    width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   };
   /**
    * The title, meta row, and banner image at the top of the post.
    */
   headerAppearance?: {
     surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-    spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-    width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   };
   /**
    * The rich text content below the header.
    */
   bodyAppearance?: {
     surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-    spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-    width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   };
   body: {
     root: {
@@ -742,8 +722,6 @@ export interface PagesSelect<T extends boolean = true> {
  */
 export interface FeaturedPostBlockSelect<T extends boolean = true> {
   surface?: T;
-  spacing?: T;
-  width?: T;
   id?: T;
   blockName?: T;
 }
@@ -753,8 +731,6 @@ export interface FeaturedPostBlockSelect<T extends boolean = true> {
  */
 export interface BlogListingBlockSelect<T extends boolean = true> {
   surface?: T;
-  spacing?: T;
-  width?: T;
   heading?: T;
   id?: T;
   blockName?: T;
@@ -785,22 +761,16 @@ export interface PostsSelect<T extends boolean = true> {
     | {
         show?: T;
         surface?: T;
-        spacing?: T;
-        width?: T;
       };
   headerAppearance?:
     | T
     | {
         surface?: T;
-        spacing?: T;
-        width?: T;
       };
   bodyAppearance?:
     | T
     | {
         surface?: T;
-        spacing?: T;
-        width?: T;
       };
   body?: T;
   meta?:
@@ -878,17 +848,9 @@ export interface Header {
    */
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   /**
-   * How wide the bar contents run.
-   */
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
-  /**
    * Fixed stays in view while the page scrolls. Static scrolls away with the rest of the page.
    */
   position?: ('fixed' | 'static') | null;
-  /**
-   * How tall the header bar is.
-   */
-  height?: ('compact' | 'normal' | 'tall') | null;
   /**
    * Start transparent so the first block shows through, then fade to the surface on scroll. Pick a surface whose text color reads against that block.
    */
@@ -978,6 +940,50 @@ export interface Setting {
   secondaryColor?: string | null;
   secondaryColorLight?: string | null;
   secondaryColorDark?: string | null;
+  /**
+   * Controls which of the site's three preloaded fonts headings use.
+   */
+  headingFont?: ('primary' | 'secondary' | 'tertiary') | null;
+  /**
+   * Controls which of the site's three preloaded fonts body text uses.
+   */
+  bodyFont?: ('primary' | 'secondary' | 'tertiary') | null;
+  /**
+   * Scales heading sizes (h1-h6) up or down across the site.
+   */
+  headingScale?: ('sm' | 'md' | 'lg') | null;
+  /**
+   * Sets the width of the header bar's contents, site-wide.
+   */
+  headerWidth?: ('narrow' | 'default' | 'wide' | 'full') | null;
+  /**
+   * Sets the height of the header bar, site-wide.
+   */
+  headerHeight?: ('compact' | 'normal' | 'tall') | null;
+  /**
+   * Sets the width of every Hero block, site-wide.
+   */
+  heroWidth?: ('narrow' | 'default' | 'wide' | 'full') | null;
+  /**
+   * Sets the vertical spacing of every Hero block, site-wide.
+   */
+  heroSpacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
+  /**
+   * Scales every section's width, site-wide.
+   */
+  containerScale?: ('sm' | 'md' | 'lg') | null;
+  /**
+   * Scales every section's vertical spacing, site-wide.
+   */
+  sectionScale?: ('sm' | 'md' | 'lg') | null;
+  /**
+   * Sets the width of rich text content, site-wide - both the Rich Text block and a post's own body. Narrower by default, for readability.
+   */
+  richTextWidth?: ('narrow' | 'default' | 'wide' | 'full') | null;
+  /**
+   * Sets the vertical spacing of rich text content, site-wide - both the Rich Text block and a post's own body.
+   */
+  richTextSpacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -988,8 +994,6 @@ export interface Setting {
 export interface Footer {
   id: string;
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  spacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
-  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
   navLinks?:
     | {
         label: string;
@@ -1009,9 +1013,7 @@ export interface Footer {
  */
 export interface HeaderSelect<T extends boolean = true> {
   surface?: T;
-  width?: T;
   position?: T;
-  height?: T;
   transparentAtTop?: T;
   showThemeToggle?: T;
   logo?: T;
@@ -1068,6 +1070,17 @@ export interface SettingsSelect<T extends boolean = true> {
   secondaryColor?: T;
   secondaryColorLight?: T;
   secondaryColorDark?: T;
+  headingFont?: T;
+  bodyFont?: T;
+  headingScale?: T;
+  headerWidth?: T;
+  headerHeight?: T;
+  heroWidth?: T;
+  heroSpacing?: T;
+  containerScale?: T;
+  sectionScale?: T;
+  richTextWidth?: T;
+  richTextSpacing?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1078,8 +1091,6 @@ export interface SettingsSelect<T extends boolean = true> {
  */
 export interface FooterSelect<T extends boolean = true> {
   surface?: T;
-  spacing?: T;
-  width?: T;
   navLinks?:
     | T
     | {
