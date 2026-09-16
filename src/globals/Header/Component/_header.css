@@ -281,26 +281,38 @@
      are written explicitly (not the 2-rule shortcut in "--- Logo ---" above)
      because here the header's OWN data-surface rule is always also in play
      and may already have swapped the images — Muted/Accent-underneath must
-     still win back to `logo` even if the header is configured as Inverse. */
+     still win back to `logo` even if the header is configured as Inverse.
+
+     Every selector below excludes [data-has-background-image]: a Hero's own
+     `surface` field is independent of its `layout` field, so a
+     background-image Hero's section still carries a `data-surface` value
+     alongside `data-has-background-image`, and would otherwise match here
+     too. That used to matter only for specificity (the background-image
+     logo mirror below was written to numerically outrank these rules), but
+     the html[data-theme] block further down adds an extra type selector
+     that tips a Default/Inverse-underneath case back in ITS favor whenever
+     an explicit theme is set - a real bug, not just a hypothetical. Excluding
+     background-image sections here makes the two rule families mutually
+     exclusive by construction instead of racing on specificity. */
 
   @media (prefers-color-scheme: light) {
-    body:has(main .ui-section:first-child[data-surface='default'])
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo {
       display: block;
     }
-    body:has(main .ui-section:first-child[data-surface='default'])
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo-dark {
       display: none;
     }
 
-    body:has(main .ui-section:first-child[data-surface='inverse'])
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo {
       display: none;
     }
-    body:has(main .ui-section:first-child[data-surface='inverse'])
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo-dark {
       display: block;
@@ -308,23 +320,23 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    body:has(main .ui-section:first-child[data-surface='default'])
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo {
       display: none;
     }
-    body:has(main .ui-section:first-child[data-surface='default'])
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo-dark {
       display: block;
     }
 
-    body:has(main .ui-section:first-child[data-surface='inverse'])
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo {
       display: block;
     }
-    body:has(main .ui-section:first-child[data-surface='inverse'])
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo-dark {
       display: none;
@@ -336,67 +348,67 @@
      ancestor selector outranks the plain body:has(...) selectors inside the
      media queries. */
   html[data-theme='light']
-    body:has(main .ui-section:first-child[data-surface='default'])
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: block;
   }
   html[data-theme='light']
-    body:has(main .ui-section:first-child[data-surface='default'])
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: none;
   }
   html[data-theme='light']
-    body:has(main .ui-section:first-child[data-surface='inverse'])
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: none;
   }
   html[data-theme='light']
-    body:has(main .ui-section:first-child[data-surface='inverse'])
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: block;
   }
 
   html[data-theme='dark']
-    body:has(main .ui-section:first-child[data-surface='default'])
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: none;
   }
   html[data-theme='dark']
-    body:has(main .ui-section:first-child[data-surface='default'])
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: block;
   }
   html[data-theme='dark']
-    body:has(main .ui-section:first-child[data-surface='inverse'])
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: block;
   }
   html[data-theme='dark']
-    body:has(main .ui-section:first-child[data-surface='inverse'])
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: none;
   }
 
-  body:has(main .ui-section:first-child[data-surface='muted'])
+  body:has(main .ui-section:first-child[data-surface='muted']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo,
-  body:has(main .ui-section:first-child[data-surface='accent'])
+  body:has(main .ui-section:first-child[data-surface='accent']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: block;
   }
-  body:has(main .ui-section:first-child[data-surface='muted'])
+  body:has(main .ui-section:first-child[data-surface='muted']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark,
-  body:has(main .ui-section:first-child[data-surface='accent'])
+  body:has(main .ui-section:first-child[data-surface='accent']:not([data-has-background-image]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: none;
