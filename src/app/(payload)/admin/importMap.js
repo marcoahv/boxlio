@@ -36,6 +36,7 @@ import { ArrayRowLabel as ArrayRowLabel_f5e6ec638918f6f93eea6c71a5faff4c } from 
 import { ColorPickerField as ColorPickerField_491b22dd89466645351af6ff3c72408c } from '@/custom/color/Component.tsx'
 import { AdminIcon as AdminIcon_d373942f776c2b4d13b4b9806defb223 } from '@/custom/admin-branding/Component.tsx'
 import { AdminLogo as AdminLogo_d373942f776c2b4d13b4b9806defb223 } from '@/custom/admin-branding/Component.tsx'
+import { AdminTimestampStyles as AdminTimestampStyles_eab6e162d88442e6ed7f0875edb4640c } from '@/custom/admin-timestamps/Component.tsx'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -78,6 +79,7 @@ export const importMap = {
   "@/custom/color/Component.tsx#ColorPickerField": ColorPickerField_491b22dd89466645351af6ff3c72408c,
   "@/custom/admin-branding/Component.tsx#AdminIcon": AdminIcon_d373942f776c2b4d13b4b9806defb223,
   "@/custom/admin-branding/Component.tsx#AdminLogo": AdminLogo_d373942f776c2b4d13b4b9806defb223,
+  "@/custom/admin-timestamps/Component.tsx#AdminTimestampStyles": AdminTimestampStyles_eab6e162d88442e6ed7f0875edb4640c,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -37,6 +37,35 @@ export const Pages: CollectionConfig = {
           label: 'Information',
           fields: [
             {
+              type: 'row',
+              fields: [
+                {
+                  name: 'updatedAt',
+                  type: 'date',
+                  label: 'Last Modified',
+                  index: true,
+                  admin: {
+                    readOnly: true,
+                    disableBulkEdit: true,
+                    className: 'admin-timestamp-field',
+                    date: { pickerAppearance: 'dayAndTime' },
+                  },
+                },
+                {
+                  name: 'createdAt',
+                  type: 'date',
+                  label: 'Created',
+                  index: true,
+                  admin: {
+                    readOnly: true,
+                    disableBulkEdit: true,
+                    className: 'admin-timestamp-field',
+                    date: { pickerAppearance: 'dayAndTime' },
+                  },
+                },
+              ],
+            },
+            {
               type: 'text',
               name: 'title',
               required: true,

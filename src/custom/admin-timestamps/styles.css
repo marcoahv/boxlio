@@ -1,0 +1,26 @@
+/* Hides Payload's own "Last Modified"/"Created" pills from the sticky
+   doc-controls bar for Pages and Posts specifically - both collections now
+   show the same values as real read-only fields inside their own
+   Information tab (see Pages/config.ts, Posts/config.ts), so the top-bar
+   copy would just be a duplicate. Scoped by the collection-edit--<slug>
+   class Payload's Edit view adds to its root wrapper (not global: every
+   other collection/global keeps the default doc-controls display).
+   .doc-controls__value-wrap is the exact wrapper for these two <li>s only -
+   Save/Publish/Status/Autosave use a different class and stay visible. */
+
+.collection-edit--pages .doc-controls__value-wrap,
+.collection-edit--posts .doc-controls__value-wrap {
+  display: none;
+}
+
+/* Payload's DatePicker renders a clear ("X") button whenever a date field
+   has a value, regardless of admin.readOnly (confirmed in
+   @payloadcms/ui/dist/elements/DatePicker/DatePicker.js - readOnly only
+   disables picking a new date, the clear button has no such check). These
+   two fields are system-managed timestamps, never meant to be cleared by an
+   editor, so hide it - scoped to the admin.className both fields share
+   (Pages/config.ts, Posts/config.ts), not to every date field site-wide. */
+
+.admin-timestamp-field .date-time-picker__clear-button {
+  display: none;
+}

@@ -374,6 +374,8 @@ export interface User {
  */
 export interface Page {
   id: string;
+  updatedAt: string;
+  createdAt: string;
   title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
@@ -399,8 +401,6 @@ export interface Page {
      */
     addToSitemap?: boolean | null;
   };
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -429,12 +429,14 @@ export interface BlogListingBlock {
  */
 export interface Post {
   id: string;
+  updatedAt: string;
+  createdAt: string;
+  title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
-  title: string;
   summary?: string | null;
   featured?: boolean | null;
   author: string | User;
@@ -493,8 +495,6 @@ export interface Post {
      */
     addToSitemap?: boolean | null;
   };
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -630,6 +630,8 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
   title?: T;
   generateSlug?: T;
   slug?: T;
@@ -650,8 +652,6 @@ export interface PagesSelect<T extends boolean = true> {
         canonicalUrl?: T;
         addToSitemap?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -677,9 +677,11 @@ export interface BlogListingBlockSelect<T extends boolean = true> {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
+  updatedAt?: T;
+  createdAt?: T;
+  title?: T;
   generateSlug?: T;
   slug?: T;
-  title?: T;
   summary?: T;
   featured?: T;
   author?: T;
@@ -719,8 +721,6 @@ export interface PostsSelect<T extends boolean = true> {
         canonicalUrl?: T;
         addToSitemap?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

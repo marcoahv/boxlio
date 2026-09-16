@@ -37,6 +37,7 @@ export default buildConfig({
         Icon: '@/custom/admin-branding/Component.tsx#AdminIcon',
         Logo: '@/custom/admin-branding/Component.tsx#AdminLogo',
       },
+      providers: ['@/custom/admin-timestamps/Component.tsx#AdminTimestampStyles'],
     },
     meta: {
       titleSuffix: ` - ${SITE_NAME}`,
