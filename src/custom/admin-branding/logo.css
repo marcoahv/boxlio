@@ -1,0 +1,38 @@
+/* Login-page logo theme swap.
+
+   Mirrors the public header's logo swap (Header/Component/_header.css,
+   "Default surface" case) but scoped to the admin panel's own theme instead
+   of the frontend's: Payload's ThemeProvider sets `data-theme` on <html> the
+   same way the frontend does, so the same selector shape works here.
+
+   `.admin-logo__img--dark` starts hidden; the media query below follows the
+   OS scheme, and the html[data-theme] overrides win whenever an editor has
+   picked an explicit theme in the admin panel, regardless of the OS
+   setting. */
+
+.admin-logo__img--dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .admin-logo__img--light {
+    display: none;
+  }
+  .admin-logo__img--dark {
+    display: block;
+  }
+}
+
+html[data-theme='light'] .admin-logo__img--light {
+  display: block;
+}
+html[data-theme='light'] .admin-logo__img--dark {
+  display: none;
+}
+
+html[data-theme='dark'] .admin-logo__img--light {
+  display: none;
+}
+html[data-theme='dark'] .admin-logo__img--dark {
+  display: block;
+}
