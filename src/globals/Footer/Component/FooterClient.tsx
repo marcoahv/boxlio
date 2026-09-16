@@ -9,19 +9,21 @@ import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
 import { Logo } from '@/globals/Header/Component/Logo'
 
 /**
- * `logo` is a one-time snapshot from Header, not wired to a live-preview
- * hook - it doesn't update during a Footer preview session even if Header is
- * edited concurrently. Deliberate: matches how Post's breadcrumbs stay
- * non-reactive in feature 15. `siteName` (from Settings) is reactive via its
- * own hook below, added in feature 20.
+ * `logo` / `logoDark` are a one-time snapshot from Header, not wired to a
+ * live-preview hook - they don't update during a Footer preview session even
+ * if Header is edited concurrently. Deliberate: matches how Post's
+ * breadcrumbs stay non-reactive in feature 15. `siteName` (from Settings) is
+ * reactive via its own hook below, added in feature 20.
  */
 export function FooterClient({
   initialFooter,
   logo,
+  logoDark,
   initialSettings,
 }: {
   initialFooter: Footer
   logo: string | Media
+  logoDark?: string | Media | null
   initialSettings: Setting
 }) {
   const { navLinks, surface } = useScopedLivePreview<Footer>({
@@ -40,7 +42,7 @@ export function FooterClient({
   return (
     <footer className="footer" data-surface={surface ?? 'default'} data-spacing="normal">
       <Container>
-        <Logo logo={logo} className="footer__logo" />
+        <Logo logo={logo} logoDark={logoDark} className="footer__logo" />
 
         {navLinks && navLinks.length > 0 && (
           <nav className="footer__nav" aria-label="Footer navigation">

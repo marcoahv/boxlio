@@ -8,7 +8,8 @@ import { FooterClient } from './FooterClient'
  *
  * Nav links are the footer's own field (`footer.navLinks`), not a reuse of
  * `header.navLinks` — kept independent so the two navs can diverge. The logo
- * still comes from `header.logo`; the footer has no logo field of its own.
+ * still comes from `header.logo` / `header.logoDark`; the footer has no logo
+ * field of its own.
  */
 export async function Footer() {
   const [header, footer, settings] = await Promise.all([
@@ -20,6 +21,11 @@ export async function Footer() {
   if (!header) return null
 
   return (
-    <FooterClient initialFooter={footer} logo={header.logo} initialSettings={settings} />
+    <FooterClient
+      initialFooter={footer}
+      logo={header.logo}
+      logoDark={header.logoDark}
+      initialSettings={settings}
+    />
   )
 }

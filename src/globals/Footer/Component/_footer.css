@@ -30,6 +30,59 @@
     --footer-fg: var(--color-on-surface-accent);
   }
 
+  /* --- Logo ---
+     Mirrors _header.css's own "--- Logo ---" block (same surfaces, same
+     tokens, only `.header` swapped for `.footer`) minus its transparent/
+     overlay-over-hero section, which doesn't apply here - the footer is
+     never a floating bar over a hero. See that file's comment for why only
+     Default and Inverse need a swap. */
+
+  @media (prefers-color-scheme: dark) {
+    .footer[data-surface='default'] .ui-logo__img--logo {
+      display: none;
+    }
+    .footer[data-surface='default'] .ui-logo__img--logo-dark {
+      display: block;
+    }
+  }
+
+  @media (prefers-color-scheme: light) {
+    .footer[data-surface='inverse'] .ui-logo__img--logo {
+      display: none;
+    }
+    .footer[data-surface='inverse'] .ui-logo__img--logo-dark {
+      display: block;
+    }
+  }
+
+  html[data-theme='dark'] .footer[data-surface='default'] .ui-logo__img--logo {
+    display: none;
+  }
+  html[data-theme='dark'] .footer[data-surface='default'] .ui-logo__img--logo-dark {
+    display: block;
+  }
+
+  html[data-theme='light'] .footer[data-surface='inverse'] .ui-logo__img--logo {
+    display: none;
+  }
+  html[data-theme='light'] .footer[data-surface='inverse'] .ui-logo__img--logo-dark {
+    display: block;
+  }
+
+  html[data-theme='light'] .footer[data-surface='default'] .ui-logo__img--logo {
+    display: block;
+  }
+  html[data-theme='light'] .footer[data-surface='default'] .ui-logo__img--logo-dark {
+    display: none;
+  }
+
+  html[data-theme='dark'] .footer[data-surface='inverse'] .ui-logo__img--logo {
+    display: block;
+  }
+  html[data-theme='dark'] .footer[data-surface='inverse'] .ui-logo__img--logo-dark {
+    display: none;
+  }
+
   .footer {
     color: var(--footer-fg);
     background-color: var(--footer-bg);
