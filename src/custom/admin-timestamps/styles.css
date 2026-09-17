@@ -33,3 +33,21 @@
 .info-tab-edit-collapsible .row-label {
   font-size: 1.25rem;
 }
+
+/* Brand the same "Edit" collapsible with the frontend's secondary color
+   instead of Payload's default neutral border, so the open/hover states read
+   as intentional rather than Payload's stock elevation gray. The admin panel
+   doesn't import the frontend token stylesheet (src/app/(frontend)/styles/
+   base/_base-tokens.css is only loaded from (frontend)/layout.tsx), so the
+   var() calls carry literal fallbacks matching those tokens. Hover is
+   declared after the open rule so it wins on equal specificity and overrides
+   the open border color while the pointer is over it, matching Payload's own
+   default hover-overrides-base pattern for collapsibles. */
+
+.info-tab-edit-collapsible .collapsible:not(.collapsible--collapsed) {
+  border-color: var(--color-secondary-dark, #137c95);
+}
+
+.info-tab-edit-collapsible .collapsible:hover {
+  border-color: var(--color-secondary, #49b7d2);
+}
