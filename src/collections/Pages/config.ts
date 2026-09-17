@@ -66,21 +66,49 @@ export const Pages: CollectionConfig = {
               ],
             },
             {
-              type: 'text',
-              name: 'title',
-              required: true,
-            },
-            slugField({
-              overrides: (field) => {
-                field.admin = {}
-                return field
+              type: 'collapsible',
+              label: 'Edit',
+              admin: {
+                initCollapsed: true,
+                className: 'info-tab-edit-collapsible',
               },
-            }),
-            {
-              type: 'upload',
-              name: 'featuredImage',
-              relationTo: 'media',
-              required: true,
+              fields: [
+                {
+                  name: 'informationTabEditAutoCollapse',
+                  type: 'ui',
+                  admin: {
+                    components: {
+                      Field: '@/custom/information-tab-edit-autocollapse/Component.tsx#InformationTabEditAutoCollapse',
+                    },
+                  },
+                },
+                {
+                  name: 'informationTabSave',
+                  type: 'ui',
+                  admin: {
+                    components: {
+                      Field: '@/custom/information-tab-save/Component.tsx#InformationTabSaveButton',
+                    },
+                  },
+                },
+                {
+                  type: 'text',
+                  name: 'title',
+                  required: true,
+                },
+                slugField({
+                  overrides: (field) => {
+                    field.admin = {}
+                    return field
+                  },
+                }),
+                {
+                  type: 'upload',
+                  name: 'featuredImage',
+                  relationTo: 'media',
+                  required: true,
+                },
+              ],
             },
           ],
         },

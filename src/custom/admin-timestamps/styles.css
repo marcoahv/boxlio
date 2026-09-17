@@ -24,3 +24,12 @@
 .admin-timestamp-field .date-time-picker__clear-button {
   display: none;
 }
+
+/* Bigger label text for the "Edit" collapsible in the Pages/Posts
+   Information tab. Scoped to admin.className below, not `.row-label`
+   directly - that class is shared by every array/blocks/collapsible row
+   label site-wide, so styling it unscoped would affect all of them. */
+
+.info-tab-edit-collapsible .row-label {
+  font-size: 1.25rem;
+}

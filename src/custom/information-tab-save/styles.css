@@ -1,0 +1,29 @@
+.information-tab-save {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Nudge effect: the Save button's own background briefly flashes a warning
+   color when an editor's mouse/focus leaves the "Edit" accordion while it
+   still has unsaved changes (triggered from src/custom/information-tab-
+   edit-autocollapse/Component.tsx), instead of the accordion silently
+   staying open with no feedback. Animates the button's own --bg-color
+   variable (set by @payloadcms/ui's Button styles) back to itself so the
+   flash returns to whatever the button's normal state actually is (its
+   usual dark fill, not a hardcoded color), and uses Payload's own
+   --theme-warning-500 so the flash color matches light/dark mode
+   automatically. */
+
+@keyframes information-tab-save-nudge {
+  0%,
+  100% {
+    background-color: var(--bg-color);
+  }
+  50% {
+    background-color: var(--theme-warning-500);
+  }
+}
+
+.information-tab-save--nudge .btn {
+  animation: information-tab-save-nudge 300ms ease-in-out 3;
+}

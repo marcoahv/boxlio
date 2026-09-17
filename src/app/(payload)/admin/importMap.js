@@ -1,3 +1,5 @@
+import { InformationTabEditAutoCollapse as InformationTabEditAutoCollapse_f2406d0d6e65832ffd2ea93c9e3783e9 } from '@/custom/information-tab-edit-autocollapse/Component.tsx'
+import { InformationTabSaveButton as InformationTabSaveButton_73c91e755630cbf542d9772e5ef324ad } from '@/custom/information-tab-save/Component.tsx'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -41,6 +43,8 @@ import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc056
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
+  "@/custom/information-tab-edit-autocollapse/Component.tsx#InformationTabEditAutoCollapse": InformationTabEditAutoCollapse_f2406d0d6e65832ffd2ea93c9e3783e9,
+  "@/custom/information-tab-save/Component.tsx#InformationTabSaveButton": InformationTabSaveButton_73c91e755630cbf542d9772e5ef324ad,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#MetaDescriptionComponent": MetaDescriptionComponent_a8a977ebc872c5d5ea7ee689724c0860,
