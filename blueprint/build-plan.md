@@ -204,3 +204,9 @@ cleaned-up checkbox version before generating the project overview.
   "Site Builder"/`payload-builder` to "Boxlio"; renaming the external GitHub
   repository itself is a separate, explicit follow-up action, not part of
   this code change
+- [x] 27. **Shared "Edit" accordion for blocks** - extend the Information
+  tab's custom Edit-accordion behavior (auto-collapse, unsaved-change nudge,
+  blocked tab-switch, in-accordion Save button, secondary-color border) to
+  every page-builder block via a shared field factory, applied automatically
+  to every registered block and explicitly to the two blog-only blocks, so
+  future blocks get it by construction

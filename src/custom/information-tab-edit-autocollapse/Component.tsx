@@ -1,6 +1,11 @@
 'use client'
 import { useEffect, useRef } from 'react'
-import { useCollapsible, useFormModified, useFormProcessing } from '@payloadcms/ui'
+import {
+  useCollapsible,
+  useFormInitializing,
+  useFormModified,
+  useFormProcessing,
+} from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 
 const WRAPPER_SELECTOR = '.info-tab-edit-collapsible'
@@ -8,11 +13,36 @@ const NUDGE_TARGET_SELECTOR = '.information-tab-save'
 const NUDGE_CLASS = 'information-tab-save--nudge'
 const TAB_BUTTON_SELECTOR = '.tabs-field__tab-button'
 const TAB_BUTTON_ACTIVE_CLASS = 'tabs-field__tab-button--active'
+// Every accordion (this one, and any unrelated nested one - an array row
+// inside the block's own fields, for instance) shares this exact class from
+// the one underlying Collapsible primitive. Resolving "this accordion's own
+// header" via querySelector's first-document-order match (done once below)
+// rather than e.target.closest() is what keeps this scoped to the right one
+// - closest() would instead find whichever toggle-wrap is nearest to the
+// click, which is wrong once the block's own fields contain something else
+// collapsible.
+const TOGGLE_WRAP_SELECTOR = '.collapsible__toggle-wrap'
 
-export const InformationTabEditAutoCollapse: UIFieldClientComponent = () => {
+type Props = Parameters<UIFieldClientComponent>[0] & {
+  /**
+   * Skip forcing the accordion closed on mount when the form had already
+   * finished initializing at that moment - i.e. this instance mounted after
+   * the document's initial load, meaning it's a freshly added block rather
+   * than one already saved on the document. Used by block accordions so
+   * adding a block doesn't auto-hide it moments later; Pages/Posts never set
+   * this, so their existing "always force-collapse on mount" behavior is
+   * unchanged.
+   */
+  skipForcedCollapseIfFresh?: boolean
+}
+
+export const InformationTabEditAutoCollapse: UIFieldClientComponent = ({
+  skipForcedCollapseIfFresh = false,
+}: Props) => {
   const { isCollapsed, toggle } = useCollapsible()
   const modified = useFormModified()
   const processing = useFormProcessing()
+  const formInitializing = useFormInitializing()
   const markerRef = useRef<HTMLSpanElement>(null)
   const stateRef = useRef({ isCollapsed, toggle, modified, processing })
   const wasModifiedRef = useRef(modified)
@@ -20,10 +50,32 @@ export const InformationTabEditAutoCollapse: UIFieldClientComponent = () => {
 
   stateRef.current = { isCollapsed, toggle, modified, processing }
 
+  // Shared across effects (the tab-switch/native-toggle guard below and the
+  // block-row-header effect) rather than defined inside one of them - both
+  // need to nudge the same Save button the same way. Only ever reference
+  // markerRef.current at call time, not at definition time, so recreating
+  // these every render is safe even for an effect that captured an earlier
+  // render's copy.
+  const getNudgeTarget = () =>
+    markerRef.current
+      ?.closest<HTMLElement>(WRAPPER_SELECTOR)
+      ?.querySelector<HTMLElement>(NUDGE_TARGET_SELECTOR) ?? null
+
+  const clearNudge = () => getNudgeTarget()?.classList.remove(NUDGE_CLASS)
+
+  const nudge = () => {
+    const target = getNudgeTarget()
+    if (!target) return
+    target.classList.remove(NUDGE_CLASS)
+    void target.offsetWidth // force a reflow so the animation restarts
+    target.classList.add(NUDGE_CLASS)
+  }
+
   useEffect(() => {
     if (hasForcedInitialCollapseRef.current) return
     hasForcedInitialCollapseRef.current = true
     if (isCollapsed === false) {
+      if (skipForcedCollapseIfFresh && !formInitializing) return
       // Deferred rather than calling toggle() immediately: this fires
       // through the exact same animated open/close path a real click
       // does. Doing that synchronously at mount - right as Payload's own
@@ -52,30 +104,28 @@ export const InformationTabEditAutoCollapse: UIFieldClientComponent = () => {
       // animationend, so the class (and the flash) would otherwise be
       // stuck, ready to silently replay next time the button becomes
       // visible again.
-      markerRef.current
-        ?.closest<HTMLElement>(WRAPPER_SELECTOR)
-        ?.querySelector<HTMLElement>(NUDGE_TARGET_SELECTOR)
-        ?.classList.remove(NUDGE_CLASS)
+      clearNudge()
       stateRef.current.toggle()
     }
+    // clearNudge is recreated every render but only ever reads markerRef.current
+    // at call time, so an earlier render's copy behaves identically - see its
+    // own definition above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modified])
 
   useEffect(() => {
     const wrapper = markerRef.current?.closest<HTMLElement>(WRAPPER_SELECTOR)
     if (!wrapper) return
 
-    const getNudgeTarget = () => wrapper.querySelector<HTMLElement>(NUDGE_TARGET_SELECTOR)
-
-    const clearNudge = () => getNudgeTarget()?.classList.remove(NUDGE_CLASS)
     wrapper.addEventListener('animationend', clearNudge)
 
-    const nudge = () => {
-      const target = getNudgeTarget()
-      if (!target) return
-      target.classList.remove(NUDGE_CLASS)
-      void target.offsetWidth // force a reflow so the animation restarts
-      target.classList.add(NUDGE_CLASS)
-    }
+    // This accordion's own toggle-wrap, resolved once here rather than via
+    // e.target.closest() per click - see TOGGLE_WRAP_SELECTOR's own comment
+    // for why closest() would be wrong once the block's own fields (once
+    // "Edit" is open) contain some other collapsible, e.g. an array field's
+    // own rows. querySelector returns the first document-order match, which
+    // is this accordion's own header (rendered before its content).
+    const ownToggleWrap = wrapper.querySelector<HTMLElement>(TOGGLE_WRAP_SELECTOR)
 
     // A mouseleave/focusout means the mouse or focus in particular is
     // leaving - not that both have. Unsaved changes nudge immediately on
@@ -129,6 +179,23 @@ export const InformationTabEditAutoCollapse: UIFieldClientComponent = () => {
     // reaches the button, so stopping it here stops React from seeing it.
     const onDocumentClickCapture = (e: MouseEvent) => {
       if (!(e.target instanceof Element)) return
+
+      // Block closing this accordion (a "Done" click) while there's
+      // something unsaved - nudge Save instead of letting the click through
+      // to Payload's own native toggle button. Only when *this* accordion is
+      // open and about to close; opening is always fine.
+      if (
+        !stateRef.current.isCollapsed &&
+        stateRef.current.modified &&
+        ownToggleWrap?.contains(e.target)
+      ) {
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+        nudge()
+        return
+      }
+
       const tabButton = e.target.closest<HTMLElement>(TAB_BUTTON_SELECTOR)
       if (!tabButton || tabButton.classList.contains(TAB_BUTTON_ACTIVE_CLASS)) return
 
@@ -167,6 +234,9 @@ export const InformationTabEditAutoCollapse: UIFieldClientComponent = () => {
       if (focusOutTimeoutId !== undefined) clearTimeout(focusOutTimeoutId)
       clearNudge()
     }
+    // clearNudge/nudge are recreated every render but only ever read
+    // markerRef.current at call time - see their shared definition above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return <span ref={markerRef} style={{ display: 'none' }} />

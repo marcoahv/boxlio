@@ -1,5 +1,7 @@
 import type { Block } from 'payload'
 
+import { editAccordionField } from '@/fields/editAccordion'
+
 import { Hero as HeroConfig } from './Hero/config'
 import { FeatureGrid as FeatureGridConfig } from './FeatureGrid/config'
 import { CallToAction as CallToActionConfig } from './CallToAction/config'
@@ -17,22 +19,30 @@ import { Table } from './Table/Component'
  *
  * To add a block:
  *   1. create `src/blocks/<Name>/config.ts` and `src/blocks/<Name>/Component.tsx`
- *   2. add its config to `blockConfigs` and its component to `blockComponents`
+ *   2. add its config to `rawBlockConfigs` and its component to `blockComponents`
  *
- * Nothing else changes. `payload.config.ts` spreads `blockConfigs` into its
- * top-level `blocks`, `collections/Pages` picks them up via `blockSlugs`,
- * `RenderBlocks` dispatches through `blockComponents`, and the rich-text
- * converters derive from the same map.
+ * Nothing else changes. Every entry in `rawBlockConfigs` automatically gets
+ * its fields wrapped in the shared "Edit" accordion below (see
+ * `editAccordionField`) - a new block needs no extra wiring for that.
+ * `payload.config.ts` spreads `blockConfigs` into its top-level `blocks`,
+ * `collections/Pages` picks them up via `blockSlugs`, `RenderBlocks`
+ * dispatches through `blockComponents`, and the rich-text converters derive
+ * from the same map.
  */
 
-/** Payload block definitions. Registered globally, referenced by slug. */
-export const blockConfigs: Block[] = [
+const rawBlockConfigs: Block[] = [
   HeroConfig,
   FeatureGridConfig,
   CallToActionConfig,
   RichTextBlockConfig,
   TableConfig,
 ]
+
+/** Payload block definitions. Registered globally, referenced by slug. */
+export const blockConfigs: Block[] = rawBlockConfigs.map((block) => ({
+  ...block,
+  fields: editAccordionField(block.fields),
+}))
 
 /**
  * Maps a block's `slug` to the component that renders it. Keys MUST match the

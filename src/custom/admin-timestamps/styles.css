@@ -34,20 +34,157 @@
   font-size: 1.25rem;
 }
 
-/* Brand the same "Edit" collapsible with the frontend's secondary color
-   instead of Payload's default neutral border, so the open/hover states read
-   as intentional rather than Payload's stock elevation gray. The admin panel
-   doesn't import the frontend token stylesheet (src/app/(frontend)/styles/
-   base/_base-tokens.css is only loaded from (frontend)/layout.tsx), so the
-   var() calls carry literal fallbacks matching those tokens. Hover is
-   declared after the open rule so it wins on equal specificity and overrides
-   the open border color while the pointer is over it, matching Payload's own
-   default hover-overrides-base pattern for collapsibles. */
+/* Brand the Information tab's "Edit" collapsible with the frontend's
+   secondary color instead of Payload's default neutral border, so the
+   open/hover states read as intentional rather than Payload's stock
+   elevation gray. The admin panel doesn't import the frontend token
+   stylesheet (src/app/(frontend)/styles/base/_base-tokens.css is only
+   loaded from (frontend)/layout.tsx), so the var() calls carry literal
+   fallbacks matching those tokens. Hover is declared after the open rule so
+   it wins on equal specificity and overrides the open border color while
+   the pointer is over it, matching Payload's own default hover-overrides-
+   base pattern for collapsibles.
 
-.info-tab-edit-collapsible .collapsible:not(.collapsible--collapsed) {
+   :not(.block-edit-collapsible) excludes every block's own "Edit" accordion
+   (src/fields/editAccordion.ts reuses this same info-tab-edit-collapsible
+   class for its behavior, but also adds block-edit-collapsible) - blocks
+   carry the color on their own outer row instead, below. */
+
+.info-tab-edit-collapsible:not(.block-edit-collapsible) .collapsible:not(.collapsible--collapsed) {
   border-color: var(--color-secondary-dark, #137c95);
 }
 
-.info-tab-edit-collapsible .collapsible:hover {
+.info-tab-edit-collapsible:not(.block-edit-collapsible) .collapsible:hover {
   border-color: var(--color-secondary, #49b7d2);
+}
+
+/* Hide the border on a block's own nested "Edit" accordion entirely - the
+   block's outer row already carries the branded border (below), so a second
+   border immediately inside it (Payload's plain default, since the rule
+   above excludes it) is just visual noise. `> .collapsible` is the direct
+   child that actually carries the border (see the :has() comment below for
+   why - `.block-edit-collapsible` is the field wrapper, not the same
+   element). `!important` + border-color (not `border: none`, which would
+   also zero out border-width and shift layout) guarantees this beats
+   Payload's own default/hover border-color rules regardless of stylesheet
+   load order between this file and @payloadcms/ui's own. */
+
+.block-edit-collapsible > .collapsible {
+  border-color: transparent !important;
+}
+
+/* Eliminate the padding *outside* the "Edit" accordion - the block's outer
+   row has its own .collapsible__content wrapper (@payloadcms/ui's default:
+   padding: var(--base), same primitive every Collapsible uses) around
+   whatever it contains, which today is just our sole "Edit" field. That
+   padding is what leaves visible space between the block's own header above
+   and "Edit" below it, and around Edit's left/right/bottom. The padding
+   *inside* Edit's own header strip (.collapsible__toggle-wrap) is left at
+   Payload's default, per request.
+
+   .collapsible__content is NOT a direct child of .collapsible here - it's
+   three levels deeper, through AnimateHeight's own two wrapper divs
+   (elements/AnimateHeight/index.js: an outer "rah-static" div, then an
+   unstyled display-toggling div, then the .collapsible__content Collapsible.js
+   actually passes as `children`) - an earlier version of this rule used `>`
+   and silently never matched anything. A plain descendant combinator is
+   correct here, but on its own would also reach the *nested*
+   .collapsible__content several levels further down that belongs to "Edit"
+   itself (the padding around the block's actual fields once open, which
+   must stay) - :not() with a full descendant-selector argument (valid,
+   well-supported by 2026) excludes exactly that one. */
+
+.blocks-field__row.collapsible .collapsible__content:not(.block-edit-collapsible .collapsible__content),
+.LexicalEditorTheme__block__row.collapsible .collapsible__content:not(.block-edit-collapsible .collapsible__content) {
+  padding: 0;
+}
+
+/* Brand a block's own outer row with the same secondary color, but only when
+   it's the "selected" one or hovered - matching the Information tab's
+   pattern, not an always-on color. At rest (not selected, not hovered) this
+   declares no override at all, so it stays Payload's own plain default
+   border. Since the outer row no longer collapses (below), there's no
+   isCollapsed of its own left to key off; "selected" here means its nested
+   "Edit" accordion (block-edit-collapsible) is open. :has() is
+   well-supported by 2026 and needs no fallback for this admin-only surface.
+   Covers both places a block can render: the classic `blocks`-type field
+   (Pages.blocks, the two blog-only blocks) and a block embedded in a Post
+   body via Lexical's BlocksFeature - both reuse @payloadcms/ui's Collapsible
+   element under a different baseClass (`blocks-field` vs. richtext-lexical's
+   default theme class `LexicalEditorTheme__block`), confirmed by reading
+   each package's installed source.
+
+   `.block-edit-collapsible` (admin.className) lands on the *field*
+   wrapper div Payload's collapsible-field component renders
+   (@payloadcms/ui/dist/fields/Collapsible/index.js) - a different, outer
+   element from the one carrying `.collapsible`/`.collapsible--collapsed`
+   (its child, the raw Collapsible UI primitive). `.block-edit-collapsible
+   :not(.collapsible--collapsed)` as one compound selector was wrong: that
+   class never appears on the wrapper itself, so :not() was vacuously always
+   true and this rule matched unconditionally. `>` (direct child) finds the
+   real state-bearing element and also prevents this from firing off some
+   unrelated nested collapsible deeper in the block's own fields (e.g. an
+   expanded array row) - only the "Edit" accordion's own collapsed state
+   counts.
+
+   No hover color on the outer row - only "selected" (Edit open) changes its
+   border. (Step 18 briefly removed the hover rule this same way, thinking
+   "hide the hover color effect" meant this border - that request actually
+   meant the header's *background* tint instead, see below, so it was
+   reverted then. This is a separate, later, explicit request: only
+   expanded, never hover, for this border specifically.) */
+
+.blocks-field__row.collapsible:has(.block-edit-collapsible > .collapsible:not(.collapsible--collapsed)),
+.LexicalEditorTheme__block__row.collapsible:has(.block-edit-collapsible > .collapsible:not(.collapsible--collapsed)) {
+  border-color: var(--color-secondary, #49b7d2);
+}
+
+/* Remove a block's ability to collapse at the outer-row level - only its
+   nested "Edit" accordion should open/close (see current-feature.md). Hiding
+   these controls is safe rather than fighting Payload's collapse state:
+   the row's content is always in the DOM regardless of collapsed state (only
+   height-animated), and both a freshly-added classic block and every
+   Lexical-embedded block already default to expanded, so nothing gets
+   stranded collapsed with no way to reopen it. The toggle selector uses a
+   direct-child combinator so it never matches the nested "Edit" accordion's
+   own toggle, several levels deeper in the same row's subtree. "Show All"
+   stays available - re-expanding is harmless, only "Collapse All" is hidden. */
+
+.blocks-field__row.collapsible > .collapsible__toggle-wrap > .collapsible__toggle,
+.LexicalEditorTheme__block__row.collapsible > .collapsible__toggle-wrap > .collapsible__toggle {
+  display: none;
+}
+
+.blocks-field__header-actions li:first-child {
+  display: none;
+}
+
+/* The chevron in the block's own header (.collapsible__actions-wrap >
+   .collapsible__indicator) is purely decorative now - it reflects the outer
+   row's own isCollapsed, which is permanently false since it can no longer
+   collapse, so it would always point "up" regardless of whether "Edit" is
+   actually open or closed. Hide it rather than leave a stale, misleading
+   signal. Direct-child chain all the way down (toggle-wrap > actions-wrap >
+   indicator are true direct children of one another and of .collapsible -
+   this path never goes through AnimateHeight, unlike .collapsible__content
+   above, so `>` is correct here). */
+
+.blocks-field__row.collapsible > .collapsible__toggle-wrap > .collapsible__actions-wrap > .collapsible__indicator,
+.LexicalEditorTheme__block__row.collapsible > .collapsible__toggle-wrap > .collapsible__actions-wrap > .collapsible__indicator {
+  display: none;
+}
+
+
+/* Hide the header's own background-color hover tint (@payloadcms/ui default:
+   var(--theme-elevation-50) at rest, var(--theme-elevation-100) on hover -
+   elements/Collapsible/index.scss's &__toggle-wrap rules), per request -
+   repeats the resting value on :hover so nothing visibly changes, rather
+   than trying to "unset" it back to a transparent/inherited value that might
+   not actually match the resting background. Direct child of .collapsible,
+   like the toggle/indicator rules above - this path doesn't go through
+   AnimateHeight either. */
+
+.blocks-field__row.collapsible > .collapsible__toggle-wrap:hover,
+.LexicalEditorTheme__block__row.collapsible > .collapsible__toggle-wrap:hover {
+  background: var(--theme-elevation-50);
 }

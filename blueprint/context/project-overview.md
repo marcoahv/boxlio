@@ -1,6 +1,6 @@
 # Boxlio - Project Overview
 
-<!-- blueprint:source-hash 48cacbfee3690524145691f429a338c6b25bc8b6d662caa04cea191bdbc4695d -->
+<!-- blueprint:source-hash 253b102c3b9c534b8e673bbc31bddb4415bd0a5400678ca4e4991f17a3a1d6a2 -->
 
 > A reusable Payload CMS + Next.js template, kept as a template repository and
 > cloned fresh for each new site, rather than shipped as one specific product.
@@ -17,9 +17,8 @@ Payload install.
 
 - **The template maintainer** - clones this repo per new site and extends it.
 - **A given site's content editors** - use the Payload admin to manage pages,
-  posts, and site-wide settings. A planned admin/editor role split (feature
-  24, not yet built) will restrict some site-wide controls, e.g. branding, to
-  admins only.
+  posts, and site-wide settings. Today every authenticated admin user has full
+  write access; no role split exists yet (see Open questions).
 - **A given site's visitors** - the public frontend.
 
 Not an end-user-facing product on its own; "users" of any one deployment are
@@ -93,19 +92,31 @@ the two roles above.
     site's primary and secondary brand colors and their light/dark shades,
     wired via the same field -> runtime CSS custom property pattern as
     feature 13's corner radius control.
-22. **Settings typography/spacing tab** (next) - editor-controlled Settings
-    tab for site-wide typography (font family, heading scale) and/or spacing
-    (container width), extending the Corners/Shadows/Colors pattern.
-23. **Admin nav grouping & Settings-driven logo** (next) - group the admin
-    nav (e.g. content vs. site-identity globals) and replace the default
-    Payload admin logo/icon with one rendered from the already-uploaded
-    `Settings.icon`, so a cloned site's admin panel reflects its brand
-    without a separate admin-only asset upload.
-24. **Role-based access control** (next) - add a `roles` field to `Users`
-    (e.g. admin/editor) plus per-collection/global access functions and
-    field-level conditions (e.g. restricting the Settings Colors tab to
-    admins), replacing today's single-role "any authenticated user can edit
-    everything" model.
+22. **Settings typography/spacing tab** (shipped) - editor-controlled
+    Typography tab (heading/body font, heading scale) and Whitespace tab
+    (per-section width/spacing: Header, Hero, Sections, Rich Text), extending
+    the Corners/Shadows/Colors field -> token pattern.
+23. **Admin nav grouping & Settings-driven logo** (shipped) - collections/
+    globals grouped via `admin.group` (`Content` vs. `Site Identity`), and the
+    admin panel's own logo/icon rendered from `Settings.icon` instead of
+    Payload's default, via `src/custom/admin-branding/`.
+25. **Main heading size override** (shipped) - a Typography-tab field
+    (`mainHeadingSize`: Default/Display/Large Display) that scales just the
+    site's page-level `<h1>` elements (Hero heading, Post title) beyond the
+    normal Heading Scale range.
+26. **Rename the project to Boxlio** (shipped) - rebranded the template's own
+    identity (`package.json` name, default site name, docs) from "Site
+    Builder"/`payload-builder` to "Boxlio".
+27. **Shared "Edit" accordion for blocks** (next) - extend the Information
+    tab's custom Edit-accordion behavior (auto-collapse, unsaved-change
+    nudge, blocked tab-switch, in-accordion Save button, secondary-color
+    border) to every page-builder block via a shared field factory, applied
+    automatically to every registered block and explicitly to the two
+    blog-only blocks, so future blocks get it by construction.
+
+> `build-plan.md`'s own numbering has no item 24 - it jumps from 23 straight
+> to 25. Kept as-is here (not renumbered) so feature references stay
+> consistent with the tracked checklist; see Open questions.
 
 ## Data model
 
@@ -159,13 +170,12 @@ the two roles above.
 
 - `name` (text, required)
 - Payload auth (email/password) - currently the only access-control gate in
-  the project; every authenticated user has full write access
-- `roles` (select, planned - feature 24, not yet built) - will introduce an
-  admin/editor distinction, backing per-collection/global access functions
-  and field-level conditions
+  the project; every authenticated user has full write access (see Open
+  questions re: a possible future role split)
 
 ### Header (global, `header`)
 
+- Admin nav group: `Site Identity`
 - Appearance: `surface`, `width`, `position` (fixed/static), `height`
   (compact/normal/tall), `transparentAtTop` (checkbox), `showThemeToggle`
   (checkbox, default true - hides the dark mode toggle control when off)
@@ -179,6 +189,7 @@ the two roles above.
 
 ### Footer (global, `footer`)
 
+- Admin nav group: `Site Identity`
 - Appearance: `surface`, `spacing`, `width` (the shared block appearance
   field)
 - `navLinks` (array, up to 6) - `link` (relationship -> Pages, required),
@@ -187,28 +198,33 @@ the two roles above.
 
 ### Settings (global, `settings`)
 
+- Admin nav group: `Site Identity`
 - **Information tab** - `siteName` (text, required, default "Boxlio"),
   `siteDescription` (textarea), `gtmCode` (text, Google Tag Manager),
   `icon`/`iconDark` (uploads -> Media, required/optional) - the browser-tab
-  favicon; `icon` is also planned to drive the admin panel's own logo
-  (feature 23, not yet built)
-- **Corner Radius tab** - `imageRadius`, `buttonRadius` (select:
-  none/sm/md/lg/xl)
+  favicon; `icon` also drives the admin panel's own logo/icon
+  (`src/custom/admin-branding/`)
+- **Corners tab** - `imageRadius`, `buttonRadius` (select: none/sm/md/lg/xl)
 - **Shadows tab** - `imageShadow`, `buttonShadow`, `cardShadow` (select:
   none/sm/md/lg)
-- **Site Colors tab** - `primary`/`secondary` groups, each with `base`/
-  `light`/`dark` hex-color fields (six tokens total: `--color-primary`/
-  `-light`/`-dark`, `--color-secondary`/`-light`/`-dark`)
-- **Typography/Spacing tab** (feature 22, not yet built) - planned font
-  family/heading-scale and/or container-width controls
+- **Colors tab** - `primary`/`secondary` groups, each with `base`/`light`/
+  `dark` hex-color fields (six tokens total: `--color-primary`/`-light`/
+  `-dark`, `--color-secondary`/`-light`/`-dark`)
+- **Typography tab** - `headingFont`/`bodyFont` (select: primary/secondary/
+  tertiary), `headingScale` (compact/default/large), `mainHeadingSize`
+  (default/display/display-lg - scales just page-level `<h1>`s)
+- **Whitespace tab** - per-section `width`/`spacing` groups: Header
+  (`headerWidth`/`headerHeight`), Hero (`heroWidth`/`heroSpacing`), Sections
+  (`containerScale`/`sectionScale`), Rich Text (`richTextWidth`/
+  `richTextSpacing`)
 
-> Lock: every Settings site-wide style control (radius, shadow, colors, and
-> the planned typography/spacing) follows the same pattern - a field on this
-> global, mirrored onto a `data-*` attribute (or inline custom property) on
-> `<html>` in `layout.tsx`, consumed by a CSS custom property in
+> Lock: every Settings site-wide style control (radius, shadow, colors,
+> typography, whitespace) follows the same pattern - a field on this global,
+> mirrored onto a `data-*` attribute (or inline custom property) on `<html>`
+> in `layout.tsx`, consumed by a CSS custom property in
 > `styles/base/_alias-tokens.css`, and kept in sync during live preview by
-> `SettingsLivePreviewSync.tsx`. Later style controls, including feature 22,
-> should extend this pattern, not invent a new one.
+> `SettingsLivePreviewSync.tsx`. Later style controls should extend this
+> pattern, not invent a new one.
 
 ### Blocks (embedded in `Pages.blocks` and `Posts.body`, via
 `src/blocks/registry.ts`)
@@ -231,12 +247,19 @@ Every block shares an `appearanceField()` (surface, spacing, width) plus:
 > contract - a new block must add its config + component there and nowhere
 > else. Later features should extend this list, not bypass it.
 
+> Planned (feature 27, not yet built): every block's own fields move inside a
+> nested "Edit" `collapsible` field, reusing the Information tab's custom
+> auto-collapse/nudge/save-button/border components - applied automatically
+> to every block in this registry, so a block added here needs no extra
+> wiring to get it.
+
 Blog-only blocks (`Pages.blogBlocks`, `src/collections/Pages/blogBlocks/`) are
 a **separate** registry, deliberately not merged into the shared one -
 `Featured Post` and `Blog Listing` need page-level query results (pagination,
 category filter) threaded in that the generic block dispatcher doesn't
 support, and merging them would make them embeddable in Post bodies and every
-other page.
+other page. They get feature 27's Edit accordion applied explicitly in their
+own config, not automatically.
 
 ## Tech stack
 
@@ -272,16 +295,23 @@ only semantic roles, never raw palette values, in block-level appearance
 controls), light/dark via `light-dark()` as the OS-driven default, and
 editor-controlled appearance so content editors pick semantic roles rather
 than colors or pixel values *at the block level*. Site-wide style controls
-(corner radius, shadows, and colors, with typography/spacing planned next)
-are the deliberate exception to that rule at the Settings level - see the
-Settings data model note above.
+(corner radius, shadows, colors, typography, whitespace) are the deliberate
+exception to that rule at the Settings level - see the Settings data model
+note above.
 
-Features 10-21 above have all shipped: the Phase 7 legacy port, the portable
-branding token system, corner radius/shadow/color controls, the manual dark
-mode toggle, and live preview across every editable document type. Next up:
-feature 22 (typography/spacing controls in Settings), feature 23 (admin nav
-grouping and a Settings-driven admin logo), and feature 24 (role-based access
-control distinguishing admin vs. editor).
+Admin-panel editing UX (not the public frontend) has its own emerging
+pattern: the Information tab's fields collapse behind a custom "Edit"
+accordion (auto-collapses when idle, nudges instead of losing unsaved work,
+in-accordion Save, secondary-color border) rather than Payload's plain
+default collapsible. Feature 27 (next) extends that exact pattern to every
+page-builder block.
+
+Every feature from 10 through 26 has shipped except the untracked 24 (see
+Open questions): the Phase 7 legacy port, the portable branding token system,
+corner radius/shadow/color/typography/whitespace controls, the manual dark
+mode toggle, live preview across every editable document type, admin nav
+grouping and branding, and the Boxlio rename. Next up: feature 27 (the shared
+block Edit accordion).
 
 - `/` and `/[slug]` - block-rendered pages (frontend)
 - `/blog` and `/blog/[slug]` - blog listing and detail pages
@@ -307,18 +337,26 @@ identity); `S3_API`/`S3_BUCKET`/`S3_ACCESS_KEY_ID`/`S3_SECRET_ACCESS_KEY`/
 > `project-plan.md` §3 and §7 still describe the project as mid-way through
 > the Phase 7 legacy port, with "new product features... deliberately on
 > hold until that styling-system work lands." `build-plan.md` now shows that
-> port, the token system, and thirteen further features (12-21: button
-> variants, corner radius, shadows, dark mode, live preview across every
-> global, blog content blocks, site colors) already shipped, plus three new
-> features just queued (22 typography/spacing, 23 admin nav/logo, 24
-> role-based access control). Update `project-plan.md` §3/§7's status
-> narrative to match current reality, or confirm the "on hold" framing no
-> longer applies, then re-run `/overview`.
+> port, the token system, and every feature through 26 (typography/
+> whitespace, admin nav/logo, main heading size, the Boxlio rename) already
+> shipped except the untracked 24, plus one new feature just queued (27, the
+> block Edit accordion). Update `project-plan.md` §3/§7's status narrative to
+> match current reality, or confirm the "on hold" framing no longer applies,
+> then re-run `/overview`.
+
+> `project-plan.md` §2 references "a role distinction (admin vs. editor) ...
+> build plan item 24," but `build-plan.md` has no item 24 - its numbering
+> jumps from 23 straight to 25, and `Users` has no `roles` field. Either
+> role-based access control was intentionally dropped and §2 should stop
+> referencing it, or it still belongs on the plan and should be re-added
+> under a current item number. This overview no longer describes it as
+> planned; confirm which is correct and update `project-plan.md` §2
+> accordingly.
 
 > `project-plan.md` §4 still lists only `siteName`/`siteDescription`/
-> `gtmCode` on `settings` and doesn't mention the `footer` global, the
-> Settings icon/corner-radius/shadow/color fields, or the planned `roles`
-> field on `users` (feature 24). The Data model section above reflects the
-> actual current and planned schema, derived from build-plan.md's feature
-> descriptions and the repository. Consider folding this detail back into
-> `project-plan.md` §4 so the two plans stay in sync.
+> `gtmCode` on `settings` and doesn't mention `footer`, the Settings icon/
+> corner-radius/shadow/color/typography/whitespace fields, or admin nav
+> grouping/branding. The Data model section above reflects the actual
+> current schema, derived from `build-plan.md`'s feature descriptions and the
+> repository. Consider folding this detail back into `project-plan.md` §4 so
+> the two plans stay in sync.
