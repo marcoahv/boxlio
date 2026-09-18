@@ -7,6 +7,7 @@ import {
   useFormProcessing,
 } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
+import { LIVE_PREVIEW_IFRAME_ID } from '@/utilities/postToLivePreviewIframe'
 
 const WRAPPER_SELECTOR = '.info-tab-edit-collapsible'
 const NUDGE_TARGET_SELECTOR = '.information-tab-save'
@@ -22,6 +23,17 @@ const TAB_BUTTON_ACTIVE_CLASS = 'tabs-field__tab-button--active'
 // click, which is wrong once the block's own fields contain something else
 // collapsible.
 const TOGGLE_WRAP_SELECTOR = '.collapsible__toggle-wrap'
+
+/**
+ * Editing a block's text directly in the Live Preview iframe is still editing
+ * *this* accordion's fields, but it doesn't look like it from out here: focus
+ * inside a child frame surfaces in this document as the `<iframe>` element
+ * itself, which of course isn't inside the accordion, and reaching the
+ * preview means the mouse leaves the sidebar. Both would otherwise read as
+ * "the editor is done here" and collapse the accordion out from under them -
+ * see BlockFieldSync for the other half of this preview/sidebar pairing.
+ */
+const isLivePreviewFocused = () => document.activeElement?.id === LIVE_PREVIEW_IFRAME_ID
 
 type Props = Parameters<UIFieldClientComponent>[0] & {
   /**
@@ -149,6 +161,7 @@ export const InformationTabEditAutoCollapse: UIFieldClientComponent = ({
         return
       }
       if (wrapper.matches(':hover') || wrapper.contains(document.activeElement)) return
+      if (isLivePreviewFocused()) return
       clearNudge()
       flip()
     }

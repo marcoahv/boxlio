@@ -1,7 +1,7 @@
 import { getServerSideURL } from './getUrl'
 import type { BlockSyncMessage } from './blockSyncMessages'
 
-const LIVE_PREVIEW_IFRAME_ID = 'live-preview-iframe'
+export const LIVE_PREVIEW_IFRAME_ID = 'live-preview-iframe'
 
 /**
  * Posts a block-sync message into Payload's built-in Live Preview iframe

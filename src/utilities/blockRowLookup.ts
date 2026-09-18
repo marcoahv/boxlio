@@ -34,6 +34,24 @@ export function findRowElementForBlockId(
   return undefined
 }
 
+/**
+ * The row wrappers a field at `fullPath` sits inside, outermost first. Every
+ * numeric segment of the path is one repeatable row, and Payload ids each by
+ * the same convention this module already relies on - so
+ * `blocks.2.features.0.title` yields `blocks-row-2` then
+ * `blocks-2-features-row-0`. Unlike the field element itself, these render
+ * whether or not their contents have ever been expanded, which is what lets
+ * `BlockFieldSync` open its way inward to a field that isn't in the DOM yet.
+ */
+export function rowElementIdsAlongPath(fullPath: string): string[] {
+  const parts = fullPath.split('.')
+  const ids: string[] = []
+  parts.forEach((part, i) => {
+    if (/^\d+$/.test(part)) ids.push(`${parts.slice(0, i).join('-')}-row-${part}`)
+  })
+  return ids
+}
+
 /** Splits a row element's own `id` (`${fieldName}-row-${rowIndex}`) apart. */
 export function parseRowId(rowEl: Element): { fieldName: string; rowIndex: string } | undefined {
   const match = rowEl.id.match(ROW_ID_PATTERN)
