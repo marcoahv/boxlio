@@ -4,6 +4,7 @@ import { CardContainer } from '@/components/CardContainer'
 import { CategoryFilter } from '@/components/CategoryFilter'
 import { Pagination, SearchParamsProps } from '@/components/Pagination'
 import { Section, Container, Heading, Stack } from '@/components/primitives'
+import { useEditableField } from '@/utilities/useEditableField'
 import type { BlogListingBlock, Category, Post } from '@/payload-types'
 
 /**
@@ -23,6 +24,7 @@ export function BlogListing(
   },
 ) {
   const {
+    id,
     surface,
     heading,
     categories,
@@ -31,6 +33,11 @@ export function BlogListing(
     categoryParam,
     searchParams,
   } = props
+  const headingField = useEditableField({
+    blockId: id,
+    fieldPath: 'heading',
+    value: heading || 'More Posts',
+  })
 
   if (blogs.docs.length === 0) return null
 
@@ -38,7 +45,7 @@ export function BlogListing(
     <Section surface={surface ?? 'muted'}>
       <Container>
         <Stack gap="lg">
-          <Heading>{heading || 'More Posts'}</Heading>
+          <Heading {...headingField.fieldProps}>{headingField.content}</Heading>
           <CategoryFilter categories={categories.docs} currentCategory={categoryParam} />
           <CardContainer>
             {blogs.docs

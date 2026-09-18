@@ -217,3 +217,23 @@ cleaned-up checkbox version before generating the project overview.
   postMessage bridge alongside the existing `useScopedLivePreview` hook.
   Scoped to Pages' top-level block fields; Posts' Lexical-embedded blocks
   are a separate future feature
+- [x] 29a. **Inline text editing in the live preview iframe (Pages blocks)** -
+  click a plain text/textarea element rendered inside a Page's `blocks`/
+  `blogBlocks` (Hero heading/subheading, FeatureGrid item text, CallToAction
+  heading/button label, etc.) to edit it directly in the preview iframe.
+  Adds a reverse (iframe -> admin) postMessage channel alongside feature
+  28's existing admin -> iframe bridge, keyed by field path; edits write
+  live into the matching admin form field as you type, so the existing
+  unsaved-changes/Save flow (including the block's "Edit" accordion Save)
+  picks them up unchanged. Lexical rich text (`RichTextBlock`'s body, Post
+  body) stays excluded, not inline-editable. Posts stay out of scope
+  entirely, same exclusion as feature 28
+- [ ] 29b. **Extend inline text editing to Header/Footer/Settings** - same
+  marker + bridge from 29a, applied to each global's own plain text fields
+  (Header's nav-link labels and CTA button labels, Footer's nav-link
+  labels, Settings' site name). Scoped to fields owned by whichever
+  document is currently open in the admin - a borrowed cross-document
+  field rendered in place (e.g. Footer's copy of `Settings.siteName`, or
+  Header's logo) stays read-only there, since editing it would require a
+  different document's form to be mounted; it only becomes editable when
+  its owning document is the one open

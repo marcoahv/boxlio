@@ -3,18 +3,7 @@ import { useEffect } from 'react'
 import { useForm } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { postToLivePreviewIframe } from '@/utilities/postToLivePreviewIframe'
-
-// Payload's own BlocksField/BlockRow renders this exact, deterministic id on
-// every row's outer wrapper - `${parentPath.split('.').join('-')}-row-${index}`
-// - unconditionally, regardless of whether that row is collapsed or still
-// lazily loading its own fields. A component nested *inside* a block's own
-// fields (our original approach) doesn't share that guarantee: Payload can
-// defer rendering a collapsed row's real field components until it's been
-// expanded at least once, which silently broke hover for any block no one
-// had opened yet. Delegating from the document and matching this row id
-// instead means there's nothing to mount per-block at all.
-const ROW_SELECTOR = '[id^="blocks-row-"], [id^="blogBlocks-row-"]'
-const ROW_ID_PATTERN = /^(blocks|blogBlocks)-row-(\d+)$/
+import { ROW_SELECTOR, resolveBlockId as resolveBlockIdFromRow } from '@/utilities/blockRowLookup'
 
 // The nested "Edit" accordion's own toggled element (editAccordion.ts's
 // `block-edit-collapsible` on the field wrapper, `.collapsible` on the raw
@@ -40,12 +29,7 @@ export const BlockHoverSync: UIFieldClientComponent = () => {
   const { getField } = useForm()
 
   useEffect(() => {
-    const resolveBlockId = (rowEl: Element) => {
-      const match = rowEl.id.match(ROW_ID_PATTERN)
-      if (!match) return undefined
-      const [, fieldName, rowIndex] = match
-      return getField(`${fieldName}.${rowIndex}.id`)?.value as string | undefined
-    }
+    const resolveBlockId = (rowEl: Element) => resolveBlockIdFromRow(rowEl, getField)
 
     let hoveredRowId: string | null = null
 

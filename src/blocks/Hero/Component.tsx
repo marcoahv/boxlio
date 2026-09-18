@@ -7,6 +7,7 @@ import {
 } from '@/components/primitives'
 import { MediaImage } from '@/components/MediaImage'
 import { isDoc } from '@/utilities/isDoc'
+import { useEditableField } from '@/utilities/useEditableField'
 import type { HeroBlock, Media } from '@/payload-types'
 
 /**
@@ -19,6 +20,7 @@ import type { HeroBlock, Media } from '@/payload-types'
  */
 export function Hero(props: HeroBlock) {
   const {
+    id,
     surface,
     heading,
     subheading,
@@ -29,6 +31,13 @@ export function Hero(props: HeroBlock) {
     overlayOpacity,
     links,
   } = props
+  const headingField = useEditableField({ blockId: id, fieldPath: 'heading', value: heading })
+  const subheadingField = useEditableField({
+    blockId: id,
+    fieldPath: 'subheading',
+    value: subheading ?? '',
+    multiline: true,
+  })
   const isBackgroundImage = layout === 'backgroundImage'
   const hasImage =
     layout !== 'textOnly' && !isBackgroundImage && isDoc<Media>(image)
@@ -112,10 +121,12 @@ export function Hero(props: HeroBlock) {
             .join(' ')}
         >
           <Stack gap="md" className="flex-1">
-            <Heading level={1}>{heading}</Heading>
-            {subheading && (
-              <p className="ui-paragraph max-w-[60ch]">
-                {subheading}
+            <Heading level={1} {...headingField.fieldProps}>
+              {headingField.content}
+            </Heading>
+            {(subheading || subheadingField.isEditable) && (
+              <p className="ui-paragraph max-w-[60ch] whitespace-pre-wrap" {...subheadingField.fieldProps}>
+                {subheadingField.content}
               </p>
             )}
 

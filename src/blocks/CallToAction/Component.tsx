@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Section, Container, Stack, Heading } from '@/components/primitives'
+import { useEditableField } from '@/utilities/useEditableField'
 import type { CallToActionBlock } from '@/payload-types'
 
 /**
@@ -8,19 +9,35 @@ import type { CallToActionBlock } from '@/payload-types'
  * that stays legible after any palette change.
  */
 export function CallToAction(props: CallToActionBlock) {
-  const { surface, heading, body, align, links } = props
+  const { id, surface, heading, body, align, links } = props
   const centered = align !== 'left'
+  const headingField = useEditableField({ blockId: id, fieldPath: 'heading', value: heading })
+  const bodyField = useEditableField({
+    blockId: id,
+    fieldPath: 'body',
+    value: body ?? '',
+    multiline: true,
+  })
 
   return (
     <Section surface={surface ?? 'inverse'} spacing="tight">
       <Container width="narrow">
         <Stack gap="md" align={centered ? 'center' : 'start'}>
-          <Heading level={2} className={centered ? 'text-center' : undefined}>
-            {heading}
+          <Heading
+            level={2}
+            className={centered ? 'text-center' : undefined}
+            {...headingField.fieldProps}
+          >
+            {headingField.content}
           </Heading>
 
-          {body && (
-            <p className={`ui-paragraph max-w-[60ch] ${centered ? 'text-center' : ''}`}>{body}</p>
+          {(body || bodyField.isEditable) && (
+            <p
+              className={`ui-paragraph max-w-[60ch] whitespace-pre-wrap ${centered ? 'text-center' : ''}`}
+              {...bodyField.fieldProps}
+            >
+              {bodyField.content}
+            </p>
           )}
 
           {links?.length > 0 && (

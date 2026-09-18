@@ -34,3 +34,24 @@
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
   pointer-events: none;
 }
+
+/* Inline text editing (src/utilities/useEditableField.ts). Only ever
+   present when a field is genuinely editable (see the hook's own gating
+   rule), so this never shows for a real visitor. A plain outline on the
+   text element itself, not the block-level ::after overlay technique above
+   - there's no opaque later-painted sibling here to cover it, so it doesn't
+   need one. Distinct from .block-sync-highlight (which marks a whole
+   hovered/selected block) so an editor can tell "this whole block" apart
+   from "this one piece of text is what's click-to-edit". */
+[data-editable-field] {
+  cursor: text;
+  border-radius: 2px;
+  outline: 1px dashed transparent;
+  outline-offset: 4px;
+  transition: outline-color 120ms ease;
+}
+
+[data-editable-field]:hover,
+[data-editable-field]:focus {
+  outline-color: #3b82f6;
+}

@@ -1,6 +1,6 @@
 # Boxlio - Project Overview
 
-<!-- blueprint:source-hash 078e8079578429203e3540464fad5face724f7b666a8448c47d298a9ff7cdaeb -->
+<!-- blueprint:source-hash ed0dfb3c6b6922c8a0096f806a393d3eda364bb69cad887356d76f239805f3f1 -->
 
 > A reusable Payload CMS + Next.js template, kept as a template repository and
 > cloned fresh for each new site, rather than shipped as one specific product.
@@ -107,12 +107,26 @@ the two roles above.
 26. **Rename the project to Boxlio** (shipped) - rebranded the template's own
     identity (`package.json` name, default site name, docs) from "Site
     Builder"/`payload-builder` to "Boxlio".
-27. **Shared "Edit" accordion for blocks** (next) - extend the Information
-    tab's custom Edit-accordion behavior (auto-collapse, unsaved-change
-    nudge, blocked tab-switch, in-accordion Save button, secondary-color
-    border) to every page-builder block via a shared field factory, applied
-    automatically to every registered block and explicitly to the two
-    blog-only blocks, so future blocks get it by construction.
+27. **Shared "Edit" accordion for blocks** (shipped) - every page-builder
+    block's own fields move inside a nested "Edit" `collapsible`
+    (`src/fields/editAccordion.ts`), reusing the Information tab's custom
+    auto-collapse/nudge/save/border behavior, applied automatically to
+    every registry block and explicitly to the two blog-only blocks.
+28. **Editor-to-preview block sync** (shipped) - hovering a block row in the
+    Pages editor highlights the matching element in the live preview iframe;
+    expanding a block's "Edit" accordion selects it and scrolls the preview
+    to it. A `data-block-id` marker on each rendered block plus an admin ->
+    iframe `postMessage` bridge (`src/custom/block-hover-sync/`,
+    `src/utilities/blockSyncMessages.ts`/`useBlockSyncListener.ts`/
+    `postToLivePreviewIframe.ts`) carry the signal. Scoped to Pages' block
+    fields; Posts' Lexical-embedded blocks don't render the marker.
+29. **Inline text editing in the live preview iframe** (next, split into
+    29a/29b) - click a plain text/textarea element rendered in the preview
+    to edit it in place, flowing the change back into the matching admin
+    form field live via a new reverse (iframe -> admin) channel on the same
+    bridge. 29a covers Pages' block text fields; 29b extends it to
+    Header/Footer/Settings' own text fields. Rich text bodies and Posts stay
+    out of scope for both.
 
 > `build-plan.md`'s own numbering has no item 24 - it jumps from 23 straight
 > to 25. Kept as-is here (not renumbered) so feature references stay
@@ -247,19 +261,22 @@ Every block shares an `appearanceField()` (surface, spacing, width) plus:
 > contract - a new block must add its config + component there and nowhere
 > else. Later features should extend this list, not bypass it.
 
-> Planned (feature 27, not yet built): every block's own fields move inside a
-> nested "Edit" `collapsible` field, reusing the Information tab's custom
-> auto-collapse/nudge/save-button/border components - applied automatically
-> to every block in this registry, so a block added here needs no extra
-> wiring to get it.
+> Lock: every block's own fields live inside the nested "Edit"
+> `collapsible` from `src/fields/editAccordion.ts` (feature 27), and every
+> rendered block carries a `data-block-id` (feature 28) targeted by the
+> admin -> iframe `postMessage` bridge (`src/custom/block-hover-sync/`,
+> `src/utilities/blockSyncMessages.ts`/`useBlockSyncListener.ts`/
+> `postToLivePreviewIframe.ts`). Feature 29a adds a reverse (iframe ->
+> admin) channel on the same marker, keyed by field path - extend this
+> bridge, don't build a parallel one.
 
 Blog-only blocks (`Pages.blogBlocks`, `src/collections/Pages/blogBlocks/`) are
 a **separate** registry, deliberately not merged into the shared one -
 `Featured Post` and `Blog Listing` need page-level query results (pagination,
 category filter) threaded in that the generic block dispatcher doesn't
 support, and merging them would make them embeddable in Post bodies and every
-other page. They get feature 27's Edit accordion applied explicitly in their
-own config, not automatically.
+other page. They get feature 27's Edit accordion and feature 28's block-sync
+marker applied explicitly in their own config, not automatically.
 
 ## Tech stack
 
@@ -281,7 +298,9 @@ own config, not automatically.
 - **`@payloadcms/live-preview-react`** - client-side live preview for Pages,
   Posts, and the Header/Footer/Settings globals; merges unsaved editor
   changes into the rendered page via `postMessage`, no drafts/versions
-  required
+  required. A second, project-authored `postMessage` bridge layers on top
+  for editor-to-preview block sync (28) and, once 29a/29b land, inline
+  text editing back into the admin form.
 
 ## Monetization
 
@@ -303,15 +322,15 @@ Admin-panel editing UX (not the public frontend) has its own emerging
 pattern: the Information tab's fields collapse behind a custom "Edit"
 accordion (auto-collapses when idle, nudges instead of losing unsaved work,
 in-accordion Save, secondary-color border) rather than Payload's plain
-default collapsible. Feature 27 (next) extends that exact pattern to every
-page-builder block.
+default collapsible - now extended to every page-builder block (27). On top
+of that, the live preview pane has gained a second, editor-authored
+`postMessage` layer: hovering or selecting a block highlights and scrolls to
+it in the preview (28, shipped). Next in that direction: making the preview
+edit-capable the other way - click text in the iframe to edit it in place,
+flowing the change back into the admin form live (29a/29b, next).
 
-Every feature from 10 through 26 has shipped except the untracked 24 (see
-Open questions): the Phase 7 legacy port, the portable branding token system,
-corner radius/shadow/color/typography/whitespace controls, the manual dark
-mode toggle, live preview across every editable document type, admin nav
-grouping and branding, and the Boxlio rename. Next up: feature 27 (the shared
-block Edit accordion).
+Every feature from 10 through 28 has shipped except the untracked 24 (see
+Open questions).
 
 - `/` and `/[slug]` - block-rendered pages (frontend)
 - `/blog` and `/blog/[slug]` - blog listing and detail pages
@@ -337,12 +356,10 @@ identity); `S3_API`/`S3_BUCKET`/`S3_ACCESS_KEY_ID`/`S3_SECRET_ACCESS_KEY`/
 > `project-plan.md` §3 and §7 still describe the project as mid-way through
 > the Phase 7 legacy port, with "new product features... deliberately on
 > hold until that styling-system work lands." `build-plan.md` now shows that
-> port, the token system, and every feature through 26 (typography/
-> whitespace, admin nav/logo, main heading size, the Boxlio rename) already
-> shipped except the untracked 24, plus one new feature just queued (27, the
-> block Edit accordion). Update `project-plan.md` §3/§7's status narrative to
-> match current reality, or confirm the "on hold" framing no longer applies,
-> then re-run `/overview`.
+> port and every feature through 28 already shipped except the untracked 24,
+> plus two new features just queued (29a/29b, inline text editing). Update
+> `project-plan.md` §3/§7's status narrative to match current reality, or
+> confirm the "on hold" framing no longer applies, then re-run `/overview`.
 
 > `project-plan.md` §2 references "a role distinction (admin vs. editor) ...
 > build plan item 24," but `build-plan.md` has no item 24 - its numbering

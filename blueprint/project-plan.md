@@ -106,6 +106,12 @@ Page or Post in the admin panel shows unsaved changes rendered instantly, no
 save required. Header/Footer/Settings live preview is a deliberate later
 addition, not part of this pass.
 
+That preview pane is planned to become editable in the other direction too
+(build plan items 29a/29b): clicking a plain text element rendered in the
+preview iframe lets an editor type directly in place, with the edit flowing
+back into the matching admin form field live. Rich text bodies and Posts stay
+out of this - editing there remains sidebar-only.
+
 The next planned UI/UX work, after the Phase 7 port, is making the token
 system **portable across different project stacks**, not just this one.
 Concretely: consolidate the design tokens (colors, typography, spacing,

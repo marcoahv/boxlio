@@ -5,6 +5,8 @@ import { Blocks } from '@/blocks'
 import { getServerSideURL } from '@/utilities/getUrl'
 import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
 import { useBlockSyncListener } from '@/utilities/useBlockSyncListener'
+import { useIsLivePreviewActive } from '@/utilities/useIsLivePreviewActive'
+import { EditableFieldProvider } from '@/utilities/EditableFieldContext'
 import { FeaturedPost } from '@/collections/Pages/blogBlocks/FeaturedPost/Component'
 import { BlogListing } from '@/collections/Pages/blogBlocks/BlogListing/Component'
 import { SearchParamsProps } from '@/components/Pagination'
@@ -43,9 +45,10 @@ export function BlogPageClient({
     depth: 2,
   })
   useBlockSyncListener()
+  const isEditable = useIsLivePreviewActive({ type: 'collection', collectionSlug: 'pages' })
 
   return (
-    <>
+    <EditableFieldProvider value={isEditable}>
       <Blocks blocks={data.blocks} />
       {data.blogBlocks?.map((block, index) => {
         if (block.blockType === 'featuredPost') {
@@ -71,6 +74,6 @@ export function BlogPageClient({
         }
         return null
       })}
-    </>
+    </EditableFieldProvider>
   )
 }
