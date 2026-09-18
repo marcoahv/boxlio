@@ -12,12 +12,12 @@ import type { FeaturedPostBlock, Post } from '@/payload-types'
 export function FeaturedPost(
   props: FeaturedPostBlock & { heroPost: Post | null | undefined; featuredBlog: Post | null },
 ) {
-  const { surface, heroPost, featuredBlog } = props
+  const { id, surface, heroPost, featuredBlog } = props
 
   if (!isDoc<Post>(heroPost)) return null
 
   return (
-    <Section surface={surface}>
+    <Section blockId={id} surface={surface}>
       <Container>
         <Stack gap="md">
           <Heading>{featuredBlog ? 'Featured post' : 'Latest post'}</Heading>

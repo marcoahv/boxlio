@@ -29,6 +29,16 @@ export type SectionProps = {
    * hasBackgroundImage itself.
    */
   hasDarkOverlayText?: boolean
+  /**
+   * The rendered block's own id, published as `data-block-id` for the admin's
+   * hover/select and inline-edit sync (`useBlockSyncListener`,
+   * `useEditableField`). It rides on this element rather than a wrapper
+   * around it on purpose: an extra element between <main>'s container and the
+   * section makes every section match `.ui-section:first-child`, which the
+   * header's logo and fixed-offset rules use to mean "the page's first block"
+   * (see _header.css) - exactly the regression this prop was added to undo.
+   */
+  blockId?: string | null
 }
 
 /**
@@ -51,11 +61,13 @@ export function Section({
   as: Tag = 'section',
   hasBackgroundImage,
   hasDarkOverlayText,
+  blockId,
 }: SectionProps) {
   return (
     <Tag
       id={id}
       className={['ui-section', className].filter(Boolean).join(' ')}
+      data-block-id={blockId ?? undefined}
       data-surface={surface ?? 'default'}
       data-spacing={spacing ?? 'normal'}
       data-has-background-image={hasBackgroundImage ? 'true' : undefined}

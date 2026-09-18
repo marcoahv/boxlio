@@ -65,7 +65,7 @@ export function FeatureGrid(props: FeatureGridBlock) {
   if (!features?.length) return null
 
   return (
-    <Section surface={surface}>
+    <Section blockId={id} surface={surface}>
       <Container>
         <Stack gap="lg">
           {(heading || intro || headingField.isEditable || introField.isEditable) && (

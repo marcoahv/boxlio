@@ -14,7 +14,7 @@ export function Table(props: TableBlockProps) {
   const bodyRows = hasHeaderRow ? rows.slice(1) : rows
 
   return (
-    <Section surface={surface}>
+    <Section blockId={id} surface={surface}>
       <Container>
         {(heading || headingField.isEditable) && (
           <Heading level={2} className="mb-6" {...headingField.fieldProps}>

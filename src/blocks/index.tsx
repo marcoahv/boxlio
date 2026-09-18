@@ -33,15 +33,10 @@ export const Blocks = ({ blocks }: { blocks?: BlockData[] | null }) => {
           return null
         }
 
-        return (
-          // data-block-id anchors the admin's hover/scroll sync
-          // (src/utilities/useBlockSyncListener.ts) to this rendered block.
-          // Padding-based section spacing (see _section.css) means this
-          // wrapper doesn't disturb block layout.
-          <div key={id ?? index} data-block-id={id ?? undefined}>
-            <Component {...block} />
-          </div>
-        )
+        // No wrapper element: each block publishes its own `data-block-id`
+        // on its root <Section> (see that primitive's `blockId` prop for why
+        // an extra element here breaks `.ui-section:first-child`).
+        return <Component key={id ?? index} {...block} />
       })}
     </>
   )

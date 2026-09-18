@@ -4,6 +4,10 @@
    --header-offset) from covering the top of a block right after
    scrollIntoView({ block: 'start' }) lands on it. Falls back to 0 when the
    header isn't fixed - --header-offset is never set on body in that case. */
+/* This is the block's own root .ui-section (see the Section primitive's
+   `blockId` prop), not a wrapper around it - _section.css already makes it
+   position: relative, restated here so the ::after overlay below doesn't
+   depend on that staying true. */
 [data-block-id] {
   position: relative;
   scroll-margin-top: var(--header-offset, 0px);
@@ -14,11 +18,10 @@
    colors a given site's Settings.colors chooses.
 
    Rendered via an absolutely positioned ::after rather than a plain outline
-   on the wrapper itself: the block's own inner .ui-section is `position:
-   relative` with an opaque background (_section.css), which paints in a
-   later stacking step than a non-positioned ancestor's own outline and
-   would otherwise cover it completely. The overlay's own z-index guarantees
-   it always paints on top.
+   on the section: a block's own full-bleed background - the Hero's
+   absolutely positioned .ui-hero-bg image, for one - paints over an outline
+   drawn on the element itself. As a child of the section, this overlay's own
+   z-index keeps it on top of that instead.
 
    A translucent color wash was tried to help it read against light
    sections, but tinting the block's own content read as too much - reverted

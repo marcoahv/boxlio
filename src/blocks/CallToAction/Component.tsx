@@ -20,7 +20,7 @@ export function CallToAction(props: CallToActionBlock) {
   })
 
   return (
-    <Section surface={surface ?? 'inverse'} spacing="tight">
+    <Section blockId={id} surface={surface ?? 'inverse'} spacing="tight">
       <Container width="narrow">
         <Stack gap="md" align={centered ? 'center' : 'start'}>
           <Heading

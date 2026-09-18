@@ -61,6 +61,7 @@ export function Hero(props: HeroBlock) {
 
   return (
     <Section
+      blockId={id}
       surface={surface}
       className="ui-hero-section"
       hasBackgroundImage={hasBackgroundImage}

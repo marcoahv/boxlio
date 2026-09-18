@@ -11,11 +11,11 @@ import type { RichTextBlock as RichTextBlockProps } from '@/payload-types'
  * bodyAppearance section in PostClient.tsx.
  */
 export function RichTextBlock(props: RichTextBlockProps) {
-  const { surface, content } = props
+  const { id, surface, content } = props
   if (!content) return null
 
   return (
-    <Section surface={surface} className="ui-rich-text-section">
+    <Section blockId={id} surface={surface} className="ui-rich-text-section">
       <Container className="ui-rich-text-container">
         <div className="ui-prose">
           <RichText data={content} />

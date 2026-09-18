@@ -42,7 +42,7 @@ export function BlogListing(
   if (blogs.docs.length === 0) return null
 
   return (
-    <Section surface={surface ?? 'muted'}>
+    <Section blockId={id} surface={surface ?? 'muted'}>
       <Container>
         <Stack gap="lg">
           <Heading {...headingField.fieldProps}>{headingField.content}</Heading>

@@ -51,25 +51,30 @@ export function BlogPageClient({
     <EditableFieldProvider value={isEditable}>
       <Blocks blocks={data.blocks} />
       {data.blogBlocks?.map((block, index) => {
+        // Each block publishes its own `data-block-id` on its root <Section>
+        // rather than through a wrapper here - see that primitive's `blockId`
+        // prop for why an extra element breaks `.ui-section:first-child`.
         if (block.blockType === 'featuredPost') {
           return (
-            <div key={block.id ?? index} data-block-id={block.id ?? undefined}>
-              <FeaturedPost {...block} heroPost={heroPost} featuredBlog={featuredBlog} />
-            </div>
+            <FeaturedPost
+              key={block.id ?? index}
+              {...block}
+              heroPost={heroPost}
+              featuredBlog={featuredBlog}
+            />
           )
         }
         if (block.blockType === 'blogListing') {
           return (
-            <div key={block.id ?? index} data-block-id={block.id ?? undefined}>
-              <BlogListing
-                {...block}
-                categories={categories}
-                blogs={blogs}
-                currentPage={currentPage}
-                categoryParam={categoryParam}
-                searchParams={searchParams}
-              />
-            </div>
+            <BlogListing
+              key={block.id ?? index}
+              {...block}
+              categories={categories}
+              blogs={blogs}
+              currentPage={currentPage}
+              categoryParam={categoryParam}
+              searchParams={searchParams}
+            />
           )
         }
         return null
