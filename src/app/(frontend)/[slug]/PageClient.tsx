@@ -3,6 +3,7 @@
 import { Blocks } from '@/blocks'
 import { getServerSideURL } from '@/utilities/getUrl'
 import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
+import { useBlockSyncListener } from '@/utilities/useBlockSyncListener'
 import type { Page as PageType } from '@/payload-types'
 
 export function PageClient({ initialData }: { initialData: PageType }) {
@@ -12,6 +13,7 @@ export function PageClient({ initialData }: { initialData: PageType }) {
     serverURL: getServerSideURL(),
     depth: 2,
   })
+  useBlockSyncListener()
 
   return (
     <div>

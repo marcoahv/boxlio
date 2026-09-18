@@ -99,14 +99,21 @@
   padding: 0;
 }
 
-/* Brand a block's own outer row with the same secondary color, but only when
-   it's the "selected" one or hovered - matching the Information tab's
-   pattern, not an always-on color. At rest (not selected, not hovered) this
+/* Brand a block's own outer row with the same blue AND width as its
+   live-preview hover/scroll highlight (src/blocks/_block-highlight.css's
+   .block-sync-highlight, 2px solid #3b82f6) rather than the site's own
+   editable secondary color and Payload's default 1px - "selected" here
+   means the editor is actively working this exact block, the same
+   relationship the iframe highlight signals, so the two should read as one
+   consistent treatment rather than tying an admin-chrome affordance to a
+   brand token the editor can change per project. Only when it's the
+   "selected" one, not an always-on style. At rest (not selected) this
    declares no override at all, so it stays Payload's own plain default
-   border. Since the outer row no longer collapses (below), there's no
-   isCollapsed of its own left to key off; "selected" here means its nested
-   "Edit" accordion (block-edit-collapsible) is open. :has() is
-   well-supported by 2026 and needs no fallback for this admin-only surface.
+   border. Since the outer row no longer
+   collapses (below), there's no isCollapsed of its own left to key off;
+   "selected" here means its nested "Edit" accordion (block-edit-collapsible)
+   is open. :has() is well-supported by 2026 and needs no fallback for this
+   admin-only surface.
    Covers both places a block can render: the classic `blocks`-type field
    (Pages.blocks, the two blog-only blocks) and a block embedded in a Post
    body via Lexical's BlocksFeature - both reuse @payloadcms/ui's Collapsible
@@ -136,7 +143,8 @@
 
 .blocks-field__row.collapsible:has(.block-edit-collapsible > .collapsible:not(.collapsible--collapsed)),
 .LexicalEditorTheme__block__row.collapsible:has(.block-edit-collapsible > .collapsible:not(.collapsible--collapsed)) {
-  border-color: var(--color-secondary, #49b7d2);
+  border-color: #3b82f6;
+  border-width: 2px;
 }
 
 /* Remove a block's ability to collapse at the outer-row level - only its

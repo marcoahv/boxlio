@@ -4,6 +4,7 @@ import { PaginatedDocs } from 'payload'
 import { Blocks } from '@/blocks'
 import { getServerSideURL } from '@/utilities/getUrl'
 import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
+import { useBlockSyncListener } from '@/utilities/useBlockSyncListener'
 import { FeaturedPost } from '@/collections/Pages/blogBlocks/FeaturedPost/Component'
 import { BlogListing } from '@/collections/Pages/blogBlocks/BlogListing/Component'
 import { SearchParamsProps } from '@/components/Pagination'
@@ -41,6 +42,7 @@ export function BlogPageClient({
     serverURL: getServerSideURL(),
     depth: 2,
   })
+  useBlockSyncListener()
 
   return (
     <>
@@ -48,25 +50,23 @@ export function BlogPageClient({
       {data.blogBlocks?.map((block, index) => {
         if (block.blockType === 'featuredPost') {
           return (
-            <FeaturedPost
-              key={block.id ?? index}
-              {...block}
-              heroPost={heroPost}
-              featuredBlog={featuredBlog}
-            />
+            <div key={block.id ?? index} data-block-id={block.id ?? undefined}>
+              <FeaturedPost {...block} heroPost={heroPost} featuredBlog={featuredBlog} />
+            </div>
           )
         }
         if (block.blockType === 'blogListing') {
           return (
-            <BlogListing
-              key={block.id ?? index}
-              {...block}
-              categories={categories}
-              blogs={blogs}
-              currentPage={currentPage}
-              categoryParam={categoryParam}
-              searchParams={searchParams}
-            />
+            <div key={block.id ?? index} data-block-id={block.id ?? undefined}>
+              <BlogListing
+                {...block}
+                categories={categories}
+                blogs={blogs}
+                currentPage={currentPage}
+                categoryParam={categoryParam}
+                searchParams={searchParams}
+              />
+            </div>
           )
         }
         return null

@@ -124,6 +124,18 @@ export const Pages: CollectionConfig = {
               blockReferences: blockSlugs as BlockSlug[],
               blocks: [],
             },
+            {
+              name: 'blockHoverSync',
+              type: 'ui',
+              admin: {
+                // Top-level, not nested inside `blocks`/`blogBlocks`, so it
+                // mounts immediately regardless of which block rows are
+                // collapsed - see the component's own comment for why.
+                components: {
+                  Field: '@/custom/block-hover-sync/Component.tsx#BlockHoverSync',
+                },
+              },
+            },
           ],
         },
         {

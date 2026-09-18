@@ -210,3 +210,10 @@ cleaned-up checkbox version before generating the project overview.
   every page-builder block via a shared field factory, applied automatically
   to every registered block and explicitly to the two blog-only blocks, so
   future blocks get it by construction
+- [x] 28. **Editor-to-preview block sync** - hovering a block row in the
+  Pages editor (`blocks`/`blogBlocks` fields) highlights the matching
+  element in the live preview iframe; selecting/focusing a block scrolls
+  the preview to it, via a `data-block-id` marker on rendered blocks and a
+  postMessage bridge alongside the existing `useScopedLivePreview` hook.
+  Scoped to Pages' top-level block fields; Posts' Lexical-embedded blocks
+  are a separate future feature
