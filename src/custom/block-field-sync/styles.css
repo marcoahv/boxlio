@@ -1,26 +1,14 @@
-/* Jump-to-field flash (src/custom/block-field-sync/Component.tsx): briefly
-   outlines the sidebar field an editor just started typing into in the Live
-   Preview iframe, after scrolling it into view. The same fixed blue accent
-   as the iframe side's own .block-sync-highlight/[data-editable-field]
-   (src/blocks/_block-highlight.css) - one accent ties both ends of the
-   jump together, and it needs to stay visible regardless of a site's own
-   Settings.colors. A finite iteration count (not `infinite`) so it always
-   fires its own `animationend`, which the component listens for to clear
-   the class - no timer needed on the JS side. */
-@keyframes block-field-sync-jump {
-  0%,
-  100% {
-    outline-color: transparent;
-  }
-  25%,
-  75% {
-    outline-color: #3b82f6;
-  }
-}
-
-.field-jump-highlight {
-  outline: 2px solid transparent;
+/* Selected-in-preview highlight (src/custom/block-field-sync/Component.tsx):
+   outlines the sidebar field an editor is currently focused on in the Live
+   Preview iframe, after scrolling it into view. Persists for as long as that
+   field stays focused there - the component adds/removes this class itself
+   (on focus/blur messages), so there's no animation or timer here to end it.
+   The same fixed blue accent as the iframe side's own
+   .block-sync-highlight/[data-editable-field] (src/blocks/_block-highlight.css)
+   - one accent ties both ends of the jump together, and it needs to stay
+   visible regardless of a site's own Settings.colors. */
+.field-focus-highlight {
+  outline: 2px solid #3b82f6;
   outline-offset: 2px;
   border-radius: 3px;
-  animation: block-field-sync-jump 600ms ease-in-out 2;
 }

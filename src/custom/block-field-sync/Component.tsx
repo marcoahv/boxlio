@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type MutableRefObject } from 'react'
 import { useForm } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { getServerSideURL } from '@/utilities/getUrl'
@@ -52,7 +52,7 @@ const BLUR_GRACE_MS = 150
 // after a budget that comfortably covers a few nested levels.
 const EXPAND_STEP_MS = 60
 const EXPAND_TIMEOUT_MS = 3000
-const JUMP_HIGHLIGHT_CLASS = 'field-jump-highlight'
+const FOCUS_HIGHLIGHT_CLASS = 'field-focus-highlight'
 
 /** Payload's own field-id convention (`fields/Text/Input.js`, `fields/Textarea/Input.js` in `@payloadcms/ui`), not something this project defined. */
 function fieldElementId(fullPath: string) {
@@ -141,18 +141,31 @@ function reconcileExpanded(ancestors: HTMLElement[], owned: HTMLElement[]) {
   return { nextOwned, expandedSomething }
 }
 
-function scrollToAndHighlight(fullPath: string) {
+/** Removes the highlight this component currently owns, if any. */
+function clearFocusHighlight(highlightedRef: MutableRefObject<HTMLElement | null>) {
+  highlightedRef.current?.classList.remove(FOCUS_HIGHLIGHT_CLASS)
+  highlightedRef.current = null
+}
+
+/**
+ * Scrolls the field into view and highlights it, clearing whichever field
+ * this component previously highlighted first (a no-op when it's the same
+ * element). The highlight otherwise persists until a caller explicitly
+ * clears it - see `clearFocusHighlight` - so it stays lit for as long as the
+ * field remains the one focused in the Live Preview iframe.
+ */
+function scrollToAndHighlight(
+  fullPath: string,
+  highlightedRef: MutableRefObject<HTMLElement | null>,
+) {
   const target = document.getElementById(fieldElementId(fullPath))
   if (!target) return
   target.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  // Restart the animation even if it's still running from a previous jump -
-  // remove, force a reflow, re-add (the same trick InformationTabEditAutoCollapse
-  // uses for its own nudge flash).
-  target.classList.remove(JUMP_HIGHLIGHT_CLASS)
-  void target.offsetWidth
-  target.classList.add(JUMP_HIGHLIGHT_CLASS)
-  const clear = () => target.classList.remove(JUMP_HIGHLIGHT_CLASS)
-  target.addEventListener('animationend', clear, { once: true })
+  if (highlightedRef.current && highlightedRef.current !== target) {
+    highlightedRef.current.classList.remove(FOCUS_HIGHLIGHT_CLASS)
+  }
+  target.classList.add(FOCUS_HIGHLIGHT_CLASS)
+  highlightedRef.current = target
 }
 
 /**
@@ -190,6 +203,7 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
   const activeFieldKeyRef = useRef<string | null>(null)
   const pendingBlurTimeoutRef = useRef<ReturnType<typeof window.setTimeout> | null>(null)
   const pendingFocusRetryRef = useRef<ReturnType<typeof window.setTimeout> | null>(null)
+  const highlightedRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const serverURL = getServerSideURL()
@@ -244,6 +258,7 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
           for (const el of ownedRef.current) clickToggle(el)
           ownedRef.current = []
           activeFieldKeyRef.current = null
+          clearFocusHighlight(highlightedRef)
         }, BLUR_GRACE_MS)
         return
       }
@@ -291,10 +306,10 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
           pendingFocusRetryRef.current = window.setTimeout(() => {
             pendingFocusRetryRef.current = null
             if (activeFieldKeyRef.current !== fieldKey) return
-            scrollToAndHighlight(fullPath)
+            scrollToAndHighlight(fullPath, highlightedRef)
           }, EXPAND_ANIMATION_MS)
         } else {
-          scrollToAndHighlight(fullPath)
+          scrollToAndHighlight(fullPath, highlightedRef)
         }
       }
 
@@ -306,6 +321,7 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
       window.removeEventListener('message', onMessage)
       cancelPendingBlur()
       cancelPendingFocusRetry()
+      clearFocusHighlight(highlightedRef)
     }
   }, [getField, dispatchFields, setModified])
 
