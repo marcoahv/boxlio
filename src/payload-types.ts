@@ -146,15 +146,23 @@ export interface UserAuthOperations {
  * via the `definition` "HeroBlock".
  */
 export interface HeroBlock {
-  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   heading: string;
   subheading?: string | null;
   /**
    * Shown beside the text (Image left/right) or as a full-bleed background (Image background).
    */
   image?: (string | null) | Media;
+  links?:
+    | {
+        label: string;
+        url: string;
+        variant?: ('solid' | 'outline' | 'ghost') | null;
+        color?: ('primary' | 'secondary') | null;
+        id?: string | null;
+      }[]
+    | null;
   /**
-   * Image background overrides the Appearance surface above with light text over a dark overlay, so it stays legible over any photo.
+   * Image background overrides the Appearance surface below with light text over a dark overlay, so it stays legible over any photo.
    */
   layout?: ('imageRight' | 'imageLeft' | 'backgroundImage' | 'textOnly') | null;
   /**
@@ -169,15 +177,7 @@ export interface HeroBlock {
    * Only applies to the Image background layout.
    */
   overlayOpacity?: ('none' | 'light' | 'medium' | 'strong' | 'solid') | null;
-  links?:
-    | {
-        label: string;
-        url: string;
-        variant?: ('solid' | 'outline' | 'ghost') | null;
-        color?: ('primary' | 'secondary') | null;
-        id?: string | null;
-      }[]
-    | null;
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'hero';
@@ -385,7 +385,7 @@ export interface Page {
   featuredImage: string | Media;
   blocks?: (HeroBlock | FeatureGridBlock | CallToActionBlock | RichTextBlock | TableBlock)[] | null;
   /**
-   * Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Content tab) above them for a heading.
+   * Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Content / Layout tab) above them for a heading.
    */
   blogBlocks?: (FeaturedPostBlock | BlogListingBlock)[] | null;
   meta?: {

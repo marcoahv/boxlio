@@ -113,7 +113,7 @@ export const Pages: CollectionConfig = {
           ],
         },
         {
-          label: 'Content',
+          label: 'Content / Layout',
           fields: [
             {
               name: 'blocks',
@@ -163,7 +163,7 @@ export const Pages: CollectionConfig = {
               blocks: [FeaturedPost, BlogListing],
               admin: {
                 description:
-                  'Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Content tab) above them for a heading.',
+                  'Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Content / Layout tab) above them for a heading.',
               },
             },
           ],

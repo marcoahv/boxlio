@@ -32,6 +32,12 @@ export const CallToAction: Block = {
       maxRows: 2,
       required: true,
       labels: { singular: 'Link', plural: 'Links' },
+      admin: {
+        initCollapsed: true,
+        components: {
+          RowLabel: '@/custom/label/Component.tsx#ArrayRowLabel',
+        },
+      },
       fields: [
         { name: 'label', type: 'text', required: true },
         { name: 'url', type: 'text', required: true },

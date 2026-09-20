@@ -8,6 +8,8 @@ import {
 } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
 import { LIVE_PREVIEW_IFRAME_ID } from '@/utilities/postToLivePreviewIframe'
+import { isProgrammaticBlockClick } from '@/utilities/programmaticBlockClick'
+import { ROW_SELECTOR } from '@/utilities/blockRowLookup'
 
 const WRAPPER_SELECTOR = '.info-tab-edit-collapsible'
 const NUDGE_TARGET_SELECTOR = '.information-tab-save'
@@ -108,17 +110,11 @@ export const InformationTabEditAutoCollapse: UIFieldClientComponent = ({
   useEffect(() => {
     const wasModified = wasModifiedRef.current
     wasModifiedRef.current = modified
-    if (wasModified && !modified && stateRef.current.isCollapsed === false) {
-      // Clear any nudge directly rather than relying solely on its
-      // animationend listener: collapsing makes the button display:none
-      // once the collapse animation finishes, which cancels a still-
-      // running CSS animation outright - a canceled animation never fires
-      // animationend, so the class (and the flash) would otherwise be
-      // stuck, ready to silently replay next time the button becomes
-      // visible again.
-      clearNudge()
-      stateRef.current.toggle()
-    }
+    // A successful save flips `modified` back to false - clear the nudge
+    // (it was only ever saying "you have unsaved work here"), but leave
+    // "Edit" open exactly as the editor left it, rather than auto-closing it
+    // out from under them.
+    if (wasModified && !modified) clearNudge()
     // clearNudge is recreated every render but only ever reads markerRef.current
     // at call time, so an earlier render's copy behaves identically - see its
     // own definition above.
@@ -193,6 +189,16 @@ export const InformationTabEditAutoCollapse: UIFieldClientComponent = ({
     const onDocumentClickCapture = (e: MouseEvent) => {
       if (!(e.target instanceof Element)) return
 
+      // BlockFieldSync opens/closes accordions and switches this same
+      // block's tabs by clicking their real buttons too (there's no other
+      // API for it - see its own comment on that). Those clicks are
+      // indistinguishable from a real one by any listener here, but they
+      // aren't a user "Done" click risking lost track of unsaved work: the
+      // field's value stays in form state regardless of whether its
+      // accordion or tab is visible, so the guard below doesn't apply to
+      // them at all.
+      if (isProgrammaticBlockClick()) return
+
       // Block closing this accordion (a "Done" click) while there's
       // something unsaved - nudge Save instead of letting the click through
       // to Payload's own native toggle button. Only when *this* accordion is
@@ -211,6 +217,22 @@ export const InformationTabEditAutoCollapse: UIFieldClientComponent = ({
 
       const tabButton = e.target.closest<HTMLElement>(TAB_BUTTON_SELECTOR)
       if (!tabButton || tabButton.classList.contains(TAB_BUTTON_ACTIVE_CLASS)) return
+
+      // A tab button inside ANY block's own row (e.g. Hero's Content/
+      // Layout) only concerns whichever block actually owns it - checked
+      // against ROW_SELECTOR (not just `wrapper.contains`) so every other
+      // already-mounted block's own listener for this exact click reaches
+      // the same "not mine" conclusion and no-ops, regardless of which one
+      // happens to run first.
+      if (tabButton.closest(ROW_SELECTOR)) {
+        if (!wrapper.contains(tabButton)) return
+        if (!stateRef.current.modified) return
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+        nudge()
+        return
+      }
 
       if (!stateRef.current.modified) {
         // Nothing unsaved - let the tab switch happen normally, but make

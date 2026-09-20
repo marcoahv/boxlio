@@ -99,6 +99,15 @@ export const Header: GlobalConfig = {
       type: 'array',
       maxRows: 2,
       labels: { singular: 'Button', plural: 'Buttons' },
+      admin: {
+        initCollapsed: true,
+        components: {
+          RowLabel: {
+            path: '@/custom/label/Component.tsx#ArrayRowLabel',
+            clientProps: { fallbackLabel: 'Button' },
+          },
+        },
+      },
       fields: [
         { name: 'label', type: 'text', required: true },
         { name: 'url', type: 'text', required: true },

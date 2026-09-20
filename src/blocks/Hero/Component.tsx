@@ -48,6 +48,12 @@ export function Hero(props: HeroBlock) {
     hasBackgroundImage && overlayCoverage === 'content'
   const resolvedOverlayColor = overlayColor ?? 'dark'
   const resolvedOverlayOpacity = overlayOpacity ?? 'medium'
+  // Live preview merges unsaved form state instantly, so a Buttons row just
+  // added (before its required label/url are filled in) would otherwise
+  // render `<Link href={undefined}>` for a moment and warn - skip it until
+  // it has a real destination, which also means two still-blank rows can
+  // never collide on the same fallback key.
+  const linkableLinks = links?.filter((link) => link.url) ?? []
   const overlayModifierClasses = [
     resolvedOverlayColor !== 'dark'
       ? `ui-hero-overlay--${resolvedOverlayColor}`
@@ -131,7 +137,7 @@ export function Hero(props: HeroBlock) {
               </p>
             )}
 
-            {links?.length > 0 && (
+            {linkableLinks.length > 0 && (
               <Stack
                 direction="row"
                 gap="sm"
@@ -139,7 +145,7 @@ export function Hero(props: HeroBlock) {
                 align="center"
                 className="mt-2"
               >
-                {links.map((link) => (
+                {linkableLinks.map((link) => (
                   <Link
                     key={link.id ?? link.url}
                     href={link.url}

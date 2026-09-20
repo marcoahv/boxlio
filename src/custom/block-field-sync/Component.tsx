@@ -9,6 +9,7 @@ import {
   parseRowId,
   rowElementIdsAlongPath,
 } from '@/utilities/blockRowLookup'
+import { withProgrammaticClick } from '@/utilities/programmaticBlockClick'
 import './styles.css'
 
 // Every nesting level that can hide a field - our own "Edit" accordion
@@ -32,6 +33,11 @@ const COLLAPSED_CLASS = 'collapsible--collapsed'
 // block's fields exist - the entry point for expanding into a block that has
 // never been opened.
 const EDIT_ACCORDION_SELECTOR = '.block-edit-collapsible > .collapsible'
+// A block's own internal tabs (e.g. Hero's Content/Layout). Payload's
+// TabsField only ever renders the active tab's fields - see `tryNextTab`'s
+// own comment for why that rules out looking up the right tab in advance.
+const TAB_BUTTON_SELECTOR = '.tabs-field__tab-button'
+const TAB_BUTTON_ACTIVE_CLASS = 'tabs-field__tab-button--active'
 // AnimateHeight's own open transition (see Collapsible's source) - jumping
 // to the field before it's finished would scroll to a still-animating,
 // not-yet-final position. Nested collapsibles all animate in parallel when
@@ -64,7 +70,31 @@ function isCollapsed(el: HTMLElement) {
 }
 
 function clickToggle(el: HTMLElement) {
-  el.querySelector<HTMLButtonElement>(COLLAPSIBLE_TOGGLE_SELECTOR)?.click()
+  withProgrammaticClick(() => {
+    el.querySelector<HTMLButtonElement>(COLLAPSIBLE_TOGGLE_SELECTOR)?.click()
+  })
+}
+
+/**
+ * Clicks the next untried, inactive tab button within `root`, if any -
+ * one click per call, so the caller's own retry loop can re-check for the
+ * field after each tab's re-render. Inactive tabs unmount their fields
+ * entirely, so there's no way to inspect which tab holds a given field in
+ * advance; trying each in turn is the only option. `tried` stops this from
+ * cycling forever once every tab has had a turn. Scoped to `root` (a
+ * specific block's row), so this can only ever reach that block's own
+ * tabs - never the page-level Information/Content/SEO tabs, which live
+ * outside any block row.
+ */
+function tryNextTab(root: Element, tried: Set<HTMLButtonElement>): boolean {
+  const buttons = root.querySelectorAll<HTMLButtonElement>(TAB_BUTTON_SELECTOR)
+  for (const button of buttons) {
+    if (tried.has(button) || button.classList.contains(TAB_BUTTON_ACTIVE_CLASS)) continue
+    tried.add(button)
+    withProgrammaticClick(() => button.click())
+    return true
+  }
+  return false
 }
 
 /** Every collapsible ancestor of `el`, innermost first. */
@@ -273,6 +303,10 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
       const rowId = parseRowId(rowEl)
       if (!rowId) return
       const fullPath = `${rowId.fieldName}.${rowId.rowIndex}.${fieldPath}`
+      // Tried, per this focus, so a field that turns out to belong to none
+      // of the block's tabs (or doesn't exist) can't cycle through them
+      // forever - see tryNextTab.
+      const triedTabButtons = new Set<HTMLButtonElement>()
 
       /**
        * Opens whatever of the chain is currently reachable, then re-checks:
@@ -281,6 +315,11 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
        * when the field itself is present with nothing left collapsed above it
        * - which on an already-open field is the very first pass, with no
        * delay before scrolling.
+       *
+       * Once every collapsible that can open is open, an unrendered field
+       * means it's sitting behind one of this block's own inactive tabs
+       * (e.g. Hero's heading/subheading live in its Content tab) - only
+       * tried then, so a still-animating collapsible always gets priority.
        */
       const expandTowardField = (deadline: number, expandedAny: boolean) => {
         if (activeFieldKeyRef.current !== fieldKey) return
@@ -288,10 +327,15 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
         const chain = collapsiblesTowardField(fullPath)
         const { nextOwned, expandedSomething } = reconcileExpanded(chain, ownedRef.current)
         ownedRef.current = nextOwned
-        const didExpand = expandedAny || expandedSomething
 
-        const reached =
-          !expandedSomething && document.getElementById(fieldElementId(fullPath)) !== null
+        const fieldReached = document.getElementById(fieldElementId(fullPath)) !== null
+        const switchedTab =
+          !fieldReached && !expandedSomething
+            ? tryNextTab(rowEl, triedTabButtons)
+            : false
+
+        const didExpand = expandedAny || expandedSomething || switchedTab
+        const reached = fieldReached && !expandedSomething && !switchedTab
         if (!reached && Date.now() < deadline) {
           pendingFocusRetryRef.current = window.setTimeout(() => {
             pendingFocusRetryRef.current = null

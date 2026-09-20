@@ -1,13 +1,13 @@
 'use client'
 import { useRowLabel } from '@payloadcms/ui'
 
-export const ArrayRowLabel = () => {
+export const ArrayRowLabel = ({ fallbackLabel = 'Link' }: { fallbackLabel?: string }) => {
   const {
     data: { label },
     rowNumber,
   } = useRowLabel<{ label?: string }>()
 
-  return <div>{label || `Link ${String(rowNumber).padStart(2, '0')}`}</div>
+  return <div>{label || `${fallbackLabel} ${String(rowNumber).padStart(2, '0')}`}</div>
 }
 
 export const CardRowLabel = () => {

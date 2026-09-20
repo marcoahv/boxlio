@@ -57,7 +57,7 @@ export default buildConfig({
       ],
       url: ({ data, collectionConfig, globalConfig }) => {
         const path = globalConfig
-          ? livePreviewPath({ type: 'global' })
+          ? livePreviewPath({ type: 'global', globalSlug: globalConfig.slug })
           : livePreviewPath({
               type: 'collection',
               collectionSlug: collectionConfig?.slug ?? '',

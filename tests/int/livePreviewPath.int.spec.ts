@@ -2,10 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { livePreviewPath } from '@/utilities/livePreviewPath'
 
 describe('livePreviewPath', () => {
-  it('resolves the home page slug to /', () => {
+  it('resolves the home page slug to / with a doc marker', () => {
     expect(
       livePreviewPath({ type: 'collection', collectionSlug: 'pages', docSlug: 'home' }),
-    ).toBe('/')
+    ).toBe('/?__livePreviewDoc=page-home')
   })
 
   it('resolves the blog-slug page to /blog', () => {
@@ -44,7 +44,22 @@ describe('livePreviewPath', () => {
     ).toBeUndefined()
   })
 
-  it('resolves a global to /', () => {
-    expect(livePreviewPath({ type: 'global' })).toBe('/')
+  it('resolves a global to / with a doc marker unique to that global', () => {
+    expect(livePreviewPath({ type: 'global', globalSlug: 'header' })).toBe(
+      '/?__livePreviewDoc=global-header',
+    )
+    expect(livePreviewPath({ type: 'global', globalSlug: 'footer' })).toBe(
+      '/?__livePreviewDoc=global-footer',
+    )
+  })
+
+  it('gives every document that renders at / a distinct URL', () => {
+    const urls = [
+      livePreviewPath({ type: 'global', globalSlug: 'header' }),
+      livePreviewPath({ type: 'global', globalSlug: 'footer' }),
+      livePreviewPath({ type: 'global', globalSlug: 'settings' }),
+      livePreviewPath({ type: 'collection', collectionSlug: 'pages', docSlug: 'home' }),
+    ]
+    expect(new Set(urls).size).toBe(urls.length)
   })
 })

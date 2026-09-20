@@ -58,3 +58,17 @@
     width: auto;
   }
 }
+
+// Matches Hero's Heading/Subheading/Image labels (`admin.className:
+// 'field-label--match-array-label'` in src/blocks/Hero/config.ts) to the
+// Button(s) array field's label size. Payload's FieldLabel component only
+// sizes labels rendered as a <label> (13px, its own %body style); an array
+// field's own label instead renders as a <span> inside an <h3
+// class="array-field__title">, which picks up Payload's global `h3 {
+// @extend %h3 }` rule (20px/24px line-height) instead. These values mirror
+// that default (base(1)/base(1.2) with Payload's default 20px baseline) -
+// this file has no access to Payload's own `base()` SCSS function.
+.field-label--match-array-label .field-label {
+  font-size: 20px;
+  line-height: 24px;
+}
