@@ -8,6 +8,10 @@ export const Footer: GlobalConfig = {
   admin: {
     group: 'Site Identity',
   },
+  access: {
+    read: () => true,
+    update: ({ req }) => Boolean(req.user),
+  },
   hooks: {
     afterChange: [revalidateGlobal],
   },

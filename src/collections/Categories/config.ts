@@ -7,6 +7,12 @@ export const Categories: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Content',
   },
+  access: {
+    read: () => true,
+    create: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    delete: ({ req }) => Boolean(req.user),
+  },
   hooks: {
     afterChange: [revalidateCategories],
     afterDelete: [deleteCategories],
