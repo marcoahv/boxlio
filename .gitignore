@@ -54,3 +54,6 @@ node_modules/
 
 # course/reference material, not app code
 /theory-lectures.pdf
+
+# locally installed Claude Code skill, not a shared workflow adapter
+/.claude/skills/payload/
