@@ -56,25 +56,35 @@ export const Hero: Block = {
                 },
               },
               fields: [
-                { name: 'label', type: 'text', required: true },
-                { name: 'url', type: 'text', required: true },
                 {
-                  name: 'variant',
-                  type: 'select',
-                  defaultValue: 'solid',
-                  options: [
-                    { label: 'Solid', value: 'solid' },
-                    { label: 'Outline', value: 'outline' },
-                    { label: 'Ghost', value: 'ghost' },
+                  type: 'row',
+                  fields: [
+                    { name: 'label', type: 'text', required: true },
+                    { name: 'url', type: 'text', required: true },
                   ],
                 },
                 {
-                  name: 'color',
-                  type: 'select',
-                  defaultValue: 'primary',
-                  options: [
-                    { label: 'Primary', value: 'primary' },
-                    { label: 'Secondary', value: 'secondary' },
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'variant',
+                      type: 'select',
+                      defaultValue: 'solid',
+                      options: [
+                        { label: 'Solid', value: 'solid' },
+                        { label: 'Outline', value: 'outline' },
+                        { label: 'Ghost', value: 'ghost' },
+                      ],
+                    },
+                    {
+                      name: 'color',
+                      type: 'select',
+                      defaultValue: 'primary',
+                      options: [
+                        { label: 'Primary', value: 'primary' },
+                        { label: 'Secondary', value: 'secondary' },
+                      ],
+                    },
                   ],
                 },
               ],
