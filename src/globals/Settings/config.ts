@@ -28,9 +28,9 @@ const colorField = ({
 
 export const Settings: GlobalConfig = {
   slug: 'settings',
-  label: 'Site Settings',
+  label: 'Site Identity',
   admin: {
-    group: 'Site Identity',
+    group: 'Globals',
   },
   access: {
     read: () => true,

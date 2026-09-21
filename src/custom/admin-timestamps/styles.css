@@ -196,3 +196,61 @@
 .LexicalEditorTheme__block__row.collapsible > .collapsible__toggle-wrap:hover {
   background: var(--theme-elevation-50);
 }
+
+/* Bigger, backgrounded sidebar nav group headings (Collections/Content/Globals)
+   - Payload's default (@payloadcms/ui's NavGroup/index.scss) renders these as
+   plain, low-contrast, small text with no background. .nav-group__toggle is
+   the full-width clickable row (label + chevron), so the background/padding
+   goes there rather than on .nav-group__label alone.
+
+   Background is the frontend's secondaryColorDark default (#137c95 in
+   Settings/config.ts) as a literal value - the admin panel doesn't import the
+   frontend token stylesheet. At 80% opacity (hex alpha cc) the tint is dark
+   enough that Payload's own default resting text/chevron colors
+   (elevation-400 / elevation-200 stroke) lose contrast, so they're forced to
+   white at rest. Hover/focus lightens the overlay to 50% (hex alpha 80)
+   rather than the full 80% resting tint - white text stays legible against
+   it, so hover keeps the same white as resting rather than switching to
+   Payload's own dark hover color. */
+
+.nav-group {
+  margin-bottom: 1.25rem;
+}
+
+.nav-group__toggle {
+  background: #137c95cc;
+  padding: 0.375rem 0.5rem;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.nav-group__toggle:hover,
+.nav-group__toggle:focus-visible {
+  background: #137c9580;
+  color: #fff;
+}
+
+.nav-group__label {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/* Indent each group's collection/global links 2 spaces from the group
+   heading above - Payload's default .nav__link has padding-inline-start: 0,
+   flush with the heading. Indenting the shared .nav-group__content wrapper
+   (rather than .nav__link itself) applies evenly to every link without
+   fighting Payload's own `.nav__link:has(.nav__link-indicator)` rule, which
+   resets padding-left to 0 on the active link. */
+
+.nav-group__content {
+  padding-left: 2ch;
+}
+
+.nav-group__indicator svg .stroke {
+  stroke: #fff;
+}
+
+.nav-group__indicator svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
