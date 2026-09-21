@@ -72,3 +72,24 @@
   font-size: 20px;
   line-height: 24px;
 }
+
+// Hero's Button(s) array (`admin.className: 'hero-buttons-array'` in
+// src/blocks/Hero/config.ts) needs every row always expanded. Payload's
+// Array field has no field-level option to disable a row's collapse toggle -
+// only `initCollapsed`, which just sets the initial state - so this disables
+// the row header's click target and hides its chevron instead. The header's
+// hover highlight is reset back to its resting background since there's
+// nothing left to toggle. Scoped to this one class, so CallToAction's
+// structurally-identical Link(s) array is untouched.
+.hero-buttons-array .collapsible__toggle {
+  pointer-events: none;
+  cursor: default;
+}
+
+.hero-buttons-array .collapsible__toggle-wrap:hover {
+  background: var(--theme-elevation-50);
+}
+
+.hero-buttons-array .collapsible__indicator {
+  display: none;
+}

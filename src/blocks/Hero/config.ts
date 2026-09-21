@@ -47,7 +47,13 @@ export const Hero: Block = {
               label: 'Button(s)',
               labels: { singular: 'Button', plural: 'Buttons' },
               admin: {
-                initCollapsed: true,
+                // Payload's Array field has no option to disable a row's
+                // collapse toggle - only `initCollapsed` for its initial
+                // state - so this class scopes a CSS override in custom.scss
+                // that disables it instead. Rows must start open now that
+                // they can't be toggled closed.
+                className: 'hero-buttons-array',
+                initCollapsed: false,
                 components: {
                   RowLabel: {
                     path: '@/custom/label/Component.tsx#ArrayRowLabel',
