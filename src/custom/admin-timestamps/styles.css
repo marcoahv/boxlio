@@ -254,3 +254,108 @@
   width: 1.1rem;
   height: 1.1rem;
 }
+
+/* Put the live-preview iframe on the left and the document form/blocks on
+   the right - Payload's own default (@payloadcms/ui's views/Edit) renders
+   `.collection-edit__main` (the form/blocks) before the LivePreviewWindow
+   iframe inside `.collection-edit__main-wrapper`, a plain flex row, with no
+   config option to swap that order. `row-reverse` flips which side each
+   child lands on without touching either child's own width rule, so the
+   ~40/60 form/iframe proportions stay exactly as Payload computed them.
+
+   Scoped to `.collection-edit--is-live-previewing` - confirmed in
+   @payloadcms/ui/dist/views/Edit/index.js, Payload adds that root modifier
+   class only when live preview is active AND rendering as an inline iframe
+   (previewWindowType === 'iframe'). That leaves the popup preview type (a
+   separate detached window, nothing to flip) and every normal edit view
+   with live preview off untouched. */
+
+.collection-edit--is-live-previewing .collection-edit__main-wrapper {
+  flex-direction: row-reverse;
+}
+
+/* Put the main Save/Publish button and the live-preview eye toggle left-most
+   in the top document-controls bar's right-side button cluster
+   (.doc-controls__controls), ahead of any other button there (a classic
+   Preview link, take-over, etc. - none configured today, but the rule should
+   hold if one ever is) - Save first, then the eye icon, per request (Payload's
+   own DOM order is the reverse: eye toggle first, then Save). `order` only
+   affects actual flex items: `#live-preview-toggler` (@payloadcms/ui's
+   LivePreviewToggler) is itself a direct flex child, but `#action-save` is
+   nested one level inside the `.form-submit` div that FormSubmit renders
+   around every submit button, so the wrapper - not the button - is what
+   needs the `order`. Both `SaveButton` and `PublishButton` render that same
+   `#action-save` id (they're mutually exclusive, gated on draft/version
+   config), so this also covers a Publish button if versions/drafts are ever
+   enabled; `SaveDraftButton` uses a separate `#action-save-draft` id and is
+   deliberately excluded - it's a secondary action, not "the main save
+   button". Save gets the more negative `order` so it wins the tie-break ahead
+   of the eye icon, reversing their default DOM order. The three-dot overflow
+   menu lives outside this flex container (a sibling of
+   `.doc-controls__controls`, already after it) and needs no rule to stay
+   put. */
+
+.doc-controls__controls .form-submit:has(#action-save) {
+  order: -2;
+}
+
+.doc-controls__controls #live-preview-toggler {
+  order: -1;
+}
+
+/* The `order` rule above only reorders the eye toggle and Save button
+   *within* their own cluster (.doc-controls__controls) - it doesn't move
+   that cluster itself, which Payload's own layout always pins to the right
+   end of the top bar (.doc-controls__content, the title/status block, has
+   flex-grow: 1 and comes first in .doc-controls__wrapper, pushing
+   .doc-controls__controls-wrapper - eye, Save, and the three-dot menu - to
+   the far right). Confirmed by trying the `order` rule alone: it's a no-op
+   whenever no other button (classic Preview link, take-over, etc.) is
+   present to be ahead of, which is every case in this project today.
+
+   Reversing the whole `.doc-controls__wrapper` (the same technique as the
+   iframe/blocks flip above) was tried next, but it drags the three-dot menu
+   along with the eye icon and Save button, since both live inside the same
+   `.doc-controls__controls-wrapper` box - not wanted, the dot-menu should
+   stay on the right.
+
+   Fix: `display: contents` on `.doc-controls__controls-wrapper` removes
+   *its own* box without touching its children - `.doc-controls__controls`
+   (the eye+Save group) and the three-dot menu's `Popup` become direct flex
+   items of `.doc-controls__wrapper` itself, alongside `.doc-controls__content`
+   (the title/status block), each independently orderable. The three-dot
+   `Popup` renders through a React portal and calculates its own dropdown
+   position from `getBoundingClientRect()` on its trigger button (confirmed in
+   @payloadcms/ui/dist/elements/Popup/index.js) - it doesn't depend on
+   `.doc-controls__controls-wrapper` as a CSS positioning context, so removing
+   that box is safe.
+
+   `.doc-controls__controls` then gets `order: -1` to move it before the
+   title/status block (default order 0); the three-dot menu is left at its
+   default order too, so it keeps its natural DOM position - after the
+   title/status block, i.e. still the right-most element in the bar.
+
+   Guarded to widths above Payload's own `mid-break` (1024px,
+   @payloadcms/ui/dist/scss/vars.scss) - below that, `.doc-controls__controls-wrapper`
+   becomes a fixed-height bottom toolbar with its own background/border
+   (@payloadcms/ui/dist/elements/DocumentControls/index.scss's mid-break
+   block), which `display: contents` would break.
+
+   Unscoped by live-preview state (an earlier version of this rule only
+   applied under `.collection-edit--is-live-previewing`, i.e. only while the
+   iframe was actually open - toggling it off snapped Save and the eye icon
+   back to the right, which wasn't wanted; per request they now stay left
+   regardless). Applies to every collection/global edit view, not just ones
+   with live preview configured - on views with no eye icon at all
+   (`#live-preview-toggler` never renders there), only the Save button moves,
+   which is consistent with the same request. */
+
+@media (min-width: 1025px) {
+  .doc-controls__controls-wrapper {
+    display: contents;
+  }
+
+  .doc-controls__controls {
+    order: -1;
+  }
+}
