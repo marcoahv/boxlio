@@ -25,10 +25,11 @@ function scrollWithinThisWindow(target: Element) {
 /**
  * Frontend half of the editor-to-preview block sync: reacts to postMessage
  * signals from the admin panel's hover/select bridge
- * (`src/custom/block-hover-sync/Component.tsx`) by highlighting and
- * scrolling to the matching `[data-block-id]` element (see
- * `src/blocks/index.tsx`). Hover is transient (mouse over a row); selection
- * (a block's "Edit" accordion left open) persists independently, so a block
+ * (`src/custom/block-hover-sync/Component.tsx`) by highlighting the matching
+ * `[data-block-id]` element (see `src/blocks/index.tsx`), and scrolling to it
+ * only once it's selected (a block's "Edit" accordion left open) - hover
+ * alone highlights but never moves the iframe's scroll position. Hover is
+ * transient (mouse over a row); selection persists independently, so a block
  * being actively edited stays highlighted after the mouse moves away.
  *
  * A no-op outside live preview - nothing ever posts these messages there -
@@ -47,13 +48,12 @@ export function useBlockSyncListener() {
     let hoveredBlockId: string | null = null
     const selectedBlockIds = new Set<string>()
     const highlightedElements = new Map<string, Element>()
-    // Deliberately NOT reset by clearHighlight/block-hover-clear: leaving the
-    // editor for the iframe and coming straight back to the same row clears
-    // and re-sends a hover for a block that was already current, so tracking
-    // this only on the highlight itself would forget it on every such leave
-    // and re-scroll right back - this instead remembers the last block
-    // actually scrolled to until hovering (or selecting) a genuinely
-    // different one.
+    // Only 'block-select' ever scrolls (see maybeScrollTo's callers below).
+    // Deliberately NOT reset by clearHighlight/block-deselect: collapsing and
+    // re-expanding the same block's "Edit" accordion re-sends a select for a
+    // block that was already the last one scrolled to, and this stops that
+    // from re-scrolling right back - it remembers the last block actually
+    // scrolled to until a genuinely different one is selected.
     let lastScrolledBlockId: string | null = null
 
     const findTarget = (blockId: string) =>
@@ -92,9 +92,11 @@ export function useBlockSyncListener() {
 
       switch (message.type) {
         case 'block-hover':
+          // Highlight only - never scrolls. Scrolling is reserved for
+          // selection (see 'block-select' below), so merely hovering a
+          // block's row doesn't move the iframe's scroll position.
           hoveredBlockId = message.blockId
           syncHighlights()
-          maybeScrollTo(message.blockId)
           return
         case 'block-hover-clear':
           hoveredBlockId = null
