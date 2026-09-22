@@ -359,3 +359,193 @@
     order: -1;
   }
 }
+
+/* Pin the admin chrome bar (@payloadcms/ui's AppHeader, `.app-header`) to the
+   top of the viewport. It holds the StepNav breadcrumb trail (e.g. "Pages /
+   Edit: Home") and this project's own Site Icon
+   (admin.components.graphics.Icon in src/payload.config.ts ->
+   src/custom/admin-branding/Component.tsx's AdminIcon, rendered inside
+   StepNav). Payload ships it as `position: relative`
+   (@payloadcms/ui/dist/elements/AppHeader/index.scss), so on any admin page
+   with enough content to scroll - a long document's fields, a long list
+   view - it scrolls off the top along with everything else, taking the
+   breadcrumbs and the site icon with it.
+
+   `background-color` is required, not cosmetic: confirmed neither
+   `.app-header` nor its own `.app-header__bg` layer declares one anywhere in
+   the installed @payloadcms/ui package (it's fine while the bar sits in
+   normal flow above the fold - there's nothing to show through - but once
+   sticky, scrolled content underneath would bleed through without it).
+   `var(--theme-bg)` matches the page's own background, the same token
+   `.template-default__wrap` already uses. */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  background-color: var(--theme-bg);
+}
+
+/* `.doc-controls` (the Save/eye-icon/title bar customized above) is already
+   `position: sticky; top: 0` by Payload's own default
+   (@payloadcms/ui/dist/elements/DocumentControls/index.scss). Now that
+   `.app-header` is sticky at `top: 0` too, both would occupy the same
+   viewport position on a document edit view - `.app-header`'s higher
+   z-index (var(--z-modal), 30) would sit on top of doc-controls (z-index 5)
+   instead of stacking below it. Offsetting doc-controls' own sticky `top` by
+   `--app-header-height` - a Payload root-level custom property Payload
+   itself already resizes at its own mid-break breakpoint (confirmed:
+   calc(var(--base) * 2.8) desktop, * 2.4 at max-width: 1024px) - makes the
+   two bars stack correctly at every viewport width, with no extra
+   breakpoint logic needed here.
+
+   The added `+ var(--base) * 3` accounts for `.doc-header` (below) - the
+   document title/tabs bar, a third element between `.app-header` and
+   `.doc-controls` this project didn't know about until it was made sticky
+   too. Payload gives that bar no CSS custom property for its own height
+   (unlike the other two) since it's content-based - see `.doc-header`'s own
+   comment below for what this constant actually is and its limits. */
+
+.doc-controls {
+  top: calc(var(--app-header-height) + var(--base) * 3);
+}
+
+/* Payload's `DocumentHeader` (@payloadcms/next/dist/elements/DocumentHeader,
+   class `.doc-header`) renders the document's title and its tabs row - a
+   third bar, separate from both `.app-header` and `.doc-controls`, sitting
+   between them in the DOM. Payload ships it `position: relative` (no
+   sticky) and gives it no `--doc-header-height` custom property, because
+   unlike the other two its height is content-based (a title line, plus a
+   tabs row when the collection/global has drafts, versions, or other
+   sub-views) rather than a fixed constant. Left un-sticky, it scrolled away
+   normally, which was the actual remaining source of "the page is still
+   scrolling" after the app-header/doc-controls fixes above - confirmed by
+   measuring every element's scrollHeight vs. clientHeight directly in the
+   browser (this session has no way to load the page itself).
+
+   Pinning it here, directly below `.app-header`, closes that gap.
+   `z-index: 10` sits between app-header's 30 and doc-controls' 5, so
+   stacking stays correct once all three are stuck with content scrolling
+   underneath.
+
+   `var(--base) * 3` (60px at this project's `--base: 20px`) is
+   `.doc-header`'s *measured* height on the document actually tested, not a
+   value Payload exposes or guarantees - flagged, not hidden. It holds as
+   long as every live-preview-enabled collection/global here renders the
+   same one-line-title, no-extra-tab shape, true today since none of them
+   has drafts/versions enabled (confirmed earlier in this project). If a
+   title ever wraps to two lines, or drafts/versions/API-view get enabled on
+   one of these later, `.doc-header` would grow past this constant and this
+   gap would partially reopen. A fully robust fix would measure it in JS and
+   publish its own custom property - larger than this fix's scope.
+
+   `margin-top: 0` overrides Payload's own `calc(var(--base) * .4)` (8px) -
+   confirmed by measurement to be the one remaining source of scroll after
+   the rule above: `position: sticky` doesn't remove an element's margin
+   from normal flow, so that 8px still reserved its own space above
+   `.doc-header` even once stuck, leaving `.template-default__wrap` with 8px
+   of real, if small, overflow. Zeroing it seats `.doc-header` flush against
+   `.app-header`, consistent with every other bar in this stack already
+   sitting flush with no gap. */
+
+.doc-header {
+  position: sticky;
+  top: var(--app-header-height);
+  background-color: var(--theme-bg);
+  z-index: 10;
+  margin-top: 0;
+}
+
+/* Stop the whole admin page from scrolling and confine scrolling to the
+   content column instead - matching how the sidebar nav already behaves
+   (@payloadcms/ui's `.nav`: `position: sticky; top: 0; height: 100vh;
+   overflow: hidden;`, with its own content in a nested `.nav__scroll {
+   height: 100%; overflow-y: auto; }`). Today `.template-default__wrap` (the
+   column holding `.app-header` and the current view) has no height cap, so
+   it grows as tall as its content and lets `body`/`html` scroll to reach it -
+   fine for a short view (Users, Categories: content fits, nothing scrolls),
+   but on a long one (a document with many fields, a long list) the whole
+   page scrolls, taking the sidebar nav's sticky frame of reference along
+   with it and making the chrome feel like it's moving.
+
+   Capping `.template-default__wrap` at `height: 100vh` with its own
+   `overflow-y: auto` gives it the identical treatment `.nav` already has.
+   Since `.template-default`'s single implicit grid row sizes to its tallest
+   item, and both `.nav` and this column are now explicitly 100vh, the row -
+   and `.template-default`'s own `min-height: 100vh` - resolves to exactly
+   one viewport height, leaving `body`/`html` nothing to scroll. `.app-header`'s
+   `position: sticky; top: 0` and `.doc-controls`'s `top: var(--app-header-height)`
+   above keep working unchanged - sticky only needs *a* scrolling ancestor,
+   not specifically the page, and this element becomes that ancestor.
+
+   Confirmed safe for Payload's dropdown menus (Popup, e.g. the three-dot
+   menu): they portal straight to `document.body`
+   (@payloadcms/ui/dist/elements/Popup/index.js), so they sit outside this
+   element and are never clipped by its new `overflow-y: auto`. Their
+   position-tracking listener is `window.addEventListener('scroll',
+   updatePosition, { capture: true })`, which fires for scroll events
+   dispatched on any descendant element during the capture phase regardless
+   of the event's own bubbling - so it still recalculates correctly once
+   this element, not the page, is what's actually scrolling. */
+
+.template-default__wrap {
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* On a live-preview edit view (Pages/Posts, or a live-preview-enabled
+   global), make the fields/blocks column and the iframe pane each scroll
+   independently in their own box, instead of one shared scrollbar carrying
+   both - matching what the collection list pages already feel like (no
+   loose page/column-level scroll).
+
+   Payload's own `.live-preview-window` (the iframe pane) already does half
+   of this - `position: sticky; top: var(--doc-controls-height); height:
+   calc(100vh - var(--doc-controls-height)); overflow: hidden;`
+   (@payloadcms/ui/dist/elements/LivePreview/Window/index.scss) - but that
+   offset only ever accounted for `.doc-controls`' own height. Now that
+   `.doc-controls` itself sits at `top: var(--app-header-height)` (above),
+   the iframe pane's hardcoded offset is stale: it doesn't know `.app-header`
+   exists, so it renders positioned and sized as if the breadcrumb bar were
+   never added - the likely cause of content appearing to disappear under
+   it. Both rules below add the missing `--app-header-height` term.
+
+   `.collection-edit__main` (the fields/blocks column) gets no equivalent
+   treatment from Payload by default - it just flows normally and grows with
+   its content. Capping it to the same remaining height and giving it its
+   own `overflow-y: auto` is what actually splits the two panes' scrolling
+   apart; without this, `.template-default__wrap`'s own scrollbar (above)
+   would carry both panes as one shared column instead of each scrolling on
+   its own.
+
+   Both panes end up capped to the exact same box (same top offset, same
+   height), so their combined natural height in the flow is exactly
+   `--app-header-height + --base*3 (.doc-header) + --doc-controls-height +
+   (100vh - --app-header-height - --base*3 - --doc-controls-height)` = one
+   full viewport height - `.template-default__wrap` has nothing left to
+   scroll here either. The `--base * 3` term matches `.doc-header`'s own
+   sticky rule below - see its comment for what that constant is and its
+   limits.
+
+   Guarded by the same `min-width: 1025px` already used for the Save/
+   eye-icon-left rules above: below that, `.live-preview-window` stacks
+   under the fields column instead of beside it (its own mid-break rule), so
+   there's no side-by-side split to give independent scroll to - the normal
+   stacked mobile layout is left alone. */
+
+@media (min-width: 1025px) {
+  .collection-edit--is-live-previewing .collection-edit__main {
+    height: calc(
+      100vh - var(--app-header-height) - var(--base) * 3 - var(--doc-controls-height)
+    );
+    overflow-y: auto;
+  }
+
+  .collection-edit--is-live-previewing .live-preview-window {
+    top: calc(
+      var(--app-header-height) + var(--base) * 3 + var(--doc-controls-height)
+    );
+    height: calc(
+      100vh - var(--app-header-height) - var(--base) * 3 - var(--doc-controls-height)
+    );
+  }
+}
