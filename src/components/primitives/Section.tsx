@@ -21,11 +21,24 @@ export type SectionProps = {
    */
   hasBackgroundImage?: boolean
   /**
-   * Set alongside hasBackgroundImage when the section's own text needs
-   * fixed DARK text over its background image (e.g. Hero's "Light" overlay
-   * color) instead of the default fixed light text. Lets a transparent
-   * Header floating over this section (see _header.css) match the same
-   * fixed pairing, never theme-relative - same reasoning as
+   * Set when the section has a full-bleed media panel covering only HALF its
+   * width (e.g. Hero's Split "Full-bleed" media fill) instead of the whole
+   * section. Unlike hasBackgroundImage, a transparent Header floating on top
+   * only needs to recolor the half of the *header* actually above the photo
+   * (its logo when 'left', its links/icons/toggle when 'right' - see
+   * _header.css's data-split-media-side rules) since the header is always
+   * logo-left / controls-right (HeaderClient.tsx). The other half keeps
+   * adopting the section's own Surface color, since it's really floating
+   * over the text side, not the media. Mutually exclusive with
+   * hasBackgroundImage in practice (Hero only sets one or the other).
+   */
+  splitMediaSide?: 'left' | 'right' | null
+  /**
+   * Set alongside hasBackgroundImage or splitMediaSide when the section's own
+   * text needs fixed DARK text over its background media (e.g. Hero's
+   * "Light" overlay color) instead of the default fixed light text. Lets a
+   * transparent Header floating over this section (see _header.css) match
+   * the same fixed pairing, never theme-relative - same reasoning as
    * hasBackgroundImage itself.
    */
   hasDarkOverlayText?: boolean
@@ -60,6 +73,7 @@ export function Section({
   id,
   as: Tag = 'section',
   hasBackgroundImage,
+  splitMediaSide,
   hasDarkOverlayText,
   blockId,
 }: SectionProps) {
@@ -71,8 +85,9 @@ export function Section({
       data-surface={surface ?? 'default'}
       data-spacing={spacing ?? 'normal'}
       data-has-background-image={hasBackgroundImage ? 'true' : undefined}
+      data-split-media-side={splitMediaSide ?? undefined}
       data-overlay-text-color={
-        hasBackgroundImage && hasDarkOverlayText ? 'dark' : undefined
+        (hasBackgroundImage || splitMediaSide) && hasDarkOverlayText ? 'dark' : undefined
       }
     >
       {children}

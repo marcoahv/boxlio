@@ -59,7 +59,11 @@ export const Media: CollectionConfig = {
   ],
   upload: {
     disableLocalStorage: Boolean(process.env.S3_BUCKET && process.env.S3_ACCESS_KEY_ID),
-    mimeTypes: ['image/*'],
+    // Video is stored as-is: canResizeImage() and generateBlurData's own
+    // mimetype guard already skip resizing/format-conversion/blur-generation
+    // for anything that isn't image/jpeg|png|gif|webp|tiff|avif, so a video
+    // upload just has no `sizes`/`blurDataUrl` - no pipeline change needed.
+    mimeTypes: ['image/*', 'video/*'],
     formatOptions: {
       format: 'webp'
     },

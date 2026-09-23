@@ -148,10 +148,17 @@ export interface UserAuthOperations {
 export interface HeroBlock {
   heading: string;
   subheading?: string | null;
+  mediaType?: ('image' | 'video') | null;
   /**
-   * Shown beside the text (Image left/right) or as a full-bleed background (Image background).
+   * Shown beside the text (Split) or as a full-bleed background (Media Background).
    */
   image?: (string | null) | Media;
+  video?: (string | null) | Media;
+  videoLoop?: boolean | null;
+  /**
+   * Hides the player controls and autoplays the video muted instead, since a hidden-control video would otherwise have no way to start.
+   */
+  videoHideControls?: boolean | null;
   links?:
     | {
         label: string;
@@ -161,21 +168,12 @@ export interface HeroBlock {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Image background overrides the Appearance surface below with light text over a dark overlay, so it stays legible over any photo.
-   */
-  layout?: ('imageRight' | 'imageLeft' | 'backgroundImage' | 'textOnly') | null;
-  /**
-   * Only applies to the Image background layout.
-   */
+  layout?: ('textOnly' | 'split' | 'backgroundImage') | null;
+  headerPosition?: ('left' | 'right') | null;
+  mediaFill?: ('contained' | 'stretch' | 'fullBleed') | null;
+  align?: ('center' | 'left' | 'right') | null;
   overlayCoverage?: ('full' | 'content') | null;
-  /**
-   * Only applies to the Image background layout.
-   */
   overlayColor?: ('dark' | 'light' | 'primary' | 'secondary') | null;
-  /**
-   * Only applies to the Image background layout.
-   */
   overlayOpacity?: ('none' | 'light' | 'medium' | 'strong' | 'solid') | null;
   surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   id?: string | null;

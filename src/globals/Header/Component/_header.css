@@ -277,42 +277,94 @@
     --header-fg: var(--color-on-overlay-light);
   }
 
+  /* Split's Full-bleed media (Hero's mediaFill: 'fullBleed') only covers half
+     the section, so unlike the background-image rules above - which recolor
+     the WHOLE header - only the half of the header actually floating over the
+     photo needs the fixed treatment. The header is always logo-left /
+     controls-right (HeaderClient.tsx's justify-content: space-between), so
+     data-split-media-side='right' means the CONTROLS half (nav links, social
+     icons, theme toggle, hamburger) sits over the media. --header-fg is
+     redefined on .header__controls only - a normal descendant override, not a
+     competing declaration on the same element, so it needs no specificity
+     race or exclusion (unlike the logo-swap mirror below, which does). The
+     'left' case (logo over the media instead) is handled by that logo mirror,
+     since --header-fg has no effect on the logo's own swapped <img> assets.
+     The header's LOGO half in this 'right' case, and the CONTROLS half in the
+     'left' case, are untouched here on purpose: they keep adopting the
+     section's own Surface color via the plain --header-fg rules above, since
+     they're really floating over the text side, not the photo.
+
+     atMedium+ ONLY: below that, Full-bleed's media is normal-flow, not
+     absolute (see fullBleedPositionClassName in Hero/Component.tsx) - the
+     section's own padding-block-start (reserved to clear the fixed header,
+     see the "Fixed-header overlay" comment above) pushes it down same as any
+     other content, so the header never actually overlaps the photo below
+     atMedium, only the section's own plain Surface-colored padding gap.
+     Forcing the photo treatment there was wrong on every Surface (just
+     invisible on darker ones by coincidence) - confirmed on a Default-
+     surface hero, where the white-forced text sat on the same white gap.
+     Below atMedium this rule simply doesn't apply, and .header__controls
+     falls through to inheriting .header's plain Surface-adoption value,
+     same as any non-split hero. */
+  @media (width >= 768px) {
+    body:has(main .ui-section:first-child[data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .header__controls {
+      --header-fg: var(--color-on-overlay);
+    }
+
+    body:has(main .ui-section:first-child[data-split-media-side='right'][data-overlay-text-color='dark'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .header__controls {
+      --header-fg: var(--color-on-overlay-light);
+    }
+  }
+
   /* Logo mirror of the four --header-fg overrides above. All four surfaces
      are written explicitly (not the 2-rule shortcut in "--- Logo ---" above)
      because here the header's OWN data-surface rule is always also in play
      and may already have swapped the images — Muted/Accent-underneath must
      still win back to `logo` even if the header is configured as Inverse.
 
-     Every selector below excludes [data-has-background-image]: a Hero's own
-     `surface` field is independent of its `layout` field, so a
-     background-image Hero's section still carries a `data-surface` value
-     alongside `data-has-background-image`, and would otherwise match here
-     too. That used to matter only for specificity (the background-image
-     logo mirror below was written to numerically outrank these rules), but
-     the html[data-theme] block further down adds an extra type selector
-     that tips a Default/Inverse-underneath case back in ITS favor whenever
-     an explicit theme is set - a real bug, not just a hypothetical. Excluding
-     background-image sections here makes the two rule families mutually
-     exclusive by construction instead of racing on specificity. */
+     Every selector below excludes [data-has-background-image] and any
+     [data-split-media-side] (either 'left' or 'right'): a Hero's own
+     `surface` field is independent of its `layout` field, so a background-
+     image or Split Full-bleed section still carries a `data-surface` value
+     alongside that attribute, and would otherwise match here too. That used
+     to matter only for specificity (the background-image logo mirror below
+     was written to numerically outrank these rules), but the html[data-theme]
+     block further down adds an extra type selector that tips a
+     Default/Inverse-underneath case back in ITS favor whenever an explicit
+     theme is set - a real bug, not just a hypothetical. Excluding all three
+     cases here makes the rule families mutually exclusive by construction
+     instead of racing on specificity.
+
+     Split Full-bleed's own logo handling (both breakpoints, both sides) lives
+     further down, after its --header-fg mirror: below atMedium its media
+     spans the section's full width once stacked (there's no left/right split
+     on mobile - see the comment on fullBleedPositionClassName in
+     Hero/Component.tsx), so BOTH sides of the header float over it there,
+     regardless of which side `data-split-media-side` names for the desktop
+     layout. */
 
   @media (prefers-color-scheme: light) {
-    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]):not([data-split-media-side]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo {
       display: block;
     }
-    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]):not([data-split-media-side]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo-dark {
       display: none;
     }
 
-    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]):not([data-split-media-side]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo {
       display: none;
     }
-    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]):not([data-split-media-side]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo-dark {
       display: block;
@@ -320,23 +372,23 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]):not([data-split-media-side]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo {
       display: none;
     }
-    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]):not([data-split-media-side]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo-dark {
       display: block;
     }
 
-    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]):not([data-split-media-side]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo {
       display: block;
     }
-    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]):not([data-split-media-side]))
       .header[data-transparent='true']:not(.header--scrolled)
       .ui-logo__img--logo-dark {
       display: none;
@@ -348,68 +400,195 @@
      ancestor selector outranks the plain body:has(...) selectors inside the
      media queries. */
   html[data-theme='light']
-    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: block;
   }
   html[data-theme='light']
-    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: none;
   }
   html[data-theme='light']
-    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: none;
   }
   html[data-theme='light']
-    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: block;
   }
 
   html[data-theme='dark']
-    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: none;
   }
   html[data-theme='dark']
-    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='default']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: block;
   }
   html[data-theme='dark']
-    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: block;
   }
   html[data-theme='dark']
-    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]))
+    body:has(main .ui-section:first-child[data-surface='inverse']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: none;
   }
 
-  body:has(main .ui-section:first-child[data-surface='muted']:not([data-has-background-image]))
+  body:has(main .ui-section:first-child[data-surface='muted']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo,
-  body:has(main .ui-section:first-child[data-surface='accent']:not([data-has-background-image]))
+  body:has(main .ui-section:first-child[data-surface='accent']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo {
     display: block;
   }
-  body:has(main .ui-section:first-child[data-surface='muted']:not([data-has-background-image]))
+  body:has(main .ui-section:first-child[data-surface='muted']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark,
-  body:has(main .ui-section:first-child[data-surface='accent']:not([data-has-background-image]))
+  body:has(main .ui-section:first-child[data-surface='accent']:not([data-has-background-image]):not([data-split-media-side]))
     .header[data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo-dark {
+    display: none;
+  }
+
+  /* Split Full-bleed with media on the RIGHT: the logo, always the header's
+     leftmost element (HeaderClient.tsx), is over the TEXT side at atMedium+
+     (see the --header-fg comment above) and over the section's own plain
+     padding gap below atMedium (media doesn't reach the header there at
+     all - see that same comment) - Surface-matched either way, unlike
+     'right's CONTROLS half, which needs the opposite split (photo at
+     atMedium+, Surface below it). So unlike every other override in this
+     file, this one is NOT media-query-gated: it needs the same Surface-
+     matched mapping as the generic logo mirror above, at every width,
+     just restated here scoped to this one case (the generic mirror now
+     excludes every [data-split-media-side] outright, so it can't be relied
+     on for this case either). */
+  @media (prefers-color-scheme: light) {
+    body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: block;
+    }
+    body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: none;
+    }
+
+    body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: none;
+    }
+    body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: block;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: none;
+    }
+    body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: block;
+    }
+
+    body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: block;
+    }
+    body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='right'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: none;
+    }
+  }
+
+  html[data-theme='light']
+    body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo {
+    display: block;
+  }
+  html[data-theme='light']
+    body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo-dark {
+    display: none;
+  }
+  html[data-theme='light']
+    body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo {
+    display: none;
+  }
+  html[data-theme='light']
+    body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo-dark {
+    display: block;
+  }
+
+  html[data-theme='dark']
+    body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo {
+    display: none;
+  }
+  html[data-theme='dark']
+    body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo-dark {
+    display: block;
+  }
+  html[data-theme='dark']
+    body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo {
+    display: block;
+  }
+  html[data-theme='dark']
+    body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo-dark {
+    display: none;
+  }
+
+  body:has(main .ui-section:first-child[data-surface='muted'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo,
+  body:has(main .ui-section:first-child[data-surface='accent'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo {
+    display: block;
+  }
+  body:has(main .ui-section:first-child[data-surface='muted'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+    .ui-logo__img--logo-dark,
+  body:has(main .ui-section:first-child[data-surface='accent'][data-split-media-side='right'])
+    .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
     .ui-logo__img--logo-dark {
     display: none;
   }
@@ -440,6 +619,184 @@
     display: none;
   }
 
+  /* Logo mirror for Split's Full-bleed media on the LEFT (data-split-media-
+     side='left'): the logo, always the header's leftmost element
+     (HeaderClient.tsx), sits over the photo instead of the controls in that
+     case. Same fixed, non-theme-relative pairing as the background-image
+     mirror above, just keyed by data-split-media-side instead. This is a
+     competing `display` declaration on the SAME .ui-logo__img elements the
+     Surface-based logo mirror further up also targets, unlike the
+     .header__controls --header-fg rule above (a plain descendant override,
+     no race) - so those Surface rules exclude every [data-split-media-side]
+     to stay mutually exclusive by construction, the same reasoning already
+     applied there for :not([data-has-background-image]).
+
+     atMedium+ ONLY, same reasoning as the 'right' --header-fg rule above:
+     below that breakpoint Full-bleed's media is normal-flow and gets pushed
+     down by the section's own header-clearance padding, so the header never
+     actually overlaps the photo there - only the plain Surface-colored
+     padding gap. Unlike 'right's logo restoration above (unconditional -
+     'right' never puts the media behind the logo at any width, so it's
+     always Surface-matched), 'left' genuinely needs different treatment per
+     breakpoint, so this rule IS gated. The mobile-scoped restoration of the
+     generic Surface mapping for this case lives further down, after the
+     muted/accent rules below. */
+  @media (width >= 768px) {
+    body:has(main .ui-section:first-child[data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: none;
+    }
+    body:has(main .ui-section:first-child[data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: block;
+    }
+
+    body:has(main .ui-section:first-child[data-split-media-side='left'][data-overlay-text-color='dark'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: block;
+    }
+    body:has(main .ui-section:first-child[data-split-media-side='left'][data-overlay-text-color='dark'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: none;
+    }
+  }
+
+  /* Below atMedium, Split Full-bleed's LOGO restoration for the 'left' case:
+     mirrors 'right's unconditional restoration above verbatim (same
+     Default/Inverse x OS-scheme x explicit-theme x Muted/Accent shape),
+     just scoped to below atMedium and keyed to 'left' instead of 'right' -
+     needed because, unlike 'right', 'left' genuinely IS photo-matched above
+     this breakpoint (the gated rule just above), so it can't just be
+     unconditional the way 'right's is. This re-derivation exists at all
+     because the generic Surface mirror can't be relied on for either side:
+     it now excludes every [data-split-media-side] unconditionally. The
+     CONTROLS side needs no equivalent below atMedium for either 'left' or
+     'right': neither ever set an override there in the first place ('left'
+     never touches .header__controls at all; 'right's override is now
+     atMedium+-only, see above), so below atMedium controls simply falls
+     through to inheriting .header's plain Surface-adoption value on both
+     sides already, with no extra rule required. */
+  @media (width < 768px) {
+    @media (prefers-color-scheme: light) {
+      body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='left'])
+        .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+        .ui-logo__img--logo {
+        display: block;
+      }
+      body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='left'])
+        .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+        .ui-logo__img--logo-dark {
+        display: none;
+      }
+
+      body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='left'])
+        .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+        .ui-logo__img--logo {
+        display: none;
+      }
+      body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='left'])
+        .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+        .ui-logo__img--logo-dark {
+        display: block;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='left'])
+        .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+        .ui-logo__img--logo {
+        display: none;
+      }
+      body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='left'])
+        .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+        .ui-logo__img--logo-dark {
+        display: block;
+      }
+
+      body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='left'])
+        .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+        .ui-logo__img--logo {
+        display: block;
+      }
+      body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='left'])
+        .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+        .ui-logo__img--logo-dark {
+        display: none;
+      }
+    }
+
+    html[data-theme='light']
+      body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: block;
+    }
+    html[data-theme='light']
+      body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: none;
+    }
+    html[data-theme='light']
+      body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: none;
+    }
+    html[data-theme='light']
+      body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: block;
+    }
+
+    html[data-theme='dark']
+      body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: none;
+    }
+    html[data-theme='dark']
+      body:has(main .ui-section:first-child[data-surface='default'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: block;
+    }
+    html[data-theme='dark']
+      body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: block;
+    }
+    html[data-theme='dark']
+      body:has(main .ui-section:first-child[data-surface='inverse'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: none;
+    }
+
+    body:has(main .ui-section:first-child[data-surface='muted'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo,
+    body:has(main .ui-section:first-child[data-surface='accent'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo {
+      display: block;
+    }
+    body:has(main .ui-section:first-child[data-surface='muted'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark,
+    body:has(main .ui-section:first-child[data-surface='accent'][data-split-media-side='left'])
+      .header[data-position='fixed'][data-transparent='true']:not(.header--scrolled)
+      .ui-logo__img--logo-dark {
+      display: none;
+    }
+  }
+
   /* Sizing lives on .ui-logo (elements/_logo.css); this only positions it. */
   .header__logo {
     display: flex;
@@ -449,11 +806,23 @@
   /* Groups the theme toggle with the hamburger/nav so .header__bar's
      space-between puts the logo on one side and everything else on the
      other, instead of spreading three separate flex children across the
-     whole bar (see HeaderClient.tsx). */
+     whole bar (see HeaderClient.tsx).
+
+     color: var(--header-fg) is re-declared here on purpose, even though
+     .header already sets the same thing: --header-fg is a custom property,
+     so redefining IT further down (e.g. the data-split-media-side='right'
+     rule above, scoped to .header__controls) only has an effect if
+     something re-reads var(--header-fg) into `color` AT that same point in
+     the tree. Without this, `color` was computed once at .header using
+     .header's own --header-fg and simply inherited unchanged from there -
+     the split-side override was setting a custom property nothing consumed,
+     so links/icons stayed stuck on the header's base color regardless of
+     which half the media was on. */
   .header__controls {
     display: flex;
     align-items: center;
     gap: 1.6rem;
+    color: var(--header-fg);
   }
 
   /* Theme toggle — visible at every breakpoint, unlike the hamburger below. */

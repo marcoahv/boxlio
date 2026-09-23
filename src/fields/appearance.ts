@@ -1,4 +1,4 @@
-import type { Field, Option } from 'payload'
+import type { Condition, Field, Option } from 'payload'
 
 /**
  * Shared option lists.
@@ -45,13 +45,19 @@ export const WIDTH_OPTIONS: Option[] = [
  *
  * Usage:
  *   fields: [ ...appearanceField(), { name: 'heading', type: 'text' } ]
+ *
+ * Pass `condition` when a block overrides the surface for one of its own
+ * layout choices (see Hero, whose Media Background layout replaces `surface`
+ * with a fixed dark overlay) and the control should hide rather than sit
+ * there unused.
  */
-export const appearanceField = (): Field[] => [
+export const appearanceField = (condition?: Condition): Field[] => [
   {
     name: 'surface',
     type: 'select',
     defaultValue: 'default',
     options: SURFACE_OPTIONS,
+    ...(condition ? { admin: { condition } } : {}),
   },
 ]
 

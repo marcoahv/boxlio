@@ -1,6 +1,7 @@
 import { Container, Section, type Surface } from '@/components/primitives'
 import { getServerSideURL } from '@/utilities/getUrl'
 import Link from 'next/link'
+import Script from 'next/script'
 
 type BreadcrumbItem = {
   label: string
@@ -32,7 +33,7 @@ export function Breadcrumbs({ items, surface = 'muted' }: BreadcrumbsProps) {
 
   return (
     <>
-      {/* Must render before the <script> below - _header.css's fixed-header
+      {/* Must render before the <Script> below - _header.css's fixed-header
           clearance targets `.ui-section:first-child` inside <main>. */}
       <Section surface={surface} spacing="tight">
         <Container width="default">
@@ -60,8 +61,16 @@ export function Breadcrumbs({ items, surface = 'muted' }: BreadcrumbsProps) {
           </nav>
         </Container>
       </Section>
-      <script
+      <Script
+        id="breadcrumbs-json-ld"
         type="application/ld+json"
+        // A literal <script> here triggers React's "scripts inside React
+        // components are never executed when rendering on the client"
+        // warning during live preview (which re-renders the tree client-side
+        // via useScopedLivePreview, unlike a normal server-rendered page
+        // load) - next/script is React-aware and handles this correctly in
+        // both contexts. Inert JSON data, so the load `strategy` doesn't
+        // matter functionally.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
     </>

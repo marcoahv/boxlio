@@ -31,14 +31,76 @@ export const Hero: Block = {
               },
             },
             {
+              name: 'mediaType',
+              label: 'Media type',
+              type: 'radio',
+              defaultValue: 'image',
+              admin: {
+                condition: (_, siblingData) =>
+                  siblingData?.layout === 'split' || siblingData?.layout === 'backgroundImage',
+              },
+              options: [
+                { label: 'Image', value: 'image' },
+                { label: 'Video', value: 'video' },
+              ],
+            },
+            {
               name: 'image',
               type: 'upload',
               relationTo: 'media',
               admin: {
                 description:
-                  'Shown beside the text (Image left/right) or as a full-bleed background (Image background).',
+                  'Shown beside the text (Split) or as a full-bleed background (Media Background).',
                 className: 'field-label--match-array-label',
+                condition: (_, siblingData) =>
+                  !(
+                    (siblingData?.layout === 'split' || siblingData?.layout === 'backgroundImage') &&
+                    siblingData?.mediaType === 'video'
+                  ),
               },
+            },
+            {
+              name: 'video',
+              type: 'upload',
+              relationTo: 'media',
+              filterOptions: {
+                mimeType: { contains: 'video' },
+              },
+              admin: {
+                className: 'field-label--match-array-label',
+                condition: (_, siblingData) =>
+                  (siblingData?.layout === 'split' || siblingData?.layout === 'backgroundImage') &&
+                  siblingData?.mediaType === 'video',
+              },
+            },
+            {
+              type: 'row',
+              admin: {
+                // Loop/Hide controls only make sense for Split's inline,
+                // controllable video - Media Background video is always
+                // forced autoplay/muted/loop with no controls (see
+                // Component.tsx), so this row stays Split-only.
+                condition: (_, siblingData) =>
+                  siblingData?.layout === 'split' && siblingData?.mediaType === 'video',
+              },
+              fields: [
+                {
+                  name: 'videoLoop',
+                  label: 'Loop',
+                  type: 'checkbox',
+                  defaultValue: false,
+                },
+                {
+                  name: 'videoHideControls',
+                  label: 'Hide controls',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    description:
+                      'Hides the player controls and autoplays the video muted instead, since a hidden-control video would otherwise have no way to start.',
+                  },
+                },
+              ],
             },
             {
               name: 'links',
@@ -102,17 +164,54 @@ export const Hero: Block = {
           fields: [
             {
               name: 'layout',
+              label: false,
               type: 'radio',
-              defaultValue: 'imageRight',
+              defaultValue: 'split',
+              options: [
+                { label: 'Text-only', value: 'textOnly' },
+                { label: 'Split', value: 'split' },
+                { label: 'Media Background', value: 'backgroundImage' },
+              ],
+            },
+            {
+              name: 'headerPosition',
+              label: 'Text position',
+              type: 'radio',
+              defaultValue: 'left',
               admin: {
-                description:
-                  'Image background overrides the Appearance surface below with light text over a dark overlay, so it stays legible over any photo.',
+                condition: (_, siblingData) => siblingData?.layout === 'split',
               },
               options: [
-                { label: 'Image right', value: 'imageRight' },
-                { label: 'Image left', value: 'imageLeft' },
-                { label: 'Image background', value: 'backgroundImage' },
-                { label: 'Text only', value: 'textOnly' },
+                { label: 'Left', value: 'left' },
+                { label: 'Right', value: 'right' },
+              ],
+            },
+            {
+              name: 'mediaFill',
+              label: 'Media fill',
+              type: 'radio',
+              defaultValue: 'contained',
+              admin: {
+                condition: (_, siblingData) => siblingData?.layout === 'split',
+              },
+              options: [
+                { label: 'Contained', value: 'contained' },
+                { label: 'Stretch', value: 'stretch' },
+                { label: 'Full-bleed', value: 'fullBleed' },
+              ],
+            },
+            {
+              name: 'align',
+              label: 'Text alignment',
+              type: 'radio',
+              defaultValue: 'left',
+              admin: {
+                condition: (_, siblingData) => siblingData?.layout === 'textOnly',
+              },
+              options: [
+                { label: 'Center', value: 'center' },
+                { label: 'Left', value: 'left' },
+                { label: 'Right', value: 'right' },
               ],
             },
             {
@@ -121,7 +220,9 @@ export const Hero: Block = {
               type: 'radio',
               defaultValue: 'full',
               admin: {
-                description: 'Only applies to the Image background layout.',
+                // Split's media is its own half, never underneath the text,
+                // so "text area only" has no equivalent there - Media
+                // Background stays the only layout with a coverage choice.
                 condition: (_, siblingData) =>
                   siblingData?.layout === 'backgroundImage',
               },
@@ -136,9 +237,9 @@ export const Hero: Block = {
               type: 'radio',
               defaultValue: 'dark',
               admin: {
-                description: 'Only applies to the Image background layout.',
                 condition: (_, siblingData) =>
-                  siblingData?.layout === 'backgroundImage',
+                  siblingData?.layout === 'backgroundImage' ||
+                  (siblingData?.layout === 'split' && siblingData?.mediaFill === 'fullBleed'),
               },
               options: [
                 { label: 'Dark', value: 'dark' },
@@ -153,9 +254,9 @@ export const Hero: Block = {
               type: 'radio',
               defaultValue: 'medium',
               admin: {
-                description: 'Only applies to the Image background layout.',
                 condition: (_, siblingData) =>
-                  siblingData?.layout === 'backgroundImage',
+                  siblingData?.layout === 'backgroundImage' ||
+                  (siblingData?.layout === 'split' && siblingData?.mediaFill === 'fullBleed'),
               },
               options: [
                 { label: 'None', value: 'none' },
@@ -165,7 +266,9 @@ export const Hero: Block = {
                 { label: 'Solid', value: 'solid' },
               ],
             },
-            ...appearanceField(),
+            ...appearanceField(
+              (_, siblingData) => siblingData?.layout !== 'backgroundImage',
+            ),
           ],
         },
       ],
