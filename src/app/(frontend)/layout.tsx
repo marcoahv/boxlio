@@ -70,7 +70,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       data-body-font={settings.bodyFont ?? 'primary'}
       data-heading-scale={settings.headingScale ?? 'md'}
       data-main-heading-size={settings.mainHeadingSize ?? 'default'}
-      data-container-scale={settings.containerScale ?? 'md'}
+      data-sections-width={settings.sectionsWidth ?? 'default'}
       data-section-scale={settings.sectionScale ?? 'md'}
       data-hero-width={settings.heroWidth ?? 'default'}
       data-hero-spacing={settings.heroSpacing ?? 'normal'}

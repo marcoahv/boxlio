@@ -432,27 +432,31 @@ html[data-main-heading-size='display-lg'] {
 }
 
 /*=============================================
-*        Container width scale
+*        Section width
 =============================================*/
 
-/* Same field -> data-attribute -> CSS pattern as Heading font above
-   (Settings.containerScale -> layout.tsx's data-container-scale on <html>).
-   A density multiplier layered on top of each block's own Container width
-   pick (Container.tsx's narrow/default/wide/full), not a replacement for
-   it - see _section.css. */
+/* Site-wide, editor-controlled (Settings.sectionsWidth -> layout.tsx's
+   data-sections-width on <html>). Same literal-preset pattern as Hero width
+   below (not a multiplier) - governs every block that isn't Header, Hero, or
+   Rich Text, via _section.css's .ui-section-container override. Shares the
+   same narrow/default/wide/full rem scale as Header/Hero/Rich Text so
+   picking "Wide" anywhere produces the same 144rem max-width. */
 
 :root {
-  --container-scale: var(--scale-md);
+  --section-max-width: 114rem;
 }
 
-html[data-container-scale='sm'] {
-  --container-scale: var(--scale-sm);
+html[data-sections-width='narrow'] {
+  --section-max-width: 72rem;
 }
-html[data-container-scale='md'] {
-  --container-scale: var(--scale-md);
+html[data-sections-width='default'] {
+  --section-max-width: 114rem;
 }
-html[data-container-scale='lg'] {
-  --container-scale: var(--scale-lg);
+html[data-sections-width='wide'] {
+  --section-max-width: 144rem;
+}
+html[data-sections-width='full'] {
+  --section-max-width: none;
 }
 
 /*=============================================
@@ -485,25 +489,27 @@ html[data-section-scale='lg'] {
 =============================================*/
 
 /* Site-wide, editor-controlled (Settings.heroWidth/heroSpacing ->
-   layout.tsx's data-hero-width/data-hero-spacing on <html>). Unlike the
-   scale tokens above, these are literal preset picks (not multipliers) -
-   they replace Hero's former per-instance width/spacing fields. Consumed by
-   _section.css's .ui-hero-container/.ui-hero-section override rules, which
-   still compose with --container-scale/--section-scale like every other
-   width/spacing consumer. */
+   layout.tsx's data-hero-width/data-hero-spacing on <html>). Width is a
+   literal preset pick (not a multiplier) - they replace Hero's former
+   per-instance width/spacing fields, and share the same narrow=72rem/
+   default=114rem/wide=144rem/full=none scale as --section-max-width/
+   --rich-text-max-width below, so "Wide" means the same thing everywhere.
+   Consumed by _section.css's .ui-hero-container/.ui-hero-section override
+   rules. Spacing still composes with --section-scale like every other
+   spacing consumer. */
 
 :root {
-  --hero-max-width: calc(114rem * var(--container-scale, 1));
+  --hero-max-width: 114rem;
 }
 
 html[data-hero-width='narrow'] {
-  --hero-max-width: calc(72rem * var(--container-scale, 1));
+  --hero-max-width: 72rem;
 }
 html[data-hero-width='default'] {
-  --hero-max-width: calc(114rem * var(--container-scale, 1));
+  --hero-max-width: 114rem;
 }
 html[data-hero-width='wide'] {
-  --hero-max-width: calc(144rem * var(--container-scale, 1));
+  --hero-max-width: 144rem;
 }
 html[data-hero-width='full'] {
   --hero-max-width: none;
@@ -536,20 +542,22 @@ html[data-hero-spacing='loose'] {
    consumers share this one source: RichTextBlock's own Section/Container,
    and a Post's bodyAppearance Section/Container - same relationship
    --heading-scale already has with _heading.css and _prose.css. Defaults to
-   'narrow' (not 'default'), a deliberate readability choice. */
+   'narrow' (not 'default'), a deliberate readability choice. Shares the same
+   narrow=72rem/default=114rem/wide=144rem/full=none scale as
+   --hero-max-width/--section-max-width. */
 
 :root {
-  --rich-text-max-width: calc(72rem * var(--container-scale, 1));
+  --rich-text-max-width: 72rem;
 }
 
 html[data-rich-text-width='narrow'] {
-  --rich-text-max-width: calc(72rem * var(--container-scale, 1));
+  --rich-text-max-width: 72rem;
 }
 html[data-rich-text-width='default'] {
-  --rich-text-max-width: calc(114rem * var(--container-scale, 1));
+  --rich-text-max-width: 114rem;
 }
 html[data-rich-text-width='wide'] {
-  --rich-text-max-width: calc(144rem * var(--container-scale, 1));
+  --rich-text-max-width: 144rem;
 }
 html[data-rich-text-width='full'] {
   --rich-text-max-width: none;

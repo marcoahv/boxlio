@@ -36,7 +36,7 @@ export function PostClient({ initialData }: { initialData: Post }) {
         <Breadcrumbs items={breadcrumbs} surface={data.breadcrumbs?.surface} />
       )}
       <Section surface={data.headerAppearance?.surface}>
-        <Container>
+        <Container className="ui-section-container">
           <Stack gap="lg">
             <Heading level={1}>{data.title}</Heading>
             <PostPreview post={data} variant="header" showLink={false} imageSize="thumbnail" />

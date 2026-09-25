@@ -11,7 +11,7 @@ import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
  * `--color-primary`/`--color-secondary` custom properties, and the
  * `data-heading-font`/`data-body-font`/`data-heading-scale`/
  * `data-main-heading-size`/
- * `data-container-scale`/`data-section-scale`/`data-hero-width`/
+ * `data-sections-width`/`data-section-scale`/`data-hero-width`/
  * `data-hero-spacing`/`data-rich-text-width`/`data-rich-text-spacing`
  * attributes in sync with Settings during a live-preview session, the same
  * `document.documentElement.setAttribute` technique `ThemeToggle` uses for
@@ -37,7 +37,7 @@ export function SettingsLivePreviewSync({ initialSettings }: { initialSettings: 
     bodyFont,
     headingScale,
     mainHeadingSize,
-    containerScale,
+    sectionsWidth,
     sectionScale,
     heroWidth,
     heroSpacing,
@@ -123,8 +123,8 @@ export function SettingsLivePreviewSync({ initialSettings }: { initialSettings: 
   }, [mainHeadingSize])
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-container-scale', containerScale ?? 'md')
-  }, [containerScale])
+    document.documentElement.setAttribute('data-sections-width', sectionsWidth ?? 'default')
+  }, [sectionsWidth])
 
   useEffect(() => {
     document.documentElement.setAttribute('data-section-scale', sectionScale ?? 'md')

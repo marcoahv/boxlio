@@ -102,25 +102,27 @@
     @apply atMedium:px-[4rem];
   }
 
-  /* max-width is scaled by --container-scale (Settings.containerScale, see
-     _alias-tokens.css) - a site-wide density multiplier. [data-width='full']
-     stays untouched below: scaling max-width: none is meaningless.
+  /* Plain literal presets, matching the narrow=72rem/default=114rem/
+     wide=144rem/full=none scale every width consumer shares (see
+     _alias-tokens.css). [data-width='full'] stays untouched below: scaling
+     max-width: none is meaningless.
 
-     Most blocks have no per-instance width choice anymore and simply render
-     data-width='default', Container's own default. Hero and rich text are
-     still independently adjustable, but from Settings - see the override
-     rules below, which must win over these generic ones. */
+     Header is the one direct consumer of these generic rules - it passes
+     Settings.headerWidth straight into Container's own `width` prop with no
+     wrapper class. Every other block goes through the .ui-section-container/
+     .ui-hero-container/.ui-rich-text-container overrides below instead,
+     which must win over these generic ones. */
 
   .ui-container[data-width='narrow'] {
-    max-width: calc(72rem * var(--container-scale, 1));
+    max-width: 72rem;
   }
 
   .ui-container[data-width='default'] {
-    max-width: calc(114rem * var(--container-scale, 1));
+    max-width: 114rem;
   }
 
   .ui-container[data-width='wide'] {
-    max-width: calc(144rem * var(--container-scale, 1));
+    max-width: 144rem;
   }
 
   .ui-container[data-width='full'] {
@@ -128,10 +130,20 @@
     padding-inline: 0;
   }
 
-  /* Hero/Rich Text overrides - same specificity reasoning as the spacing
-     overrides above: 2 classes + 1 attribute-presence selector = (0,3,0),
-     beats every generic [data-width='X'] rule's (0,2,0) unconditionally.
-     Must stay inside this @layer components block. */
+  /* Section/Hero/Rich Text overrides - same specificity reasoning as the
+     spacing overrides above: 2 classes + 1 attribute-presence selector =
+     (0,3,0), beats every generic [data-width='X'] rule's (0,2,0)
+     unconditionally. Must stay inside this @layer components block.
+
+     .ui-section-container covers every block that isn't Header, Hero, or
+     Rich Text (FeatureGrid, Table, CallToAction, PostNavigation,
+     Breadcrumbs, Footer, FeaturedPost, BlogListing, a post's own header) -
+     driven by Settings.sectionsWidth via --section-max-width, the same
+     preset mechanism Hero/Rich Text already use. */
+
+  .ui-section-container.ui-container[data-width] {
+    max-width: var(--section-max-width);
+  }
 
   .ui-hero-container.ui-container[data-width] {
     max-width: var(--hero-max-width);
@@ -139,6 +151,10 @@
 
   .ui-rich-text-container.ui-container[data-width] {
     max-width: var(--rich-text-max-width);
+  }
+
+  html[data-sections-width='full'] .ui-section-container.ui-container[data-width] {
+    padding-inline: 0;
   }
 
   html[data-hero-width='full'] .ui-hero-container.ui-container[data-width] {

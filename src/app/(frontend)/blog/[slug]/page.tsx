@@ -58,7 +58,7 @@ export default async function Page({ params }: PageProps) {
       <PostNavigation prevPost={prevPost} nextPost={nextPost} />
       {relatedPosts.docs.length > 0 && (
         <Section surface="muted">
-          <Container>
+          <Container className="ui-section-container">
             <Heading>Related Posts</Heading>
             <CardContainer>
               {relatedPosts.docs.map((related) => (

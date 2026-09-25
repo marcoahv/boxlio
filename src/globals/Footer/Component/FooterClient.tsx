@@ -41,7 +41,7 @@ export function FooterClient({
 
   return (
     <footer className="footer" data-surface={surface ?? 'default'} data-spacing="normal">
-      <Container>
+      <Container className="ui-section-container">
         <Logo logo={logo} logoDark={logoDark} className="footer__logo" />
 
         {navLinks && navLinks.length > 0 && (

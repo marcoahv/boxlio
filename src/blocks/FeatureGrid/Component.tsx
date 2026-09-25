@@ -66,7 +66,7 @@ export function FeatureGrid(props: FeatureGridBlock) {
 
   return (
     <Section blockId={id} surface={surface}>
-      <Container>
+      <Container className="ui-section-container">
         <Stack gap="lg">
           {(heading || intro || headingField.isEditable || introField.isEditable) && (
             <Stack gap="sm" className="max-w-[70ch]">

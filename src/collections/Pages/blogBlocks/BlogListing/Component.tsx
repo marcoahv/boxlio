@@ -43,7 +43,7 @@ export function BlogListing(
 
   return (
     <Section blockId={id} surface={surface ?? 'muted'}>
-      <Container>
+      <Container className="ui-section-container">
         <Stack gap="lg">
           <Heading {...headingField.fieldProps}>{headingField.content}</Heading>
           <CategoryFilter categories={categories.docs} currentCategory={categoryParam} />

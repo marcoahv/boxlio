@@ -171,10 +171,10 @@
 
 @theme static {
   /* Shared 3-step density multiplier, reused by both Heading Scale and
-     Container Width (Settings.headingScale/containerScale) - the same
-     conceptual Compact/Default/Bold-or-Wide scale, just applied to two
+     Section Spacing (Settings.headingScale/sectionScale) - the same
+     conceptual Compact/Default/Bold-or-Loose scale, just applied to two
      different consumers via _alias-tokens.css's --heading-scale/
-     --container-scale cascades. */
+     --section-scale cascades. */
   --scale-sm: 0.85;
   --scale-md: 1;
   --scale-lg: 1.15;

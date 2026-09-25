@@ -17,7 +17,7 @@ export function PostNavigation({ prevPost, nextPost }: PostNavigationProps) {
 
   return (
     <nav className="post-navigation" aria-label="Post navigation">
-      <Container width="narrow">
+      <Container className="ui-section-container">
         <div className="post-navigation__inner">
           {prevPost ? (
             <Link

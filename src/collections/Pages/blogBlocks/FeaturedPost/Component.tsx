@@ -18,7 +18,7 @@ export function FeaturedPost(
 
   return (
     <Section blockId={id} surface={surface}>
-      <Container>
+      <Container className="ui-section-container">
         <Stack gap="md">
           <Heading>{featuredBlog ? 'Featured post' : 'Latest post'}</Heading>
           <PostPreview post={heroPost} imageSize={'fullSize'} />

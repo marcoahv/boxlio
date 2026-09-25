@@ -36,7 +36,7 @@ export function Breadcrumbs({ items, surface = 'muted' }: BreadcrumbsProps) {
       {/* Must render before the <Script> below - _header.css's fixed-header
           clearance targets `.ui-section:first-child` inside <main>. */}
       <Section surface={surface} spacing="tight">
-        <Container width="default">
+        <Container className="ui-section-container">
           <nav aria-label="Breadcrumb">
             <ol className="breadcrumbs__list">
               {items.map((item, index) => (

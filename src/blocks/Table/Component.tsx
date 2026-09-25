@@ -15,7 +15,7 @@ export function Table(props: TableBlockProps) {
 
   return (
     <Section blockId={id} surface={surface}>
-      <Container>
+      <Container className="ui-section-container">
         {(heading || headingField.isEditable) && (
           <Heading level={2} className="mb-6" {...headingField.fieldProps}>
             {headingField.content}

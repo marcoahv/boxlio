@@ -358,17 +358,13 @@ export const Settings: GlobalConfig = {
               admin: { initCollapsed: false },
               fields: [
                 {
-                  name: 'containerScale',
+                  name: 'sectionsWidth',
                   type: 'select',
                   label: 'Width',
-                  defaultValue: 'md',
-                  options: [
-                    { label: 'Narrow', value: 'sm' },
-                    { label: 'Default', value: 'md' },
-                    { label: 'Wide', value: 'lg' },
-                  ],
+                  defaultValue: 'default',
+                  options: WIDTH_OPTIONS,
                   admin: {
-                    description: "Scales every section's width, site-wide.",
+                    description: "Sets the width of every section, site-wide.",
                   },
                 },
                 {

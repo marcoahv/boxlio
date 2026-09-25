@@ -971,9 +971,9 @@ export interface Setting {
    */
   heroSpacing?: ('none' | 'tight' | 'normal' | 'loose') | null;
   /**
-   * Scales every section's width, site-wide.
+   * Sets the width of every section, site-wide.
    */
-  containerScale?: ('sm' | 'md' | 'lg') | null;
+  sectionsWidth?: ('narrow' | 'default' | 'wide' | 'full') | null;
   /**
    * Scales every section's vertical spacing, site-wide.
    */
@@ -1080,7 +1080,7 @@ export interface SettingsSelect<T extends boolean = true> {
   headerHeight?: T;
   heroWidth?: T;
   heroSpacing?: T;
-  containerScale?: T;
+  sectionsWidth?: T;
   sectionScale?: T;
   richTextWidth?: T;
   richTextSpacing?: T;

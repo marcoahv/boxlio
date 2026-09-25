@@ -21,7 +21,7 @@ export function CallToAction(props: CallToActionBlock) {
 
   return (
     <Section blockId={id} surface={surface ?? 'inverse'} spacing="tight">
-      <Container width="narrow">
+      <Container className="ui-section-container">
         <Stack gap="md" align={centered ? 'center' : 'start'}>
           <Heading
             level={2}
