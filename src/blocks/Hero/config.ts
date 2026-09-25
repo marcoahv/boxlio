@@ -206,7 +206,10 @@ export const Hero: Block = {
               type: 'radio',
               defaultValue: 'left',
               admin: {
-                condition: (_, siblingData) => siblingData?.layout === 'textOnly',
+                condition: (_, siblingData) =>
+                  siblingData?.layout === 'textOnly' ||
+                  siblingData?.layout === 'split' ||
+                  siblingData?.layout === 'backgroundImage',
               },
               options: [
                 { label: 'Center', value: 'center' },

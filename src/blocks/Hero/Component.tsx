@@ -78,9 +78,7 @@ export function Hero(props: HeroBlock) {
   const mediaCover = mediaFillMode !== 'contained'
   const mediaRadius = mediaFillMode === 'fullBleed' ? 'none' : 'site'
   const mediaShadow = mediaFillMode === 'fullBleed' ? 'none' : 'site'
-  // Only the Text-only layout offers alignment - Split/Media Background keep
-  // their existing stretch/left behavior regardless of a stale `align` value.
-  const textAlign = layout === 'textOnly' ? (align ?? 'left') : 'left'
+  const textAlign = align ?? 'left'
   const contentAlign =
     textAlign === 'center' ? 'center' : textAlign === 'right' ? 'end' : undefined
   const textAlignClass =
