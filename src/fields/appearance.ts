@@ -50,14 +50,30 @@ export const WIDTH_OPTIONS: Option[] = [
  * layout choices (see Hero, whose Media Background layout replaces `surface`
  * with a fixed dark overlay) and the control should hide rather than sit
  * there unused.
+ *
+ * Pass `className` to opt this one call site into an `admin.className` (e.g.
+ * Hero's shared `field-label--sidebar-badge` treatment for its Layout tab) -
+ * every other call site omits it and is unaffected.
+ *
+ * Pass `fieldType: 'radio'` to render as radio buttons instead of the default
+ * dropdown (Hero's Layout tab uses this so Surface matches the radio-based
+ * fields around it) - every other call site omits it and keeps the dropdown.
+ * Same option values either way, so the generated `surface` union type and
+ * stored data are unaffected.
  */
-export const appearanceField = (condition?: Condition): Field[] => [
+export const appearanceField = (
+  condition?: Condition,
+  className?: string,
+  fieldType: 'radio' | 'select' = 'select',
+): Field[] => [
   {
     name: 'surface',
-    type: 'select',
+    type: fieldType,
     defaultValue: 'default',
     options: SURFACE_OPTIONS,
-    ...(condition ? { admin: { condition } } : {}),
+    ...((condition || className)
+      ? { admin: { ...(condition ? { condition } : {}), ...(className ? { className } : {}) } }
+      : {}),
   },
 ]
 

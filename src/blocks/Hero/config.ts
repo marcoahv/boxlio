@@ -164,21 +164,30 @@ export const Hero: Block = {
           fields: [
             {
               name: 'layout',
-              label: false,
+              label: 'Type',
               type: 'radio',
               defaultValue: 'split',
+              admin: {
+                className: 'field-label--sidebar-badge',
+              },
               options: [
                 { label: 'Text-only', value: 'textOnly' },
                 { label: 'Split', value: 'split' },
                 { label: 'Media Background', value: 'backgroundImage' },
               ],
             },
+            ...appearanceField(
+              (_, siblingData) => siblingData?.layout !== 'backgroundImage',
+              'field-label--sidebar-badge',
+              'radio',
+            ),
             {
               name: 'headerPosition',
               label: 'Text position',
               type: 'radio',
               defaultValue: 'left',
               admin: {
+                className: 'field-label--sidebar-badge',
                 condition: (_, siblingData) => siblingData?.layout === 'split',
               },
               options: [
@@ -187,25 +196,12 @@ export const Hero: Block = {
               ],
             },
             {
-              name: 'mediaFill',
-              label: 'Media fill',
-              type: 'radio',
-              defaultValue: 'contained',
-              admin: {
-                condition: (_, siblingData) => siblingData?.layout === 'split',
-              },
-              options: [
-                { label: 'Contained', value: 'contained' },
-                { label: 'Stretch', value: 'stretch' },
-                { label: 'Full-bleed', value: 'fullBleed' },
-              ],
-            },
-            {
               name: 'align',
               label: 'Text alignment',
               type: 'radio',
               defaultValue: 'left',
               admin: {
+                className: 'field-label--sidebar-badge',
                 condition: (_, siblingData) =>
                   siblingData?.layout === 'textOnly' ||
                   siblingData?.layout === 'split' ||
@@ -218,11 +214,27 @@ export const Hero: Block = {
               ],
             },
             {
+              name: 'mediaFill',
+              label: 'Media fill',
+              type: 'radio',
+              defaultValue: 'contained',
+              admin: {
+                className: 'field-label--sidebar-badge',
+                condition: (_, siblingData) => siblingData?.layout === 'split',
+              },
+              options: [
+                { label: 'Contained', value: 'contained' },
+                { label: 'Stretch', value: 'stretch' },
+                { label: 'Full-bleed', value: 'fullBleed' },
+              ],
+            },
+            {
               name: 'overlayCoverage',
               label: 'Overlay coverage',
               type: 'radio',
               defaultValue: 'full',
               admin: {
+                className: 'field-label--sidebar-badge',
                 // Split's media is its own half, never underneath the text,
                 // so "text area only" has no equivalent there - Media
                 // Background stays the only layout with a coverage choice.
@@ -240,6 +252,7 @@ export const Hero: Block = {
               type: 'radio',
               defaultValue: 'dark',
               admin: {
+                className: 'field-label--sidebar-badge',
                 condition: (_, siblingData) =>
                   siblingData?.layout === 'backgroundImage' ||
                   (siblingData?.layout === 'split' && siblingData?.mediaFill === 'fullBleed'),
@@ -257,6 +270,7 @@ export const Hero: Block = {
               type: 'radio',
               defaultValue: 'medium',
               admin: {
+                className: 'field-label--sidebar-badge',
                 condition: (_, siblingData) =>
                   siblingData?.layout === 'backgroundImage' ||
                   (siblingData?.layout === 'split' && siblingData?.mediaFill === 'fullBleed'),
@@ -269,9 +283,6 @@ export const Hero: Block = {
                 { label: 'Solid', value: 'solid' },
               ],
             },
-            ...appearanceField(
-              (_, siblingData) => siblingData?.layout !== 'backgroundImage',
-            ),
           ],
         },
       ],

@@ -169,13 +169,13 @@ export interface HeroBlock {
       }[]
     | null;
   layout?: ('textOnly' | 'split' | 'backgroundImage') | null;
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   headerPosition?: ('left' | 'right') | null;
-  mediaFill?: ('contained' | 'stretch' | 'fullBleed') | null;
   align?: ('center' | 'left' | 'right') | null;
+  mediaFill?: ('contained' | 'stretch' | 'fullBleed') | null;
   overlayCoverage?: ('full' | 'content') | null;
   overlayColor?: ('dark' | 'light' | 'primary' | 'secondary') | null;
   overlayOpacity?: ('none' | 'light' | 'medium' | 'strong' | 'solid') | null;
-  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'hero';

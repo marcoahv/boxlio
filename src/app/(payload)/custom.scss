@@ -93,3 +93,26 @@
 .hero-buttons-array .collapsible__indicator {
   display: none;
 }
+
+// Badges Hero's Layout tab field labels (`admin.className:
+// 'field-label--sidebar-badge'` in src/blocks/Hero/config.ts and
+// src/fields/appearance.ts) with a dark gray pill, and wraps each label plus
+// its options in a border.
+//
+// The className lands on the field's own outer div (label + options both
+// render inside it - see @payloadcms/ui's RadioGroup/index.js and
+// Select/Input.js), so the border below wraps the label and its options
+// together as one bordered group, not just the label text.
+.field-label--sidebar-badge {
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.field-label--sidebar-badge .field-label {
+  display: inline-block;
+  background: #374151;
+  color: #fff;
+  padding: 0.375rem 0.5rem;
+  border-radius: 4px;
+}
