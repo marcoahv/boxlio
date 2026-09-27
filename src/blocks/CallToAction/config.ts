@@ -39,8 +39,16 @@ export const CallToAction: Block = {
         },
       },
       fields: [
-        { name: 'label', type: 'text', required: true },
-        { name: 'url', type: 'text', required: true },
+        {
+          type: 'row',
+          admin: {
+            className: 'field-row--no-stack',
+          },
+          fields: [
+            { name: 'label', type: 'text', required: true },
+            { name: 'url', type: 'text', required: true },
+          ],
+        },
         {
           name: 'variant',
           type: 'select',

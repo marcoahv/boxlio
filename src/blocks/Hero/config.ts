@@ -17,17 +17,14 @@ export const Hero: Block = {
               type: 'text',
               required: true,
               admin: {
-                // Matches the Button(s) array field's label size - see
-                // custom.scss's own comment on this class for why an array
-                // field's label renders bigger by default.
-                className: 'field-label--match-array-label',
+                className: 'field-label--sidebar-badge',
               },
             },
             {
               name: 'subheading',
               type: 'textarea',
               admin: {
-                className: 'field-label--match-array-label',
+                className: 'field-label--sidebar-badge',
               },
             },
             {
@@ -36,6 +33,7 @@ export const Hero: Block = {
               type: 'radio',
               defaultValue: 'image',
               admin: {
+                className: 'field-label--sidebar-badge',
                 condition: (_, siblingData) =>
                   siblingData?.layout === 'split' || siblingData?.layout === 'backgroundImage',
               },
@@ -51,7 +49,7 @@ export const Hero: Block = {
               admin: {
                 description:
                   'Shown beside the text (Split) or as a full-bleed background (Media Background).',
-                className: 'field-label--match-array-label',
+                className: 'field-label--sidebar-badge',
                 condition: (_, siblingData) =>
                   !(
                     (siblingData?.layout === 'split' || siblingData?.layout === 'backgroundImage') &&
@@ -67,7 +65,7 @@ export const Hero: Block = {
                 mimeType: { contains: 'video' },
               },
               admin: {
-                className: 'field-label--match-array-label',
+                className: 'field-label--sidebar-badge',
                 condition: (_, siblingData) =>
                   (siblingData?.layout === 'split' || siblingData?.layout === 'backgroundImage') &&
                   siblingData?.mediaType === 'video',
@@ -109,12 +107,13 @@ export const Hero: Block = {
               label: 'Button(s)',
               labels: { singular: 'Button', plural: 'Buttons' },
               admin: {
-                // Payload's Array field has no option to disable a row's
-                // collapse toggle - only `initCollapsed` for its initial
-                // state - so this class scopes a CSS override in custom.scss
-                // that disables it instead. Rows must start open now that
-                // they can't be toggled closed.
-                className: 'hero-buttons-array',
+                // 'hero-buttons-array' scopes a CSS override in custom.scss
+                // that disables the row collapse toggle - Payload's Array
+                // field has no option for that, only `initCollapsed` for its
+                // initial state, so rows must start open now that they can't
+                // be toggled closed. 'field-label--sidebar-badge' matches the
+                // Layout tab's label styling.
+                className: 'hero-buttons-array field-label--sidebar-badge',
                 initCollapsed: false,
                 components: {
                   RowLabel: {
@@ -126,6 +125,9 @@ export const Hero: Block = {
               fields: [
                 {
                   type: 'row',
+                  admin: {
+                    className: 'field-row--no-stack',
+                  },
                   fields: [
                     { name: 'label', type: 'text', required: true },
                     { name: 'url', type: 'text', required: true },

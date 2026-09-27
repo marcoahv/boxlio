@@ -62,20 +62,6 @@
   }
 }
 
-// Matches Hero's Heading/Subheading/Image labels (`admin.className:
-// 'field-label--match-array-label'` in src/blocks/Hero/config.ts) to the
-// Button(s) array field's label size. Payload's FieldLabel component only
-// sizes labels rendered as a <label> (13px, its own %body style); an array
-// field's own label instead renders as a <span> inside an <h3
-// class="array-field__title">, which picks up Payload's global `h3 {
-// @extend %h3 }` rule (20px/24px line-height) instead. These values mirror
-// that default (base(1)/base(1.2) with Payload's default 20px baseline) -
-// this file has no access to Payload's own `base()` SCSS function.
-.field-label--match-array-label .field-label {
-  font-size: 20px;
-  line-height: 24px;
-}
-
 // Hero's Button(s) array (`admin.className: 'hero-buttons-array'` in
 // src/blocks/Hero/config.ts) needs every row always expanded. Payload's
 // Array field has no field-level option to disable a row's collapse toggle -
@@ -97,7 +83,7 @@
   display: none;
 }
 
-// Badges Hero's Layout tab field labels (`admin.className:
+// Badges Hero's Content and Layout tab field labels (`admin.className:
 // 'field-label--sidebar-badge'` in src/blocks/Hero/config.ts and
 // src/fields/appearance.ts) with a dark gray pill, and wraps each label plus
 // its options in a border.
@@ -118,4 +104,51 @@
   color: #fff;
   padding: 0.375rem 0.5rem;
   border-radius: 4px;
+  // Without this, the Button(s) array's label - rendered as a <span> inside
+  // an <h3 class="array-field__title"> instead of the plain <label> other
+  // fields use - inherits that h3's larger 20px/24px size instead of the
+  // 13px/20px every other field label gets from Payload's own %body style.
+  font-size: 13px;
+  line-height: 20px;
+}
+
+// The rule above matches every '.field-label' descendant, not just the
+// array's own title - inside Button(s) that also catches each row's own
+// Label/Url/Variant/Color labels. Undo the pill there, so only the
+// 'array-field__title' (Button(s) itself) keeps it. Higher specificity than
+// the rule above (3 classes vs. 2) wins regardless of source order.
+.field-label--sidebar-badge .array-field__row .field-label {
+  display: flex;
+  background: none;
+  color: var(--theme-elevation-800);
+  padding: 0;
+  border-radius: 0;
+}
+
+// Keeps a two-field row (`admin.className: 'field-row--no-stack'` in
+// src/blocks/Hero/config.ts and src/blocks/CallToAction/config.ts, both on
+// their label/url row) side by side unconditionally.
+//
+// This isn't just Payload's viewport-width "mid-break" (max-width: 1024px,
+// see Row/index.scss) forcing a stack - the real squeeze is Live Preview:
+// @payloadcms/ui's Edit/index.scss gives the form column
+// `.collection-edit__main--is-live-previewing` only 40% width, and every
+// level of nesting here (block edit accordion, blocks field, this block's
+// own tabs, the array, this row) narrows it further. At that point the row
+// wraps simply because there isn't room for both fields' default min-content
+// width, viewport size aside - Payload's own default (non-mid-break)
+// `.row__fields > *` rule already uses `flex: 0 1 var(--field-width)`, which
+// still wraps under `flex-wrap: wrap` once content can't shrink below its
+// intrinsic min-width (the default `min-width: auto` on a flex item).
+// `flex-wrap: nowrap` plus `min-width: 0` removes both causes: the fields
+// shrink to fit instead of ever moving to a second line.
+.field-row--no-stack.row .row__fields {
+  flex-wrap: nowrap;
+  margin-inline: calc(var(--base) / -4);
+
+  > * {
+    flex: 0 1 calc(50% - var(--base) / 2);
+    min-width: 0;
+    margin-inline: calc(var(--base) / 4);
+  }
 }
