@@ -203,22 +203,34 @@
    the full-width clickable row (label + chevron), so the background/padding
    goes there rather than on .nav-group__label alone.
 
-   Background is the frontend's secondaryColorDark default (#137c95 in
-   Settings/config.ts) as a literal value - the admin panel doesn't import the
-   frontend token stylesheet. At 80% opacity (hex alpha cc) the tint is dark
-   enough that Payload's own default resting text/chevron colors
-   (elevation-400 / elevation-200 stroke) lose contrast, so they're forced to
-   white at rest. Hover/focus lightens the overlay to 50% (hex alpha 80)
-   rather than the full 80% resting tint - white text stays legible against
-   it, so hover keeps the same white as resting rather than switching to
-   Payload's own dark hover color. */
+   Background is a fixed dark gray (#374151), the same neutral admin-chrome
+   color `.field-label--sidebar-badge` in src/app/(payload)/custom.scss uses
+   for Hero's Layout tab labels - replaces an earlier version of this rule
+   that used the frontend's secondaryColorDark default (#137c95) instead, per
+   request, so the nav no longer carries a brand-tied accent color. A literal
+   value either way - the admin panel doesn't import the frontend token
+   stylesheet. Dark enough at rest that Payload's own default resting
+   text/chevron colors (elevation-400 / elevation-200 stroke) lose contrast,
+   so they're forced to white at rest; hover/focus steps to a lighter gray
+   (#4b5563) rather than the alpha-blended overlay the old teal version used,
+   since a solid neutral pair reads correctly in both the admin's light and
+   dark themes without depending on what's showing through. White text stays
+   legible against both steps, so hover keeps the same white as resting.
+
+   `.nav-group` also gets a border around the whole group (heading + the
+   links under it) - one border per group, not per link - matching the same
+   border `.field-label--sidebar-badge` puts around its label-plus-options
+   box. */
 
 .nav-group {
   margin-bottom: 1.25rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 6px;
+  padding: 0.75rem;
 }
 
 .nav-group__toggle {
-  background: #137c95cc;
+  background: #374151;
   padding: 0.375rem 0.5rem;
   border-radius: 4px;
   color: #fff;
@@ -226,7 +238,7 @@
 
 .nav-group__toggle:hover,
 .nav-group__toggle:focus-visible {
-  background: #137c9580;
+  background: #4b5563;
   color: #fff;
 }
 
@@ -253,6 +265,28 @@
 .nav-group__indicator svg {
   width: 1.1rem;
   height: 1.1rem;
+}
+
+/* Swap the underline Payload puts on a hovered/focused sidebar link
+   (@payloadcms/ui's default: `.nav a.nav__link:hover, .nav
+   a.nav__link:focus-visible { text-decoration: underline }`) for a
+   background highlight instead, per request. `var(--theme-elevation-100)` is
+   the same light tint other hover surfaces in this admin already use (see
+   the collapsible toggle-wrap hover above), so it stays theme-reactive across
+   light/dark mode rather than a fixed color like the group heading's own
+   badge above.
+
+   `.active` (Payload's own class for whichever link matches the current
+   page) shares the same rule, per request, so the current page keeps that
+   background permanently instead of it only appearing transiently on
+   hover/focus. */
+
+.nav__link:hover,
+.nav__link:focus-visible,
+.nav__link.active {
+  text-decoration: none;
+  background: var(--theme-elevation-100);
+  border-radius: 4px;
 }
 
 /* Put the live-preview iframe on the left and the document form/blocks on

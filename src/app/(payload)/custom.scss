@@ -13,11 +13,14 @@
   height: 40px;
 }
 
-// 35% narrower than Payload's default --nav-width (275px x 0.65). Kept above
-// Payload's own small-break (768px) so the mobile full-width nav is untouched.
+// 24% narrower than Payload's default --nav-width (275px x 0.76) - was 0.65
+// (178.75px), widened a little per request now that the main sidebar's group
+// boxes (border + padding, see admin-timestamps/styles.css) need a bit more
+// room. Kept above Payload's own small-break (768px) so the mobile
+// full-width nav is untouched.
 @media (min-width: 769px) {
   :root {
-    --nav-width: 178.75px;
+    --nav-width: 209px;
   }
 }
 
