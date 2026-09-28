@@ -62,3 +62,21 @@ export function parseRowId(rowEl: Element): { fieldName: string; rowIndex: strin
   const [, fieldName, rowIndex] = match
   return { fieldName, rowIndex }
 }
+
+/**
+ * The nearest ancestor row whose id matches the plain `field-row-index`
+ * convention (`ROW_ID_PATTERN`) - a top-level `blocks`/`blogBlocks` row,
+ * never a nested array row inside one (whose id has extra segments, e.g.
+ * `blocks-2-features-row-0`, and so never matches `ROW_ID_PATTERN`).
+ * `el.closest(ROW_SELECTOR)` alone would stop at the *nearest* row, which
+ * for a field nested inside an array is that array's own row, not the
+ * top-level block it belongs to - this keeps walking outward past those.
+ */
+export function findTopLevelRowAncestor(el: Element): HTMLElement | undefined {
+  let current = el.closest<HTMLElement>(ROW_SELECTOR)
+  while (current) {
+    if (ROW_ID_PATTERN.test(current.id)) return current
+    current = current.parentElement?.closest<HTMLElement>(ROW_SELECTOR) ?? null
+  }
+  return undefined
+}

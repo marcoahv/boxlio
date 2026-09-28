@@ -58,6 +58,16 @@ const BLUR_GRACE_MS = 150
 // after a budget that comfortably covers a few nested levels.
 const EXPAND_STEP_MS = 60
 const EXPAND_TIMEOUT_MS = 3000
+// Reserved off the tail of EXPAND_TIMEOUT_MS before the tab-switch fallback
+// may run - see `expandTowardField`'s own comment on why a field nested a
+// few levels deep (an array row, a `row`-type field grouping two fields
+// side by side, ...) can still be mid-render on the correct, already-active
+// tab well past any fixed number of passes: each level's own
+// intersection-observer gate has its own, variable latency, worse under
+// page-load contention. Time-based rather than a pass count, so it scales
+// with whatever's actually happening instead of assuming a fixed per-pass
+// duration.
+const TAB_SWITCH_RESERVE_MS = 1000
 const FOCUS_HIGHLIGHT_CLASS = 'field-focus-highlight'
 
 /** Payload's own field-id convention (`fields/Text/Input.js`, `fields/Textarea/Input.js` in `@payloadcms/ui`), not something this project defined. */
@@ -224,6 +234,28 @@ function reconcileExpanded(ancestors: HTMLElement[], owned: HTMLElement[]) {
   return { nextOwned, expandedSomething }
 }
 
+/**
+ * Collapses every OTHER top-level block's own "Edit" accordion, so only one
+ * block is ever expanded at a time - regardless of whether the editor opened
+ * the others by hand (which `reconcileExpanded`'s own `owned` tracking
+ * deliberately never touches) or this component auto-expanded them for an
+ * earlier field. `EDIT_ACCORDION_SELECTOR` only ever matches a top-level
+ * block's own accordion (`editAccordionField`'s wrapper), never a nested
+ * array row's native collapse, so this can never reach into a sibling field
+ * inside the current block or affect anything but sibling blocks.
+ * `currentRowEl` is `document.body` for a top-level, row-less field (Post's
+ * `body`, Settings' `siteName`, ...) - `.contains()` is then true for every
+ * accordion, so this intentionally no-ops there; those documents have no
+ * page-builder blocks of their own to collapse.
+ */
+function collapseOtherBlockAccordions(currentRowEl: Element) {
+  const accordions = document.querySelectorAll<HTMLElement>(EDIT_ACCORDION_SELECTOR)
+  for (const accordion of accordions) {
+    if (currentRowEl.contains(accordion)) continue
+    if (!isCollapsed(accordion)) clickToggle(accordion)
+  }
+}
+
 /** Removes the highlight this component currently owns, if any. */
 function clearFocusHighlight(highlightedRef: MutableRefObject<HTMLElement | null>) {
   highlightedRef.current?.classList.remove(FOCUS_HIGHLIGHT_CLASS)
@@ -264,9 +296,12 @@ function scrollToAndHighlight(
  *   (`block-rich-text-edit`, see `richTextNodeSync.ts`) - both replace the
  *   whole field value at `resolved.fullPath`.
  * - `block-field-focus` - fired once when an editable element gains focus
- *   in the iframe (not per keystroke). Expands every collapsed ancestor
- *   collapsible the field needs (see `reconcileExpanded`), then scrolls the
- *   sidebar to the matching field. Never moves keyboard focus there - the
+ *   in the iframe (not per keystroke). Collapses every OTHER top-level
+ *   block's own "Edit" accordion first (see `collapseOtherBlockAccordions`
+ *   - only one block is ever open at a time, even one the editor expanded
+ *   by hand), then expands every collapsed ancestor collapsible THIS field
+ *   needs (see `reconcileExpanded`), then scrolls the sidebar to the
+ *   matching field. Never moves keyboard focus there - the
  *   iframe's contentEditable element already holds it, and `.focus()` on
  *   the sidebar field would steal it across frames, ending the very edit
  *   that triggered this. Expanding works inward from the block's row rather
@@ -275,7 +310,10 @@ function scrollToAndHighlight(
  *   `collapsiblesTowardField`.
  * - `block-field-blur` - the counterpart: after a short grace period,
  *   collapses whatever this component auto-expanded for that field, unless
- *   a newer focus has already superseded it.
+ *   a newer focus has already superseded it, or `document.activeElement` is
+ *   by then inside the field's own revealed element in the sidebar - a click
+ *   there fires this same blur on the iframe side (real focus just left it
+ *   for the sidebar), but isn't "done editing".
  *
  * Mounted the same way `BlockHoverSync` is - a top-level `ui` field in the
  * Content tab, not nested inside any block - so it's listening regardless
@@ -357,6 +395,29 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
           // A newer focus (same field or a different one) already
           // reconciled ownership - this blur is stale, nothing to do.
           if (activeFieldKeyRef.current !== fieldKey) return
+          // This blur fired because clicking the field's own revealed
+          // element in the sidebar moved the browser's real focus out of
+          // the iframe - not because the user is done editing. That native
+          // focus transfer (iframe blur, then sidebar focus) happens
+          // synchronously, well before this message's async delivery and
+          // this grace period both elapse, so `document.activeElement` has
+          // already settled by now. Collapsing here would close the very
+          // field the user just clicked into.
+          //
+          // Re-resolved fresh rather than trusting `highlightedRef.current`:
+          // any edit already round-tripped from the iframe
+          // (`block-rich-text-edit`, above) forces the sidebar's own Lexical
+          // field to remount - Payload's field component deliberately
+          // excludes `value` from its editor-init memo and only refreshes
+          // via an `initialValue` change, which remounts the editor. That
+          // leaves `highlightedRef.current` pointing at the pre-remount DOM
+          // node, now detached - `.contains()` on a detached node never
+          // matches anything, so after bouncing between the iframe and this
+          // field even once, the cached reference would always read as
+          // "not focused" and collapse a field the user is still typing in.
+          const resolved = resolveFieldTarget(blockId, fieldPath, getField)
+          const liveTarget = resolved ? findFieldElement(resolved.fullPath, resolved.tabScope) : null
+          if (liveTarget?.contains(document.activeElement)) return
           for (const el of ownedRef.current) clickToggle(el)
           ownedRef.current = []
           activeFieldKeyRef.current = null
@@ -373,6 +434,11 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
       const resolved = resolveFieldTarget(blockId, fieldPath, getField)
       if (!resolved) return
       const { fullPath, tabScope } = resolved
+      // Only one block open at a time - see collapseOtherBlockAccordions.
+      // Runs immediately on focus, not gated behind this field's own
+      // expand/retry loop below, so switching blocks closes the previous
+      // one right away rather than waiting on the new field to be found.
+      collapseOtherBlockAccordions(tabScope)
       // Tried, per this focus, so a field that turns out to belong to none
       // of the block's tabs (or doesn't exist) can't cycle through them
       // forever - see tryNextTab.
@@ -395,14 +461,42 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
         if (activeFieldKeyRef.current !== fieldKey) return
 
         const chain = collapsiblesTowardField(fullPath)
+        // Nudge the page toward whatever we've found so far, on every pass -
+        // not just once the target field itself is located.
+        // `RenderIfInViewport`'s own intersection-observer gate (see below)
+        // can never fire for content that's never been anywhere near the
+        // viewport, and nothing else scrolls there until the field is
+        // already found - a chicken-and-egg gap that left a field nested
+        // behind an array row/`row`-field pair unreachable on the very
+        // first click into a block sitting low in the sidebar (until a
+        // shallower field in the same block was clicked first, scrolling
+        // there as a side effect). Instant, not smooth - a rendering aid,
+        // not the user-facing scroll; `scrollToAndHighlight` below still
+        // does that smoothly once the real field is found.
+        chain[chain.length - 1]?.scrollIntoView({ behavior: 'auto', block: 'center' })
         const { nextOwned, expandedSomething } = reconcileExpanded(chain, ownedRef.current)
         ownedRef.current = nextOwned
 
         const fieldReached = findFieldElement(fullPath, tabScope) !== null
-        const switchedTab =
-          !fieldReached && !expandedSomething
-            ? tryNextTab(tabScope, triedTabButtons)
-            : false
+        // Every level in `chain` - Payload's own `@payloadcms/ui` Collapsible
+        // (native block/array row collapse) and our own "Edit" accordion
+        // alike - only mounts its own fields once its `RenderIfInViewport`
+        // wrapper (`forms/RenderFields`) has observed real geometry, which
+        // needs its own intersection-observer tick after each level opens.
+        // A field nested a few levels deep (a Hero/CallToAction button's
+        // `label`, wrapped in both an array row AND a `row`-type field
+        // grouping it beside `url`) sits behind three or four of these in a
+        // row, so "not found, nothing left to expand" is indistinguishable
+        // from "still waiting on that cascade" until well into the overall
+        // budget, on the correct, already-active tab. Switching tabs early -
+        // Payload's TabsField unmounts the inactive one - would tear down
+        // that very field mid-render and never recover it within the
+        // timeout, so a genuine tab switch is only tried once most of the
+        // budget (see TAB_SWITCH_RESERVE_MS) has already gone to giving the
+        // render cascade a realistic window to catch up first.
+        const canTryTab =
+          !fieldReached && !expandedSomething && Date.now() >= deadline - TAB_SWITCH_RESERVE_MS
+        const switchedTab = canTryTab ? tryNextTab(tabScope, triedTabButtons) : false
 
         const didExpand = expandedAny || expandedSomething || switchedTab
         const reached = fieldReached && !expandedSomething && !switchedTab

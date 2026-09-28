@@ -9,6 +9,7 @@ export type BlockSyncMessage =
   | { type: 'block-rich-text-edit'; blockId: string; fieldPath: string; value: SerializedEditorState }
   | { type: 'block-field-focus'; blockId: string; fieldPath: string }
   | { type: 'block-field-blur'; blockId: string; fieldPath: string }
+  | { type: 'admin-field-focus'; blockId: string; fieldPath: string }
 
 const BLOCK_SYNC_MESSAGE_TYPES = new Set<BlockSyncMessage['type']>([
   'block-hover',
@@ -19,6 +20,7 @@ const BLOCK_SYNC_MESSAGE_TYPES = new Set<BlockSyncMessage['type']>([
   'block-rich-text-edit',
   'block-field-focus',
   'block-field-blur',
+  'admin-field-focus',
 ])
 
 /** A non-null, non-array object - as loose as `block-rich-text-edit`'s value can be checked here without re-validating Lexical's own document shape. */
@@ -65,7 +67,11 @@ export const isBlockSyncEvent = (
     )
   }
 
-  if (event.data.type === 'block-field-focus' || event.data.type === 'block-field-blur') {
+  if (
+    event.data.type === 'block-field-focus' ||
+    event.data.type === 'block-field-blur' ||
+    event.data.type === 'admin-field-focus'
+  ) {
     return hasRequiredStringFields(event.data, ['blockId', 'fieldPath'])
   }
 

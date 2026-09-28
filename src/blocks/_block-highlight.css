@@ -46,11 +46,16 @@
    need one. Distinct from .block-sync-highlight (which marks a whole
    hovered/selected block) so an editor can tell "this whole block" apart
    from "this one piece of text is what's click-to-edit". */
+/* Same --header-offset reasoning as [data-block-id] above - `admin-field-focus`
+   (useBlockSyncListener.ts) scrolls straight to one of these, and without its
+   own scroll-margin-top the fixed header covers it even though the block-level
+   scroll already accounted for the header. */
 [data-editable-field] {
   cursor: text;
   border-radius: 2px;
   outline: 1px dashed transparent;
   outline-offset: 4px;
+  scroll-margin-top: var(--header-offset, 0px);
   transition: outline-color 120ms ease;
 }
 

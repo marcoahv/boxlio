@@ -31,6 +31,8 @@ function scrollWithinThisWindow(target: Element) {
  * alone highlights but never moves the iframe's scroll position. Hover is
  * transient (mouse over a row); selection persists independently, so a block
  * being actively edited stays highlighted after the mouse moves away.
+ * `admin-field-focus` is more precise still - scrolls straight to the one
+ * focused field's own element via `data-editable-field`, not just its block.
  *
  * A no-op outside live preview - nothing ever posts these messages there -
  * and a silent no-op when a block id has no matching element on this page
@@ -111,6 +113,20 @@ export function useBlockSyncListener() {
           selectedBlockIds.delete(message.blockId)
           syncHighlights()
           return
+        case 'admin-field-focus': {
+          // The precise, reverse-direction counterpart to `block-field-focus`
+          // (`block-field-sync/Component.tsx`, iframe -> admin): scrolls to
+          // the exact editable element within the block rather than the
+          // block as a whole. `data-editable-field` is only ever set while
+          // this field is inline-editable (`useEditableField`/
+          // `EditableRichText`), so this is a silent no-op for a field this
+          // block doesn't expose that way.
+          const el = document.querySelector(
+            `[data-block-id="${CSS.escape(message.blockId)}"] [data-editable-field="${CSS.escape(message.fieldPath)}"]`,
+          )
+          if (el) scrollWithinThisWindow(el)
+          return
+        }
       }
     }
 
