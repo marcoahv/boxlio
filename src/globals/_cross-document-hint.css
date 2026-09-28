@@ -1,0 +1,49 @@
+/* Cross-document edit hint (src/utilities/useCrossDocumentEditHint.ts).
+   Shared across Header and Footer (not one component's own CSS) - same
+   precedent as blocks/_block-highlight.css for a marker attribute that spans
+   more than one place.
+
+   The marker lives on the <li> wrapper around each nav-link/CTA-button
+   <Link>, not the link itself: .ui-link sets `overflow: hidden` (for its own
+   text-truncation needs), which silently clipped this tooltip's absolute
+   positioning when it lived on the link directly - confirmed live, the
+   tooltip rendered but was invisible on every .ui-link. The <li> has no such
+   constraint. */
+[data-cross-document-hint] {
+  position: relative;
+}
+
+/* Absolutely positioned, not inline content - this text must never become
+   part of the nav/footer's own flow and shift its layout. Offset above the
+   element for every caller, Header included - flipping it below inside
+   Header's own bar clipped its background against the bar's own bounding
+   box (confirmed live); above stays clear of that. */
+[data-cross-document-hint]::after {
+  content: 'Open ' attr(data-cross-document-hint) ' to edit';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.4;
+  white-space: nowrap;
+  width: max-content;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+  z-index: 10;
+}
+
+/* Hover only, deliberately - a click leaves the link focused (clicking
+   doesn't navigate here; see LivePreviewNavGuard), and a `:focus-within`
+   trigger made the tooltip stick on screen after that click instead of
+   disappearing once the mouse moved away (confirmed live). */
+[data-cross-document-hint]:hover::after {
+  opacity: 1;
+}

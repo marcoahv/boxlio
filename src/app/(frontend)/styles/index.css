@@ -32,6 +32,7 @@
    never made them portable, only harder to find. This is the one place that
    still has to know where every one of them lives. */
 @import '../../../components/primitives/_section.css';
+@import '../../../globals/_cross-document-hint.css';
 @import '../../../globals/Header/Component/_header.css';
 @import '../../../globals/Footer/Component/_footer.css';
 

@@ -237,7 +237,7 @@ cleaned-up checkbox version before generating the project overview.
   Header's logo) stays read-only there, since editing it would require a
   different document's form to be mounted; it only becomes editable when
   its owning document is the one open
-- [ ] 29c. **Cross-document edit hint** - when a Page's Live Preview renders a
+- [x] 29c. **Cross-document edit hint** - when a Page's Live Preview renders a
   Header/Footer element that carries an inline-editable marker but isn't the
   currently open document (a nav-link label, a CTA button label, or the
   footer's site name), show a small, non-editable hint on hover/click (e.g.

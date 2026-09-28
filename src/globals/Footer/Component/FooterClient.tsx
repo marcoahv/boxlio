@@ -8,6 +8,7 @@ import { getServerSideURL } from '@/utilities/getUrl'
 import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
 import { useIsLivePreviewActive } from '@/utilities/useIsLivePreviewActive'
 import { useEditableField } from '@/utilities/useEditableField'
+import { useCrossDocumentEditHint } from '@/utilities/useCrossDocumentEditHint'
 import { EditableFieldProvider } from '@/utilities/EditableFieldContext'
 import { Logo } from '@/globals/Header/Component/Logo'
 
@@ -21,10 +22,11 @@ type FooterNavLinkItem = NonNullable<Footer['navLinks']>[number]
 function FooterNavLink({ item }: { item: FooterNavLinkItem }) {
   const href = hrefForNavLink(item)
   const labelField = useEditableField({ blockId: item.id, fieldPath: 'label', value: item.label })
+  const showHint = useCrossDocumentEditHint(labelField.isEditable)
   if (!href) return null
 
   return (
-    <li>
+    <li {...(showHint ? { 'data-cross-document-hint': 'Footer' } : {})}>
       <Link
         className="ui-link"
         href={href}
@@ -53,7 +55,15 @@ function FooterCopyrightSiteName({ siteName }: { siteName: string }) {
     fieldPath: 'siteName',
     value: siteName,
   })
-  return <span {...siteNameField.fieldProps}>{siteNameField.content}</span>
+  const showHint = useCrossDocumentEditHint(siteNameField.isEditable)
+  return (
+    <span
+      {...siteNameField.fieldProps}
+      {...(showHint ? { 'data-cross-document-hint': 'Site Identity › Information' } : {})}
+    >
+      {siteNameField.content}
+    </span>
+  )
 }
 
 /**

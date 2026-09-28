@@ -14,6 +14,7 @@ import { getServerSideURL } from '@/utilities/getUrl'
 import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
 import { useIsLivePreviewActive } from '@/utilities/useIsLivePreviewActive'
 import { useEditableField } from '@/utilities/useEditableField'
+import { useCrossDocumentEditHint } from '@/utilities/useCrossDocumentEditHint'
 import { EditableFieldProvider } from '@/utilities/EditableFieldContext'
 import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
@@ -31,10 +32,11 @@ type CtaButtonItem = NonNullable<Header['ctaButtons']>[number]
 function HeaderNavLinkItem({ item, onClick }: { item: NavLinkItem; onClick: () => void }) {
   const href = hrefForNavLink(item)
   const labelField = useEditableField({ blockId: item.id, fieldPath: 'label', value: item.label })
+  const showHint = useCrossDocumentEditHint(labelField.isEditable)
   if (!href) return null
 
   return (
-    <li>
+    <li {...(showHint ? { 'data-cross-document-hint': 'Header' } : {})}>
       <Link
         className="ui-link"
         href={href}
@@ -51,10 +53,11 @@ function HeaderNavLinkItem({ item, onClick }: { item: NavLinkItem; onClick: () =
 
 function HeaderCtaButtonItem({ item, onClick }: { item: CtaButtonItem; onClick: () => void }) {
   const labelField = useEditableField({ blockId: item.id, fieldPath: 'label', value: item.label })
+  const showHint = useCrossDocumentEditHint(labelField.isEditable)
   if (!item.url) return null
 
   return (
-    <li>
+    <li {...(showHint ? { 'data-cross-document-hint': 'Header' } : {})}>
       <Link
         href={item.url}
         className={[
