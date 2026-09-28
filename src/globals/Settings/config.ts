@@ -416,5 +416,18 @@ export const Settings: GlobalConfig = {
         },
       ],
     },
+    // Sibling to the `tabs` field above, not nested inside any individual
+    // tab - Payload's TabsField only renders the active tab's fields, so
+    // nesting this inside e.g. "Information" would unmount the listener the
+    // moment an editor switched to "Corners"/"Shadows"/etc.
+    {
+      name: 'settingsFieldSync',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/custom/block-field-sync/Component.tsx#BlockFieldSync',
+        },
+      },
+    },
   ],
 }

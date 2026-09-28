@@ -132,5 +132,14 @@ export const Header: GlobalConfig = {
         },
       ],
     },
+    {
+      name: 'headerFieldSync',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/custom/block-field-sync/Component.tsx#BlockFieldSync',
+        },
+      },
+    },
   ],
 }

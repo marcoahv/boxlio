@@ -125,6 +125,12 @@ export function useEditableField({
       contentEditable: true,
       suppressContentEditableWarning: true,
       'data-editable-field': fieldPath,
+      // A no-op on a plain heading/paragraph, but required when this element
+      // is itself a link (e.g. Header/Footer's nav-link and CTA labels):
+      // without it, a click both starts an edit and navigates the iframe
+      // away from the document being edited. Only present while editable -
+      // a real visitor's click on the same link is never touched.
+      onClick: (event: React.MouseEvent) => event.preventDefault(),
       onInput: handleInput,
       onFocus: handleFocus,
       onBlur: handleBlur,

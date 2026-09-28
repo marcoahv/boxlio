@@ -18,9 +18,17 @@ type LivePreviewTarget =
  * real visitor in that case.
  *
  * A separate minimal listener rather than an addition to
- * `useScopedLivePreview`'s own return value, so this feature's blast radius
- * stays scoped to Pages and doesn't touch the Header/Footer/Settings/Post
- * call sites that hook already has.
+ * `useScopedLivePreview`'s own return value, so a caller that only needs
+ * this flag (not the merged data) doesn't have to also thread `initialData`
+ * through. Originally scoped to Pages (feature 29a); Header/Footer/Settings
+ * (feature 29b) call it once per global whose own fields render editable
+ * text, since each of those globals renders in the root layout on every
+ * route and needs its own independent "is *my* document the one open" flag.
+ *
+ * Takes a moment after Live Preview first opens for the initial handshake
+ * (`ready()` -> the admin's first `payload-live-preview` response) to land -
+ * a click before that arrives is a no-op, not a bug; the field becomes
+ * editable as soon as it does.
  */
 export function useIsLivePreviewActive(target: LivePreviewTarget): boolean {
   const [isActive, setIsActive] = useState(false)

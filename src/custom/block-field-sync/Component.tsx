@@ -81,10 +81,12 @@ function clickToggle(el: HTMLElement) {
  * field after each tab's re-render. Inactive tabs unmount their fields
  * entirely, so there's no way to inspect which tab holds a given field in
  * advance; trying each in turn is the only option. `tried` stops this from
- * cycling forever once every tab has had a turn. Scoped to `root` (a
- * specific block's row), so this can only ever reach that block's own
- * tabs - never the page-level Information/Content/SEO tabs, which live
- * outside any block row.
+ * cycling forever once every tab has had a turn. `root` is normally a
+ * specific block's row, so this reaches only that block's own tabs; for a
+ * field resolved with no row at all (see `resolveFieldTarget`), the caller
+ * passes `document.body` instead, so a top-level `Tabs` field (e.g.
+ * Settings' own Information/Corners/Shadows tabs) can be switched into the
+ * same way.
  */
 function tryNextTab(root: Element, tried: Set<HTMLButtonElement>): boolean {
   const buttons = root.querySelectorAll<HTMLButtonElement>(TAB_BUTTON_SELECTOR)
@@ -95,6 +97,37 @@ function tryNextTab(root: Element, tried: Set<HTMLButtonElement>): boolean {
     return true
   }
   return false
+}
+
+/**
+ * Resolves an incoming `blockId`/`fieldPath` pair (see `blockSyncMessages.ts`)
+ * to the field's full form path and the DOM scope to search for its own
+ * internal tabs (`tryNextTab`). When `blockId` matches a rendered array row -
+ * a Pages/Posts block, or a Header/Footer `navLinks`/`ctaButtons` row - the
+ * field lives inside that row (`${fieldName}.${rowIndex}.${fieldPath}`) and
+ * tabs are scoped to the row. When `blockId` matches no row at all, but
+ * `fieldPath` itself exists as a top-level field on the current document's
+ * own form (e.g. Settings' `siteName`, which has no array wrapper), the
+ * field's path IS `fieldPath` and tabs are scoped to the whole document.
+ * Anything else - a stale or genuinely unmatched id - is unresolvable,
+ * returning `undefined` for the same silent no-op every other unmatched-id
+ * case in this bridge already has.
+ */
+function resolveFieldTarget(
+  blockId: string,
+  fieldPath: string,
+  getField: (path: string) => { value?: unknown } | undefined,
+): { fullPath: string; tabScope: Element } | undefined {
+  const rowEl = findRowElementForBlockId(blockId, getField)
+  if (rowEl) {
+    const rowId = parseRowId(rowEl)
+    if (!rowId) return undefined
+    return { fullPath: `${rowId.fieldName}.${rowId.rowIndex}.${fieldPath}`, tabScope: rowEl }
+  }
+  if (getField(fieldPath)) {
+    return { fullPath: fieldPath, tabScope: document.body }
+  }
+  return undefined
 }
 
 /** Every collapsible ancestor of `el`, innermost first. */
@@ -258,13 +291,11 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
       const { blockId, fieldPath } = event.data
 
       if (event.data.type === 'block-text-edit') {
-        const rowEl = findRowElementForBlockId(blockId, getField)
-        if (!rowEl) return
-        const rowId = parseRowId(rowEl)
-        if (!rowId) return
+        const resolved = resolveFieldTarget(blockId, fieldPath, getField)
+        if (!resolved) return
         dispatchFields({
           type: 'UPDATE',
-          path: `${rowId.fieldName}.${rowId.rowIndex}.${fieldPath}`,
+          path: resolved.fullPath,
           value: event.data.value,
         })
         setModified(true)
@@ -298,11 +329,9 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
       cancelPendingFocusRetry()
       activeFieldKeyRef.current = fieldKey
 
-      const rowEl = findRowElementForBlockId(blockId, getField)
-      if (!rowEl) return
-      const rowId = parseRowId(rowEl)
-      if (!rowId) return
-      const fullPath = `${rowId.fieldName}.${rowId.rowIndex}.${fieldPath}`
+      const resolved = resolveFieldTarget(blockId, fieldPath, getField)
+      if (!resolved) return
+      const { fullPath, tabScope } = resolved
       // Tried, per this focus, so a field that turns out to belong to none
       // of the block's tabs (or doesn't exist) can't cycle through them
       // forever - see tryNextTab.
@@ -331,7 +360,7 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
         const fieldReached = document.getElementById(fieldElementId(fullPath)) !== null
         const switchedTab =
           !fieldReached && !expandedSomething
-            ? tryNextTab(rowEl, triedTabButtons)
+            ? tryNextTab(tabScope, triedTabButtons)
             : false
 
         const didExpand = expandedAny || expandedSomething || switchedTab

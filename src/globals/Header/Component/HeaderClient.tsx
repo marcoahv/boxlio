@@ -12,8 +12,69 @@ import { Container } from '@/components/primitives'
 import { isThemeToggleEnabled } from '@/utilities/theme'
 import { getServerSideURL } from '@/utilities/getUrl'
 import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
+import { useIsLivePreviewActive } from '@/utilities/useIsLivePreviewActive'
+import { useEditableField } from '@/utilities/useEditableField'
+import { EditableFieldProvider } from '@/utilities/EditableFieldContext'
 import { Logo } from './Logo'
 import { ThemeToggle } from './ThemeToggle'
+
+type NavLinkItem = NonNullable<Header['navLinks']>[number]
+type CtaButtonItem = NonNullable<Header['ctaButtons']>[number]
+
+/**
+ * Its own component (not inlined in the `.map()` below) so `useEditableField`
+ * can be called at each item's own top level, per the Rules of Hooks - same
+ * pattern as `FeatureGrid`'s `FeatureItem`. `blockId` is the row's own id
+ * (there is no enclosing block for a global's own array field), so
+ * `fieldPath` is relative to the row (`'label'`), not the full form path.
+ */
+function HeaderNavLinkItem({ item, onClick }: { item: NavLinkItem; onClick: () => void }) {
+  const href = hrefForNavLink(item)
+  const labelField = useEditableField({ blockId: item.id, fieldPath: 'label', value: item.label })
+  if (!href) return null
+
+  return (
+    <li>
+      <Link
+        className="ui-link"
+        href={href}
+        target={item.newTab ? '_blank' : undefined}
+        rel={item.newTab ? 'noopener noreferrer' : undefined}
+        onClick={onClick}
+        {...labelField.fieldProps}
+      >
+        {labelField.content}
+      </Link>
+    </li>
+  )
+}
+
+function HeaderCtaButtonItem({ item, onClick }: { item: CtaButtonItem; onClick: () => void }) {
+  const labelField = useEditableField({ blockId: item.id, fieldPath: 'label', value: item.label })
+  if (!item.url) return null
+
+  return (
+    <li>
+      <Link
+        href={item.url}
+        className={[
+          'ui-btn',
+          {
+            outline: 'ui-btn-outline',
+            ghost: 'ui-btn-ghost',
+          }[item.variant ?? ''],
+          item.color === 'secondary' ? 'ui-btn-secondary' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        onClick={onClick}
+        {...labelField.fieldProps}
+      >
+        {labelField.content}
+      </Link>
+    </li>
+  )
+}
 
 export function HeaderClient({
   initialHeader,
@@ -34,6 +95,7 @@ export function HeaderClient({
     serverURL: getServerSideURL(),
     depth: 2,
   })
+  const isEditable = useIsLivePreviewActive({ type: 'global', globalSlug: 'header' })
 
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -162,31 +224,15 @@ export function HeaderClient({
               className={`header__nav ${open ? 'header__nav--open' : ''}`}
               aria-label="Main navigation"
             >
-              {navLinks && navLinks.length > 0 && (
-                <ul className="header__links">
-                  {navLinks.map((item) => {
-                    const href = hrefForNavLink(item)
-                    if (!href) return null
-                    return (
-                      <li key={item.id}>
-                        <Link
-                          className="ui-link"
-                          href={href}
-                          target={item.newTab ? '_blank' : undefined}
-                          rel={
-                            item.newTab
-                              ? 'noopener noreferrer'
-                              : undefined
-                          }
-                          onClick={close}
-                        >
-                          {item.label}
-                        </Link>
-                      </li>
-                    )
-                  })}
-                </ul>
-              )}
+              <EditableFieldProvider value={isEditable}>
+                {navLinks && navLinks.length > 0 && (
+                  <ul className="header__links">
+                    {navLinks.map((item) => (
+                      <HeaderNavLinkItem key={item.id} item={item} onClick={close} />
+                    ))}
+                  </ul>
+                )}
+              </EditableFieldProvider>
 
               {socialLinks && socialLinks.length > 0 && (
                 <ul className="header__social">
@@ -220,31 +266,11 @@ export function HeaderClient({
 
               {ctaButtons && ctaButtons.length > 0 && (
                 <ul className="header__actions">
-                  {ctaButtons.map((item) => {
-                    if (!item.url) return null
-                    return (
-                      <li key={item.id}>
-                        <Link
-                          href={item.url}
-                          className={[
-                            'ui-btn',
-                            {
-                              outline: 'ui-btn-outline',
-                              ghost: 'ui-btn-ghost',
-                            }[item.variant ?? ''],
-                            item.color === 'secondary'
-                              ? 'ui-btn-secondary'
-                              : '',
-                          ]
-                            .filter(Boolean)
-                            .join(' ')}
-                          onClick={close}
-                        >
-                          {item.label}
-                        </Link>
-                      </li>
-                    )
-                  })}
+                  <EditableFieldProvider value={isEditable}>
+                    {ctaButtons.map((item) => (
+                      <HeaderCtaButtonItem key={item.id} item={item} onClick={close} />
+                    ))}
+                  </EditableFieldProvider>
                 </ul>
               )}
             </nav>

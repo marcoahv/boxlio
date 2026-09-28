@@ -228,7 +228,7 @@ cleaned-up checkbox version before generating the project overview.
   picks them up unchanged. Lexical rich text (`RichTextBlock`'s body, Post
   body) stays excluded, not inline-editable. Posts stay out of scope
   entirely, same exclusion as feature 28
-- [ ] 29b. **Extend inline text editing to Header/Footer/Settings** - same
+- [x] 29b. **Extend inline text editing to Header/Footer/Settings** - same
   marker + bridge from 29a, applied to each global's own plain text fields
   (Header's nav-link labels and CTA button labels, Footer's nav-link
   labels, Settings' site name). Scoped to fields owned by whichever
@@ -237,3 +237,10 @@ cleaned-up checkbox version before generating the project overview.
   Header's logo) stays read-only there, since editing it would require a
   different document's form to be mounted; it only becomes editable when
   its owning document is the one open
+- [ ] 29c. **Cross-document edit hint** - when a Page's Live Preview renders a
+  Header/Footer element that carries an inline-editable marker but isn't the
+  currently open document (a nav-link label, a CTA button label, or the
+  footer's site name), show a small, non-editable hint on hover/click (e.g.
+  "Open Header to edit") instead of silently doing nothing - makes the
+  existing own-document-only editability rule visible instead of surprising,
+  without touching the underlying architecture

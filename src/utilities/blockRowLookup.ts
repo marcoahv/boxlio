@@ -1,11 +1,14 @@
-// Payload's own BlocksField/BlockRow renders this exact, deterministic id on
-// every row's outer wrapper - `${parentPath.split('.').join('-')}-row-${index}`
-// - unconditionally, regardless of whether that row is collapsed or still
-// lazily loading its own fields. Resolving a block by this row id (rather
-// than a component nested *inside* the block's own fields) means there's
-// nothing that depends on the row ever having been expanded.
-export const ROW_SELECTOR = '[id^="blocks-row-"], [id^="blogBlocks-row-"]'
-export const ROW_ID_PATTERN = /^(blocks|blogBlocks)-row-(\d+)$/
+// Payload renders this exact, deterministic id on every top-level repeatable
+// row's outer wrapper - `${fieldName}-row-${index}` - for any array-shaped
+// field (`blocks`/`blogBlocks`, but equally a plain `array` field like
+// `navLinks`/`ctaButtons`), unconditionally, regardless of whether that row
+// is collapsed or still lazily loading its own fields. Resolving a row by
+// this id (rather than a component nested *inside* its own fields) means
+// there's nothing that depends on the row ever having been expanded. Scoped
+// to *top-level* rows only - a nested array (e.g. FeatureGrid's `features`)
+// is reached via `rowElementIdsAlongPath` instead, not this pattern.
+export const ROW_SELECTOR = '[id*="-row-"]'
+export const ROW_ID_PATTERN = /^([A-Za-z]+)-row-(\d+)$/
 
 type GetField = (path: string) => { value?: unknown } | undefined
 
