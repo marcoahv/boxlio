@@ -253,7 +253,7 @@ cleaned-up checkbox version before generating the project overview.
   message bridge, only per-block wiring. URLs and other button fields stay
   out of scope, same as every other "editable" feature in this series (label
   text only)
-- [ ] 30. **WYSIWYG rich text editing in the live preview iframe** - split into
+- [x] 30. **WYSIWYG rich text editing in the live preview iframe** - split into
   30a/30b
   - [x] 30a. **RichTextBlock** - a floating formatting toolbar appears when
     selecting text inside a `RichTextBlock`'s rendered prose in the iframe;
@@ -266,6 +266,6 @@ cleaned-up checkbox version before generating the project overview.
     `BlocksFeature`) stay non-editable through this new toolbar; they
     already get their own inline editing through the existing block
     dispatcher (29a)
-  - [ ] 30b. **Post body** - extends 30a's toolbar/bridge to a Post's `body`
+  - [x] 30b. **Post body** - extends 30a's toolbar/bridge to a Post's `body`
     field. Page-builder blocks embedded in the body stay non-editable
     through the toolbar, same exclusion as 30a

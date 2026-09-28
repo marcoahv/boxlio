@@ -1,11 +1,13 @@
 'use client'
 
 import { Breadcrumbs } from '@/components/Breadcrumbs'
-import { RichText } from '@/components/RichText'
+import { EditableRichText } from '@/components/RichText/EditableRichText'
 import { Section, Container, Heading, Stack } from '@/components/primitives'
 import { PostPreview } from '@/components/PostPreview'
 import { getServerSideURL } from '@/utilities/getUrl'
 import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
+import { useIsLivePreviewActive } from '@/utilities/useIsLivePreviewActive'
+import { EditableFieldProvider } from '@/utilities/EditableFieldContext'
 import type { Post } from '@/payload-types'
 
 /**
@@ -23,6 +25,7 @@ export function PostClient({ initialData }: { initialData: Post }) {
     serverURL: getServerSideURL(),
     depth: 2,
   })
+  const isEditable = useIsLivePreviewActive({ type: 'collection', collectionSlug: 'posts' })
 
   const breadcrumbs = [
     { label: 'Home', href: '/' },
@@ -48,9 +51,9 @@ export function PostClient({ initialData }: { initialData: Post }) {
           Section/Container - see _section.css. */}
       <Section surface={data.bodyAppearance?.surface} className="ui-rich-text-section">
         <Container className="ui-rich-text-container">
-          <div className="ui-prose">
-            <RichText data={data.body} />
-          </div>
+          <EditableFieldProvider value={isEditable}>
+            <EditableRichText blockId="body" fieldPath="body" data={data.body} className="ui-prose" />
+          </EditableFieldProvider>
         </Container>
       </Section>
     </>

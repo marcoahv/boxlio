@@ -247,6 +247,15 @@ export const Posts: CollectionConfig = {
                 ],
               }),
             },
+            {
+              name: 'blockFieldSync',
+              type: 'ui',
+              admin: {
+                components: {
+                  Field: '@/custom/block-field-sync/Component.tsx#BlockFieldSync',
+                },
+              },
+            },
           ],
         },
         {
