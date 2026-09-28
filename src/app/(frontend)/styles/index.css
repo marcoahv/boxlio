@@ -36,6 +36,7 @@
 @import '../../../globals/Header/Component/_header.css';
 @import '../../../globals/Footer/Component/_footer.css';
 
+@import '../../../components/RichText/_rich-text-toolbar.css';
 @import '../../../components/_breadcrumbs.css';
 @import '../../../components/_card.css';
 @import '../../../components/_post-preview.css';

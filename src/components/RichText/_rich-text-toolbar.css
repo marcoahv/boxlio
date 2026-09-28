@@ -1,0 +1,61 @@
+/* Floating Bold/Italic/Link toolbar for editable RichTextBlock prose
+   (src/components/RichText/EditableRichText.tsx, RichTextToolbar.tsx).
+
+   A fixed admin-tool accent (#3b82f6), the same one
+   blocks/_block-highlight.css and globals/_cross-document-hint.css already
+   use for this exact "this is an editing affordance, not site content"
+   signal - never a site brand token, so it stays legible regardless of a
+   given site's own Settings.colors. Only ever rendered while
+   `useIsEditableField()` is true, so a real visitor never sees it. */
+.ui-rich-text-toolbar {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  margin-top: -8px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 6px;
+  background: #1f2937;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 20;
+}
+
+.ui-rich-text-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ui-rich-text-toolbar button:hover,
+.ui-rich-text-toolbar button[aria-pressed='true'] {
+  background: #3b82f6;
+}
+
+.ui-rich-text-toolbar input[type='text'] {
+  min-width: 180px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #3b82f6;
+  border-radius: 4px;
+  background: #111827;
+  color: #fff;
+  font-size: 13px;
+}
+
+.ui-rich-text-toolbar [role='alert'] {
+  padding: 0 4px;
+  color: #fca5a5;
+  font-size: 11px;
+  white-space: nowrap;
+}

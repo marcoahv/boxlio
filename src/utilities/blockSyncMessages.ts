@@ -1,9 +1,12 @@
+import type { SerializedEditorState } from 'lexical'
+
 export type BlockSyncMessage =
   | { type: 'block-hover'; blockId: string }
   | { type: 'block-hover-clear' }
   | { type: 'block-select'; blockId: string }
   | { type: 'block-deselect'; blockId: string }
   | { type: 'block-text-edit'; blockId: string; fieldPath: string; value: string }
+  | { type: 'block-rich-text-edit'; blockId: string; fieldPath: string; value: SerializedEditorState }
   | { type: 'block-field-focus'; blockId: string; fieldPath: string }
   | { type: 'block-field-blur'; blockId: string; fieldPath: string }
 
@@ -13,9 +16,15 @@ const BLOCK_SYNC_MESSAGE_TYPES = new Set<BlockSyncMessage['type']>([
   'block-select',
   'block-deselect',
   'block-text-edit',
+  'block-rich-text-edit',
   'block-field-focus',
   'block-field-blur',
 ])
+
+/** A non-null, non-array object - as loose as `block-rich-text-edit`'s value can be checked here without re-validating Lexical's own document shape. */
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
 
 /**
  * `block-text-edit` carries three required string fields beyond `type` -
@@ -48,6 +57,12 @@ export const isBlockSyncEvent = (
 
   if (event.data.type === 'block-text-edit') {
     return hasRequiredStringFields(event.data, ['blockId', 'fieldPath', 'value'])
+  }
+
+  if (event.data.type === 'block-rich-text-edit') {
+    return (
+      hasRequiredStringFields(event.data, ['blockId', 'fieldPath']) && isPlainObject(event.data.value)
+    )
   }
 
   if (event.data.type === 'block-field-focus' || event.data.type === 'block-field-blur') {

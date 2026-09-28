@@ -1,5 +1,5 @@
 import { Section, Container } from '@/components/primitives'
-import { RichText } from '@/components/RichText'
+import { EditableRichText } from '@/components/RichText/EditableRichText'
 import type { RichTextBlock as RichTextBlockProps } from '@/payload-types'
 
 /**
@@ -17,9 +17,7 @@ export function RichTextBlock(props: RichTextBlockProps) {
   return (
     <Section blockId={id} surface={surface} className="ui-rich-text-section">
       <Container className="ui-rich-text-container">
-        <div className="ui-prose">
-          <RichText data={content} />
-        </div>
+        <EditableRichText blockId={id} fieldPath="content" data={content} className="ui-prose" />
       </Container>
     </Section>
   )

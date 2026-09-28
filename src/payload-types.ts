@@ -380,6 +380,9 @@ export interface Page {
    */
   generateSlug?: boolean | null;
   slug: string;
+  /**
+   * Shown on preview cards and used as the social share (Open Graph) image when no SEO image is set.
+   */
   featuredImage: string | Media;
   blocks?: (HeroBlock | FeatureGridBlock | CallToActionBlock | RichTextBlock | TableBlock)[] | null;
   /**
@@ -445,6 +448,9 @@ export interface Post {
     id?: string | null;
     name?: string | null;
   };
+  /**
+   * Shown on blog cards and used as the social share (Open Graph) image when no SEO image is set.
+   */
   featuredImage: string | Media;
   /**
    * The Home / Blog / post-title trail above the post.

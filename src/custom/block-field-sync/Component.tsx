@@ -65,6 +65,26 @@ function fieldElementId(fullPath: string) {
   return `field-${fullPath.replace(/\./g, '__')}`
 }
 
+/**
+ * `@payloadcms/richtext-lexical`'s own field component (`field/Field.js`)
+ * never renders `id="field-<path>"` - every other core field type gets that
+ * id from `@payloadcms/ui`'s shared `generateFieldID` (confirmed by reading
+ * both sources), but Lexical's wrapper only carries a `.rich-text-lexical`
+ * class. Without this fallback, `block-field-focus`/`block-field-blur` for a
+ * `RichTextBlock`'s `content` field (see `EditableRichText.tsx`) expand the
+ * right accordion but never find anything to scroll to or highlight.
+ * `scope` keeps this from jumping to the wrong block's editor when a page
+ * has more than one `RichTextBlock` - it's always the row `resolveFieldTarget`
+ * already resolved (or `document.body` for a top-level field), and exactly
+ * one `.rich-text-lexical` renders per row, so the first match is
+ * unambiguous.
+ */
+function findFieldElement(fullPath: string, scope: Element): HTMLElement | null {
+  const byId = document.getElementById(fieldElementId(fullPath))
+  if (byId) return byId
+  return scope.querySelector<HTMLElement>('.rich-text-lexical')
+}
+
 function isCollapsed(el: HTMLElement) {
   return el.classList.contains(COLLAPSED_CLASS)
 }
@@ -219,9 +239,10 @@ function clearFocusHighlight(highlightedRef: MutableRefObject<HTMLElement | null
  */
 function scrollToAndHighlight(
   fullPath: string,
+  scope: Element,
   highlightedRef: MutableRefObject<HTMLElement | null>,
 ) {
-  const target = document.getElementById(fieldElementId(fullPath))
+  const target = findFieldElement(fullPath, scope)
   if (!target) return
   target.scrollIntoView({ behavior: 'smooth', block: 'center' })
   if (highlightedRef.current && highlightedRef.current !== target) {
@@ -235,9 +256,13 @@ function scrollToAndHighlight(
  * Admin-side listener for the messages the Live Preview iframe posts about a
  * field an editor is interacting with (see current-feature.md):
  *
- * - `block-text-edit` - writes the edited value straight into this
- *   document's own form state, so the existing unsaved-changes/Save flow
- *   (the block's "Edit" accordion Save button) picks it up unchanged.
+ * - `block-text-edit` / `block-rich-text-edit` - writes the edited value
+ *   straight into this document's own form state, so the existing
+ *   unsaved-changes/Save flow (the block's "Edit" accordion Save button)
+ *   picks it up unchanged. `dispatchFields` doesn't care whether the value
+ *   is a plain string (`block-text-edit`) or a full Lexical document object
+ *   (`block-rich-text-edit`, see `richTextNodeSync.ts`) - both replace the
+ *   whole field value at `resolved.fullPath`.
  * - `block-field-focus` - fired once when an editable element gains focus
  *   in the iframe (not per keystroke). Expands every collapsed ancestor
  *   collapsible the field needs (see `reconcileExpanded`), then scrolls the
@@ -285,18 +310,34 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
 
     const onMessage = (event: MessageEvent) => {
       if (!isBlockSyncEvent(event, serverURL)) return
-      const validTypes = ['block-text-edit', 'block-field-focus', 'block-field-blur']
+      const validTypes = [
+        'block-text-edit',
+        'block-rich-text-edit',
+        'block-field-focus',
+        'block-field-blur',
+      ]
       if (!validTypes.includes(event.data.type)) return
 
       const { blockId, fieldPath } = event.data
 
-      if (event.data.type === 'block-text-edit') {
+      if (event.data.type === 'block-text-edit' || event.data.type === 'block-rich-text-edit') {
         const resolved = resolveFieldTarget(blockId, fieldPath, getField)
         if (!resolved) return
         dispatchFields({
           type: 'UPDATE',
           path: resolved.fullPath,
           value: event.data.value,
+          // Lexical's own field component (`@payloadcms/richtext-lexical`'s
+          // Field.js, confirmed by reading it) deliberately excludes `value`
+          // from the memo that builds its editor's initial state - a plain
+          // `UPDATE` writes correct form state but never visibly refreshes
+          // the rendered editor. It only remounts when `initialValue`
+          // changes (the same mechanism an autosave/document-reload uses),
+          // so `block-rich-text-edit` sets both to the same value to force
+          // that live refresh. Plain text/textarea inputs are simple
+          // controlled elements that already re-render from `value` alone,
+          // so `block-text-edit` doesn't need this.
+          ...(event.data.type === 'block-rich-text-edit' ? { initialValue: event.data.value } : {}),
         })
         setModified(true)
         return
@@ -357,7 +398,7 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
         const { nextOwned, expandedSomething } = reconcileExpanded(chain, ownedRef.current)
         ownedRef.current = nextOwned
 
-        const fieldReached = document.getElementById(fieldElementId(fullPath)) !== null
+        const fieldReached = findFieldElement(fullPath, tabScope) !== null
         const switchedTab =
           !fieldReached && !expandedSomething
             ? tryNextTab(tabScope, triedTabButtons)
@@ -379,10 +420,10 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
           pendingFocusRetryRef.current = window.setTimeout(() => {
             pendingFocusRetryRef.current = null
             if (activeFieldKeyRef.current !== fieldKey) return
-            scrollToAndHighlight(fullPath, highlightedRef)
+            scrollToAndHighlight(fullPath, tabScope, highlightedRef)
           }, EXPAND_ANIMATION_MS)
         } else {
-          scrollToAndHighlight(fullPath, highlightedRef)
+          scrollToAndHighlight(fullPath, tabScope, highlightedRef)
         }
       }
 

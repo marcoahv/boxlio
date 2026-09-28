@@ -76,6 +76,70 @@ describe('isBlockSyncEvent', () => {
     ).toBe(false)
   })
 
+  it('accepts a block-rich-text-edit message with all required fields', () => {
+    expect(
+      isBlockSyncEvent(
+        makeEvent(SERVER_URL, {
+          type: 'block-rich-text-edit',
+          blockId: 'abc',
+          fieldPath: 'content',
+          value: { root: { children: [] } },
+        }),
+        SERVER_URL,
+      ),
+    ).toBe(true)
+  })
+
+  it('rejects a block-rich-text-edit message missing fieldPath', () => {
+    expect(
+      isBlockSyncEvent(
+        makeEvent(SERVER_URL, {
+          type: 'block-rich-text-edit',
+          blockId: 'abc',
+          value: { root: { children: [] } },
+        }),
+        SERVER_URL,
+      ),
+    ).toBe(false)
+  })
+
+  it('rejects a block-rich-text-edit message missing value', () => {
+    expect(
+      isBlockSyncEvent(
+        makeEvent(SERVER_URL, { type: 'block-rich-text-edit', blockId: 'abc', fieldPath: 'content' }),
+        SERVER_URL,
+      ),
+    ).toBe(false)
+  })
+
+  it('rejects a block-rich-text-edit message with a non-object value', () => {
+    expect(
+      isBlockSyncEvent(
+        makeEvent(SERVER_URL, {
+          type: 'block-rich-text-edit',
+          blockId: 'abc',
+          fieldPath: 'content',
+          value: 'not an object',
+        }),
+        SERVER_URL,
+      ),
+    ).toBe(false)
+  })
+
+  it('rejects a block-rich-text-edit message with an array value', () => {
+    expect(
+      isBlockSyncEvent(
+        makeEvent(SERVER_URL, {
+          type: 'block-rich-text-edit',
+          blockId: 'abc',
+          fieldPath: 'content',
+          value: [],
+        }),
+        SERVER_URL,
+      ),
+    ).toBe(false)
+  })
+
   it('accepts a block-field-focus message with all required fields', () => {
     expect(
       isBlockSyncEvent(

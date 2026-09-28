@@ -1,6 +1,6 @@
 # Boxlio - Project Overview
 
-<!-- blueprint:source-hash 4762118ecd9d93650bdb7493a72bc98e391277fb0ee862535fe8a09c99b2c6f4 -->
+<!-- blueprint:source-hash 4688f31e07da94c658321f1f3f2c95c3e052ebab6111b4a1f03aaca956761339 -->
 
 > A reusable Payload CMS + Next.js template, kept as a template repository and
 > cloned fresh for each new site, rather than shipped as one specific product.

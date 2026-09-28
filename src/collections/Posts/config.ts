@@ -187,6 +187,10 @@ export const Posts: CollectionConfig = {
                   name: 'featuredImage',
                   relationTo: 'media',
                   required: true,
+                  admin: {
+                    description:
+                      'Shown on blog cards and used as the social share (Open Graph) image when no SEO image is set.',
+                  },
                 },
               ],
             },
