@@ -3,6 +3,45 @@ import { Section, Container, Stack, Heading } from '@/components/primitives'
 import { useEditableField } from '@/utilities/useEditableField'
 import type { CallToActionBlock } from '@/payload-types'
 
+type CallToActionLink = NonNullable<CallToActionBlock['links']>[number]
+
+/**
+ * Its own component (not inlined in the `.map()` below) so `useEditableField`
+ * can be called at each link's own top level, per the Rules of Hooks - same
+ * pattern as `FeatureGrid`'s `FeatureItem` / Hero's `HeroLinkButton`.
+ */
+function CallToActionLinkButton({
+  blockId,
+  index,
+  link,
+}: {
+  blockId?: string | null
+  index: number
+  link: CallToActionLink
+}) {
+  const labelField = useEditableField({
+    blockId,
+    fieldPath: `links.${index}.label`,
+    value: link.label,
+  })
+
+  return (
+    <Link
+      href={link.url}
+      className={[
+        'ui-btn',
+        { outline: 'ui-btn-outline', ghost: 'ui-btn-ghost' }[link.variant ?? ''],
+        link.color === 'secondary' ? 'ui-btn-secondary' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      {...labelField.fieldProps}
+    >
+      {labelField.content}
+    </Link>
+  )
+}
+
 /**
  * Short conversion band. Defaults to the inverse surface so it reads as a
  * deliberate interruption — and because surfaces carry their own foreground,
@@ -42,20 +81,13 @@ export function CallToAction(props: CallToActionBlock) {
 
           {links?.length > 0 && (
             <Stack direction="row" gap="sm" wrap align="center">
-              {links.map((link) => (
-                <Link
+              {links.map((link, index) => (
+                <CallToActionLinkButton
                   key={link.id ?? link.url}
-                  href={link.url}
-                  className={[
-                    'ui-btn',
-                    { outline: 'ui-btn-outline', ghost: 'ui-btn-ghost' }[link.variant ?? ''],
-                    link.color === 'secondary' ? 'ui-btn-secondary' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')}
-                >
-                  {link.label}
-                </Link>
+                  blockId={id}
+                  index={index}
+                  link={link}
+                />
               ))}
             </Stack>
           )}

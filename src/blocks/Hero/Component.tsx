@@ -10,6 +10,48 @@ import { isDoc } from '@/utilities/isDoc'
 import { useEditableField } from '@/utilities/useEditableField'
 import type { HeroBlock, Media } from '@/payload-types'
 
+type HeroLink = NonNullable<HeroBlock['links']>[number]
+
+/**
+ * Its own component (not inlined in the `.map()` below) so `useEditableField`
+ * can be called at each button's own top level, per the Rules of Hooks - same
+ * pattern as `FeatureGrid`'s `FeatureItem`. `blockId` is the Hero block's own
+ * id (there is no enclosing block for a Hero button beyond Hero itself), so
+ * `fieldPath` is the full path relative to Hero (`links.${index}.label`),
+ * matching `FeatureGrid`'s `features.${index}.title` exactly.
+ */
+function HeroLinkButton({
+  blockId,
+  index,
+  link,
+}: {
+  blockId?: string | null
+  index: number
+  link: HeroLink
+}) {
+  const labelField = useEditableField({
+    blockId,
+    fieldPath: `links.${index}.label`,
+    value: link.label,
+  })
+
+  return (
+    <Link
+      href={link.url}
+      className={[
+        'ui-btn',
+        { outline: 'ui-btn-outline', ghost: 'ui-btn-ghost' }[link.variant ?? ''],
+        link.color === 'secondary' ? 'ui-btn-secondary' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      {...labelField.fieldProps}
+    >
+      {labelField.content}
+    </Link>
+  )
+}
+
 /**
  * Reference implementation for a block.
  *
@@ -98,9 +140,11 @@ export function Hero(props: HeroBlock) {
   // Live preview merges unsaved form state instantly, so a Buttons row just
   // added (before its required label/url are filled in) would otherwise
   // render `<Link href={undefined}>` for a moment and warn - skip it until
-  // it has a real destination, which also means two still-blank rows can
-  // never collide on the same fallback key.
-  const linkableLinks = links?.filter((link) => link.url) ?? []
+  // it has a real destination. Filtering happens inside the render below
+  // (not here, into a separate array) so each rendered button keeps its true
+  // index into `links` - `HeroLinkButton`'s `fieldPath` depends on that index
+  // matching the real array position, not a position in a re-indexed copy.
+  const hasLinkableLinks = links?.some((link) => link.url) ?? false
   const overlayModifierClasses = [
     resolvedOverlayColor !== 'dark'
       ? `ui-hero-overlay--${resolvedOverlayColor}`
@@ -139,23 +183,13 @@ export function Hero(props: HeroBlock) {
         </p>
       )}
 
-      {linkableLinks.length > 0 && (
+      {hasLinkableLinks && (
         <Stack direction="row" gap="sm" wrap align="center" justify={contentAlign} className="mt-2">
-          {linkableLinks.map((link) => (
-            <Link
-              key={link.id ?? link.url}
-              href={link.url}
-              className={[
-                'ui-btn',
-                { outline: 'ui-btn-outline', ghost: 'ui-btn-ghost' }[link.variant ?? ''],
-                link.color === 'secondary' ? 'ui-btn-secondary' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {links?.map((link, index) =>
+            link.url ? (
+              <HeroLinkButton key={link.id ?? index} blockId={id} index={index} link={link} />
+            ) : null,
+          )}
         </Stack>
       )}
     </Stack>

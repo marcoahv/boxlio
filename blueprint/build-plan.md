@@ -244,3 +244,12 @@ cleaned-up checkbox version before generating the project overview.
   "Open Header to edit") instead of silently doing nothing - makes the
   existing own-document-only editability rule visible instead of surprising,
   without touching the underlying architecture
+- [x] 29d. **Editable block button labels (Hero, CallToAction)** - extend
+  inline text editing to the button/link labels feature 29a explicitly
+  deferred (Hero's `links[].label`, up to 2 buttons; CallToAction's
+  `links[].label`, 1-2 required links), reusing the exact `blockId` +
+  relative-`fieldPath` convention `FeatureGrid`'s nested `features[]` array
+  already establishes - no changes to `useEditableField`/`BlockFieldSync`/the
+  message bridge, only per-block wiring. URLs and other button fields stay
+  out of scope, same as every other "editable" feature in this series (label
+  text only)
