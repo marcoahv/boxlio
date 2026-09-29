@@ -15,11 +15,27 @@ export const BlogListing: Block = {
   interfaceName: 'BlogListingBlock',
   labels: { singular: 'Blog Listing', plural: 'Blog Listings' },
   fields: editAccordionField([
-    ...appearanceField(),
     {
-      name: 'heading',
-      type: 'text',
-      defaultValue: 'More Posts',
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Content',
+          fields: [
+            {
+              name: 'heading',
+              type: 'text',
+              defaultValue: 'More Posts',
+              admin: {
+                className: 'field-label--sidebar-badge',
+              },
+            },
+          ],
+        },
+        {
+          label: 'Layout',
+          fields: [...appearanceField(undefined, 'field-label--sidebar-badge')],
+        },
+      ],
     },
   ]),
 }

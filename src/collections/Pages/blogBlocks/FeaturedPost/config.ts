@@ -10,10 +10,24 @@ import { editAccordionField } from '@/fields/editAccordion'
  *
  * Sitting outside the registry means it doesn't get the shared "Edit"
  * accordion automatically, so it's applied explicitly here.
+ *
+ * No Content tab: this block has no content fields at all (only `surface`),
+ * so unlike every other block's Content/Layout split, it gets a Layout tab
+ * only - an empty Content tab would be worse than no tabs.
  */
 export const FeaturedPost: Block = {
   slug: 'featuredPost',
   interfaceName: 'FeaturedPostBlock',
   labels: { singular: 'Featured Post', plural: 'Featured Posts' },
-  fields: editAccordionField([...appearanceField()]),
+  fields: editAccordionField([
+    {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Layout',
+          fields: [...appearanceField(undefined, 'field-label--sidebar-badge')],
+        },
+      ],
+    },
+  ]),
 }

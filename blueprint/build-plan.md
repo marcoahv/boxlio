@@ -269,3 +269,10 @@ cleaned-up checkbox version before generating the project overview.
   - [x] 30b. **Post body** - extends 30a's toolbar/bridge to a Post's `body`
     field. Page-builder blocks embedded in the body stay non-editable
     through the toolbar, same exclusion as 30a
+- [x] 31. **Standardize block admin tabs** - extend Hero's Content/Layout tab
+  split and `field-label--sidebar-badge` field styling (radio/select/text/
+  array fields; checkboxes stay exempt, matching Hero's own exemption for
+  `videoLoop`/`videoHideControls`) to every other block: the shared-registry
+  blocks (`FeatureGrid`, `CallToAction`, `RichTextBlock`, `Table`) and the
+  blog-only blocks (`Featured Post`, `Blog Listing`). Admin-panel editing
+  organization only - no change to stored data shape or frontend rendering

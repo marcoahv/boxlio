@@ -242,16 +242,16 @@ export interface Media {
  * via the `definition` "FeatureGridBlock".
  */
 export interface FeatureGridBlock {
-  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   heading?: string | null;
   intro?: string | null;
-  columns?: ('2' | '3' | '4') | null;
   features: {
     title: string;
     body?: string | null;
     image?: (string | null) | Media;
     id?: string | null;
   }[];
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+  columns?: ('2' | '3' | '4') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'featureGrid';
@@ -261,10 +261,8 @@ export interface FeatureGridBlock {
  * via the `definition` "CallToActionBlock".
  */
 export interface CallToActionBlock {
-  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   heading: string;
   body?: string | null;
-  align?: ('center' | 'left') | null;
   links: {
     label: string;
     url: string;
@@ -272,6 +270,8 @@ export interface CallToActionBlock {
     color?: ('primary' | 'secondary') | null;
     id?: string | null;
   }[];
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+  align?: ('center' | 'left') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'callToAction';
@@ -281,7 +281,6 @@ export interface CallToActionBlock {
  * via the `definition` "RichTextBlock".
  */
 export interface RichTextBlock {
-  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   content: {
     root: {
       type: string;
@@ -297,6 +296,7 @@ export interface RichTextBlock {
     };
     [k: string]: unknown;
   };
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'richText';
@@ -306,12 +306,7 @@ export interface RichTextBlock {
  * via the `definition` "TableBlock".
  */
 export interface TableBlock {
-  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   heading?: string | null;
-  /**
-   * Style the first row as column headings instead of a normal row.
-   */
-  hasHeaderRow?: boolean | null;
   /**
    * Keep the same number of cells in every row - columns are not enforced automatically.
    */
@@ -336,6 +331,11 @@ export interface TableBlock {
     }[];
     id?: string | null;
   }[];
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+  /**
+   * Style the first row as column headings instead of a normal row.
+   */
+  hasHeaderRow?: boolean | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'table';
@@ -418,8 +418,8 @@ export interface FeaturedPostBlock {
  * via the `definition` "BlogListingBlock".
  */
 export interface BlogListingBlock {
-  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   heading?: string | null;
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'blogListing';
@@ -671,8 +671,8 @@ export interface FeaturedPostBlockSelect<T extends boolean = true> {
  * via the `definition` "BlogListingBlock_select".
  */
 export interface BlogListingBlockSelect<T extends boolean = true> {
-  surface?: T;
   heading?: T;
+  surface?: T;
   id?: T;
   blockName?: T;
 }
