@@ -142,32 +142,28 @@ export const headerAppearanceField = (): Field[] => [
 /**
  * Show/hide plus appearance for a post's breadcrumb trail.
  *
- * Defaults (`muted`/`tight`) deliberately don't match `appearanceField()`'s
- * (`default`/`normal`) - they match what the breadcrumb trail already looks
- * like today, so an existing post with no stored value renders identically
- * to before this field existed, and a new post's form matches that same look.
+ * Defaults (`muted`) deliberately don't match `appearanceField()`'s
+ * (`default`) - it matches what the breadcrumb trail already looks like
+ * today, so an existing post with no stored value renders identically to
+ * before this field existed, and a new post's form matches that same look.
+ *
+ * Pass `className` for the same `field-label--sidebar-badge` treatment
+ * `appearanceField()` supports - every other call site omits it and is
+ * unaffected.
  */
-export const breadcrumbsField = (): Field[] => [
+export const breadcrumbsField = (className?: string): Field[] => [
   {
-    type: 'collapsible',
-    label: 'Appearance',
-    admin: {
-      initCollapsed: true,
-      description: 'Whether the breadcrumb trail shows above this post, and how it looks.',
-    },
-    fields: [
-      {
-        name: 'show',
-        type: 'checkbox',
-        defaultValue: true,
-        label: 'Show breadcrumbs',
-      },
-      {
-        name: 'surface',
-        type: 'select',
-        defaultValue: 'muted',
-        options: SURFACE_OPTIONS,
-      },
-    ],
+    name: 'show',
+    type: 'checkbox',
+    defaultValue: true,
+    label: 'Show breadcrumbs',
+    ...(className ? { admin: { className } } : {}),
+  },
+  {
+    name: 'surface',
+    type: 'select',
+    defaultValue: 'muted',
+    options: SURFACE_OPTIONS,
+    ...(className ? { admin: { className } } : {}),
   },
 ]

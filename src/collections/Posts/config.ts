@@ -197,55 +197,78 @@ export const Posts: CollectionConfig = {
           ],
         },
         {
-          label: 'Appearance',
+          label: 'Content / Layout',
           fields: [
             {
-              type: 'group',
-              name: 'breadcrumbs',
-              label: 'Breadcrumbs',
+              name: 'contentLayoutTabSave',
+              type: 'ui',
               admin: {
-                description: 'The Home / Blog / post-title trail above the post.',
+                components: {
+                  Field: '@/custom/information-tab-save/Component.tsx#InformationTabSaveButton',
+                },
               },
-              fields: breadcrumbsField(),
             },
             {
-              type: 'group',
-              name: 'headerAppearance',
-              label: 'Hero section',
-              admin: {
-                description: 'The title, meta row, and banner image at the top of the post.',
-              },
-              fields: appearanceField(),
-            },
-            {
-              type: 'group',
-              name: 'bodyAppearance',
-              label: 'Body section',
-              admin: {
-                description: 'The rich text content below the header.',
-              },
-              fields: appearanceField(),
-            },
-          ],
-        },
-        {
-          label: 'Content',
-          fields: [
-            {
-              type: 'richText',
-              name: 'body',
-              required: true,
-              editor: lexicalEditor({
-                features: ({ defaultFeatures }) => [
-                  ...defaultFeatures,
-                  FixedToolbarFeature(),
-                  // Derived from the registry, so blocks stay available
-                  // inside post bodies without a second list to maintain.
-                  BlocksFeature({
-                    blocks: blockSlugs as BlockSlug[],
-                  }),
-                ],
-              }),
+              type: 'tabs',
+              tabs: [
+                {
+                  label: 'Content',
+                  fields: [
+                    {
+                      type: 'richText',
+                      name: 'body',
+                      required: true,
+                      admin: {
+                        className: 'field-label--sidebar-badge',
+                      },
+                      editor: lexicalEditor({
+                        features: ({ defaultFeatures }) => [
+                          ...defaultFeatures,
+                          FixedToolbarFeature(),
+                          // Derived from the registry, so blocks stay
+                          // available inside post bodies without a second
+                          // list to maintain.
+                          BlocksFeature({
+                            blocks: blockSlugs as BlockSlug[],
+                          }),
+                        ],
+                      }),
+                    },
+                  ],
+                },
+                {
+                  label: 'Layout',
+                  fields: [
+                    {
+                      type: 'group',
+                      name: 'breadcrumbs',
+                      label: 'Breadcrumbs',
+                      admin: {
+                        description: 'The Home / Blog / post-title trail above the post.',
+                      },
+                      fields: breadcrumbsField('field-label--sidebar-badge'),
+                    },
+                    {
+                      type: 'group',
+                      name: 'headerAppearance',
+                      label: 'Hero section',
+                      admin: {
+                        description: 'The title, meta row, and banner image at the top of the post.',
+                      },
+                      fields: appearanceField(undefined, 'field-label--sidebar-badge'),
+                    },
+                    {
+                      type: 'group',
+                      name: 'bodyAppearance',
+                      label: 'Body section',
+                      admin: {
+                        description: 'The rich text content below the header.',
+                      },
+                      fields: appearanceField(undefined, 'field-label--sidebar-badge'),
+                    },
+                  ],
+                },
+              ],
             },
             {
               name: 'blockFieldSync',

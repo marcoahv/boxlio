@@ -452,6 +452,21 @@ export interface Post {
    * Shown on blog cards and used as the social share (Open Graph) image when no SEO image is set.
    */
   featuredImage: string | Media;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   /**
    * The Home / Blog / post-title trail above the post.
    */
@@ -470,21 +485,6 @@ export interface Post {
    */
   bodyAppearance?: {
     surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-  };
-  body: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
   };
   meta?: {
     title?: string | null;
@@ -699,6 +699,7 @@ export interface PostsSelect<T extends boolean = true> {
         name?: T;
       };
   featuredImage?: T;
+  body?: T;
   breadcrumbs?:
     | T
     | {
@@ -715,7 +716,6 @@ export interface PostsSelect<T extends boolean = true> {
     | {
         surface?: T;
       };
-  body?: T;
   meta?:
     | T
     | {
