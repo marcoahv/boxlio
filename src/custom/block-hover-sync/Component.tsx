@@ -2,6 +2,8 @@
 import { useEffect } from 'react'
 import { useForm } from '@payloadcms/ui'
 import type { UIFieldClientComponent } from 'payload'
+import { $isBlockNode } from '@payloadcms/richtext-lexical/client'
+import { $getNearestNodeFromDOMNode, getNearestEditorFromDOMNode } from '@payloadcms/richtext-lexical/lexical'
 import { postToLivePreviewIframe } from '@/utilities/postToLivePreviewIframe'
 import {
   ROW_SELECTOR,
@@ -9,6 +11,7 @@ import {
   findTopLevelRowAncestor,
   parseRowId,
 } from '@/utilities/blockRowLookup'
+import { findEnclosingBlockId } from '@/utilities/lexicalBlockLookup'
 
 /** Payload's own field-id convention (`fields/Text/Input.js`, `fields/Textarea/Input.js` in `@payloadcms/ui`) - the reverse of `block-field-sync/Component.tsx`'s own `fieldElementId`. */
 function fullPathFromFieldElementId(id: string): string | undefined {
@@ -25,18 +28,35 @@ function fullPathFromFieldElementId(id: string): string | undefined {
 const EDIT_TOGGLE_SELECTOR = '.block-edit-collapsible > .collapsible'
 
 /**
- * One global bridge, mounted once at the top level of the Pages fields (see
- * src/collections/Pages/config.ts's Content tab) - not nested inside any
- * block - so it's interactive from page load regardless of which block rows
- * are collapsed. Hovering any part of a block's row (label, pill, fields)
- * highlights and scrolls to it in the live preview iframe; leaving it clears
- * the highlight. Independently, expanding a block's "Edit" accordion selects
- * it (persists the highlight regardless of hover) until it's collapsed again.
- * Focusing a specific plain text/textarea field scrolls the iframe to that
- * exact element rather than just the block (see `onFocusIn` below).
- * Posts' blocks embed in Lexical rich text rather than this field type, so
- * they never render a matching row id - out of scope, see
- * current-feature.md.
+ * One global bridge, mounted once at the top level of the Pages and Posts
+ * fields (see src/collections/Pages/config.ts's Content / Layout tab and
+ * src/collections/Posts/config.ts's Content / Layout tab) - not nested
+ * inside any block - so it's interactive from page load regardless of which
+ * block rows are collapsed. Hovering any part of a block's row (label,
+ * pill, fields) highlights and scrolls to it in the live preview iframe;
+ * leaving it clears the highlight. Independently, expanding a block's
+ * "Edit" accordion selects it (persists the highlight regardless of hover)
+ * until it's collapsed again. Focusing a specific plain text/textarea field
+ * scrolls the iframe to that exact element rather than just the block (see
+ * `onFocusIn` below).
+ *
+ * Two distinct resolution paths feed the same `block-hover`/
+ * `block-hover-clear` messages: Pages' (and Posts' top-level) `blocks`/
+ * `blogBlocks` field renders each row with a `[id*="-row-"]` DOM id
+ * (`blockRowLookup.ts`'s `ROW_SELECTOR`), resolved directly from that id.
+ * Blocks embedded inside Posts' `body` Lexical rich text (`BlocksFeature`)
+ * render no such id - `BlocksNode.decorate()` carries nothing identifying
+ * the block in the DOM - so `resolveLexicalBlockId` below instead asks
+ * Lexical itself: `getNearestEditorFromDOMNode` finds the owning editor for
+ * a hovered DOM node, then `$getNearestNodeFromDOMNode` plus
+ * `findEnclosingBlockId`/`$isBlockNode` walk up the Lexical node tree to the
+ * nearest enclosing block and its `fields.id`. Only `block-hover`/
+ * `block-hover-clear` use this fallback; `block-select`/`block-deselect`
+ * (Edit-accordion expand/collapse, via `notifySelection` below) and
+ * `admin-field-focus` (via `onFocusIn` below) still require a
+ * `ROW_SELECTOR` match and silently no-op for embedded blocks - out of
+ * scope for now, same reasoning as the inline-text-edit boundary in
+ * `src/components/RichText/converters/index.tsx`.
  */
 export const BlockHoverSync: UIFieldClientComponent = () => {
   const { getField } = useForm()
@@ -44,25 +64,61 @@ export const BlockHoverSync: UIFieldClientComponent = () => {
   useEffect(() => {
     const resolveBlockId = (rowEl: Element) => resolveBlockIdFromRow(rowEl, getField)
 
+    // Lexical-embedded blocks (Posts' `body`) have no `ROW_SELECTOR` match,
+    // so there's no DOM id to resolve - ask the Lexical editor that owns
+    // this DOM node for its nearest enclosing block instead. Returns
+    // undefined (never throws) for any node outside a Lexical editor, or
+    // one with no enclosing block (plain paragraph text, etc).
+    const resolveLexicalBlockId = (target: EventTarget | null): string | undefined => {
+      if (!(target instanceof Node)) return undefined
+      const editor = getNearestEditorFromDOMNode(target)
+      if (!editor) return undefined
+      try {
+        return editor
+          .getEditorState()
+          .read(() => findEnclosingBlockId($getNearestNodeFromDOMNode(target), $isBlockNode))
+      } catch {
+        return undefined
+      }
+    }
+
     let hoveredRowId: string | null = null
+    let hoveredLexicalBlockId: string | null = null
 
     const onMouseOver = (e: MouseEvent) => {
       if (!(e.target instanceof Element)) return
       const rowEl = e.target.closest<HTMLElement>(ROW_SELECTOR)
-      if (!rowEl || rowEl.id === hoveredRowId) return
-      const blockId = resolveBlockId(rowEl)
-      if (!blockId) return
-      hoveredRowId = rowEl.id
+      if (rowEl) {
+        if (rowEl.id === hoveredRowId) return
+        const blockId = resolveBlockId(rowEl)
+        if (!blockId) return
+        hoveredRowId = rowEl.id
+        hoveredLexicalBlockId = null
+        postToLivePreviewIframe({ type: 'block-hover', blockId })
+        return
+      }
+      const blockId = resolveLexicalBlockId(e.target)
+      if (!blockId || blockId === hoveredLexicalBlockId) return
+      hoveredLexicalBlockId = blockId
+      hoveredRowId = null
       postToLivePreviewIframe({ type: 'block-hover', blockId })
     }
 
     const onMouseOut = (e: MouseEvent) => {
-      if (!(e.target instanceof Element) || !hoveredRowId) return
-      const rowEl = e.target.closest<HTMLElement>(ROW_SELECTOR)
-      if (!rowEl || rowEl.id !== hoveredRowId) return
-      const related = e.relatedTarget
-      if (related instanceof Node && rowEl.contains(related)) return
-      hoveredRowId = null
+      if (!(e.target instanceof Element)) return
+      if (hoveredRowId) {
+        const rowEl = e.target.closest<HTMLElement>(ROW_SELECTOR)
+        if (!rowEl || rowEl.id !== hoveredRowId) return
+        const related = e.relatedTarget
+        if (related instanceof Node && rowEl.contains(related)) return
+        hoveredRowId = null
+        postToLivePreviewIframe({ type: 'block-hover-clear' })
+        return
+      }
+      if (!hoveredLexicalBlockId) return
+      if (resolveLexicalBlockId(e.target) !== hoveredLexicalBlockId) return
+      if (resolveLexicalBlockId(e.relatedTarget) === hoveredLexicalBlockId) return
+      hoveredLexicalBlockId = null
       postToLivePreviewIframe({ type: 'block-hover-clear' })
     }
 

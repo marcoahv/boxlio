@@ -276,3 +276,10 @@ cleaned-up checkbox version before generating the project overview.
   blocks (`FeatureGrid`, `CallToAction`, `RichTextBlock`, `Table`) and the
   blog-only blocks (`Featured Post`, `Blog Listing`). Admin-panel editing
   organization only - no change to stored data shape or frontend rendering
+- [x] 32. **Lexical-embedded block hover-sync (Posts)** - extend feature 28's
+  admin-hover -> Live Preview highlight bridge to blocks embedded in a
+  Post's `body` rich text (`BlocksFeature`), the case feature 28 explicitly
+  deferred. Requires resolving a stable block id on both the frontend
+  (currently disabled for embedded blocks by design) and a new admin-side
+  hover-detection mechanism for Lexical's own block rendering, since neither
+  reuses the native `blocks`-field row convention feature 28 relies on

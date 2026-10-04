@@ -271,6 +271,15 @@ export const Posts: CollectionConfig = {
               ],
             },
             {
+              name: 'blockHoverSync',
+              type: 'ui',
+              admin: {
+                components: {
+                  Field: '@/custom/block-hover-sync/Component.tsx#BlockHoverSync',
+                },
+              },
+            },
+            {
               name: 'blockFieldSync',
               type: 'ui',
               admin: {
