@@ -66,53 +66,34 @@ export const Pages: CollectionConfig = {
               ],
             },
             {
-              type: 'collapsible',
-              label: 'Edit',
+              name: 'informationTabSave',
+              type: 'ui',
               admin: {
-                initCollapsed: true,
-                className: 'info-tab-edit-collapsible',
+                components: {
+                  Field: '@/custom/information-tab-save/Component.tsx#InformationTabSaveButton',
+                },
               },
-              fields: [
-                {
-                  name: 'informationTabEditAutoCollapse',
-                  type: 'ui',
-                  admin: {
-                    components: {
-                      Field: '@/custom/information-tab-edit-autocollapse/Component.tsx#InformationTabEditAutoCollapse',
-                    },
-                  },
-                },
-                {
-                  name: 'informationTabSave',
-                  type: 'ui',
-                  admin: {
-                    components: {
-                      Field: '@/custom/information-tab-save/Component.tsx#InformationTabSaveButton',
-                    },
-                  },
-                },
-                {
-                  type: 'text',
-                  name: 'title',
-                  required: true,
-                },
-                slugField({
-                  overrides: (field) => {
-                    field.admin = {}
-                    return field
-                  },
-                }),
-                {
-                  type: 'upload',
-                  name: 'featuredImage',
-                  relationTo: 'media',
-                  required: true,
-                  admin: {
-                    description:
-                      'Shown on preview cards and used as the social share (Open Graph) image when no SEO image is set.',
-                  },
-                },
-              ],
+            },
+            {
+              type: 'text',
+              name: 'title',
+              required: true,
+            },
+            slugField({
+              overrides: (field) => {
+                field.admin = {}
+                return field
+              },
+            }),
+            {
+              type: 'upload',
+              name: 'featuredImage',
+              relationTo: 'media',
+              required: true,
+              admin: {
+                description:
+                  'Shown on preview cards and used as the social share (Open Graph) image when no SEO image is set.',
+              },
             },
           ],
         },

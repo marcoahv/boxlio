@@ -25,46 +25,27 @@
   display: none;
 }
 
-/* Bigger label text for the "Edit" collapsible in the Pages/Posts
-   Information tab. Scoped to admin.className below, not `.row-label`
-   directly - that class is shared by every array/blocks/collapsible row
-   label site-wide, so styling it unscoped would affect all of them. */
+/* Bigger label text for every block's own "Edit" accordion
+   (src/fields/editAccordion.ts reuses this same info-tab-edit-collapsible
+   class for its behavior). Pages/Posts' own Information tab used to render
+   a matching "Edit" collapsible too, sharing this rule - removed; this now
+   only ever matches a block's. Scoped to admin.className below, not
+   `.row-label` directly - that class is shared by every array/blocks/
+   collapsible row label site-wide, so styling it unscoped would affect all
+   of them. */
 
 .info-tab-edit-collapsible .row-label {
   font-size: 1.25rem;
 }
 
-/* Brand the Information tab's "Edit" collapsible with the frontend's
-   secondary color instead of Payload's default neutral border, so the
-   open/hover states read as intentional rather than Payload's stock
-   elevation gray. The admin panel doesn't import the frontend token
-   stylesheet (src/app/(frontend)/styles/base/_base-tokens.css is only
-   loaded from (frontend)/layout.tsx), so the var() calls carry literal
-   fallbacks matching those tokens. Hover is declared after the open rule so
-   it wins on equal specificity and overrides the open border color while
-   the pointer is over it, matching Payload's own default hover-overrides-
-   base pattern for collapsibles.
-
-   :not(.block-edit-collapsible) excludes every block's own "Edit" accordion
-   (src/fields/editAccordion.ts reuses this same info-tab-edit-collapsible
-   class for its behavior, but also adds block-edit-collapsible) - blocks
-   carry the color on their own outer row instead, below. */
-
-.info-tab-edit-collapsible:not(.block-edit-collapsible) .collapsible:not(.collapsible--collapsed) {
-  border-color: var(--color-secondary-dark, #137c95);
-}
-
-.info-tab-edit-collapsible:not(.block-edit-collapsible) .collapsible:hover {
-  border-color: var(--color-secondary, #49b7d2);
-}
-
 /* Hide the border on a block's own nested "Edit" accordion entirely - the
    block's outer row already carries the branded border (below), so a second
-   border immediately inside it (Payload's plain default, since the rule
-   above excludes it) is just visual noise. `> .collapsible` is the direct
-   child that actually carries the border (see the :has() comment below for
-   why - `.block-edit-collapsible` is the field wrapper, not the same
-   element). `!important` + border-color (not `border: none`, which would
+   border immediately inside it (Payload's own plain default - nothing
+   brands this inner accordion's border) is just visual noise. `>
+   .collapsible` is the direct child that actually carries the border (see
+   the :has() comment below for why - `.block-edit-collapsible` is the field
+   wrapper, not the same element). `!important` + border-color (not
+   `border: none`, which would
    also zero out border-width and shift layout) guarantees this beats
    Payload's own default/hover border-color rules regardless of stylesheet
    load order between this file and @payloadcms/ui's own. */
