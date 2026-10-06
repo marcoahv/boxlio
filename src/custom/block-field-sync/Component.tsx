@@ -123,6 +123,23 @@ function clickToggle(el: HTMLElement) {
 }
 
 /**
+ * How many ancestor tabs fields a button belongs to (`@payloadcms/ui`'s
+ * `Tabs/index.js` puts its own `tabs-field` class on every tabs field's root,
+ * outer or inner). Lets `tryNextTab` prefer a button that just became
+ * reachable by nesting (an inner tab revealed by switching its outer one)
+ * over a still-untried sibling at a shallower level.
+ */
+function tabNestingDepth(button: Element): number {
+  let depth = 0
+  let current = button.parentElement
+  while (current) {
+    if (current.classList.contains('tabs-field')) depth++
+    current = current.parentElement
+  }
+  return depth
+}
+
+/**
  * Clicks the next untried, inactive tab button within `root`, if any -
  * one click per call, so the caller's own retry loop can re-check for the
  * field after each tab's re-render. Inactive tabs unmount their fields
@@ -134,16 +151,27 @@ function clickToggle(el: HTMLElement) {
  * passes `document.body` instead, so a top-level `Tabs` field (e.g.
  * Settings' own Information/Corners/Shadows tabs) can be switched into the
  * same way.
+ *
+ * Candidates are tried deepest-first (`tabNestingDepth`), not in raw document
+ * order: a document-level field nested two tab levels deep (Post's `body` -
+ * outer Content/Layout, then inner Content) revealed its inner tab's buttons
+ * only after the outer one was clicked, but the outer row always renders
+ * before that inner content in the DOM - so document order would always find
+ * a still-untried outer sibling (e.g. SEO) before the inner button the
+ * previous click just exposed, abandoning the correct branch before it ever
+ * got a turn. Sorting deepest-first fixes that without changing behavior for
+ * a single tab level, where every candidate shares the same depth and the
+ * stable sort leaves their relative order untouched.
  */
 function tryNextTab(root: Element, tried: Set<HTMLButtonElement>): boolean {
-  const buttons = root.querySelectorAll<HTMLButtonElement>(TAB_BUTTON_SELECTOR)
-  for (const button of buttons) {
-    if (tried.has(button) || button.classList.contains(TAB_BUTTON_ACTIVE_CLASS)) continue
-    tried.add(button)
-    withProgrammaticClick(() => button.click())
-    return true
-  }
-  return false
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>(TAB_BUTTON_SELECTOR))
+    .filter((button) => !tried.has(button) && !button.classList.contains(TAB_BUTTON_ACTIVE_CLASS))
+    .sort((a, b) => tabNestingDepth(b) - tabNestingDepth(a))
+  const button = buttons[0]
+  if (!button) return false
+  tried.add(button)
+  withProgrammaticClick(() => button.click())
+  return true
 }
 
 /**
