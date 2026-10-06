@@ -1,0 +1,43 @@
+/* "Edit in the Information tab" hint for PostPreview's own author/category/
+   date/featuredImage (`src/components/PostPreview.tsx`) - the Information
+   tab fields rendered on a Post's own Live Preview page that can never
+   become click-to-edit text (relationship/date/upload fields, unlike
+   title/summary). Same hover-tooltip mechanism as
+   `globals/_cross-document-hint.css`, but a distinct attribute and wording:
+   that one reads "Open <Document> to edit" for a field that belongs to a
+   DIFFERENT document; this field belongs to the document already open, so
+   there's nothing to open - just a tab to switch to. */
+
+[data-information-tab-hint] {
+  position: relative;
+  /* Matches [data-block-id]/[data-editable-field] in _block-highlight.css -
+     `admin-field-focus` (useBlockSyncListener.ts) can scroll straight to one
+     of these, and without this a fixed header would cover it on arrival. */
+  scroll-margin-top: var(--header-offset, 0px);
+}
+
+[data-information-tab-hint]::after {
+  content: 'Edit in the Information tab';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.4;
+  white-space: nowrap;
+  width: max-content;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease;
+  z-index: 10;
+}
+
+[data-information-tab-hint]:hover::after {
+  opacity: 1;
+}

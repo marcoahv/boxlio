@@ -130,12 +130,14 @@ export const BlockHoverSync: UIFieldClientComponent = () => {
      * its block) scrolls the iframe to that exact element, not merely the
      * block containing it - the reverse-direction counterpart to
      * `block-field-focus` (`block-field-sync/Component.tsx`), which already
-     * does this for iframe -> admin. `[id^="field-"]` only exists on plain
-     * text/textarea-style fields (Payload's own richText field wrapper never
-     * renders it - see that file's own `findFieldElement` comment), so this
-     * silently no-ops for rich text fields for now; the existing block-level
-     * scroll from `notifySelection` below still applies to those. Resolving
-     * through `findTopLevelRowAncestor` rather than a plain
+     * does this for iframe -> admin. `[id^="field-"]` exists on every core
+     * field type's own wrapper (Text, Textarea, Relationship, DateTime,
+     * Upload, ... - confirmed by reading each one's source; Payload's own
+     * richText field wrapper is the one exception, never rendering it - see
+     * `block-field-sync/Component.tsx`'s own `findFieldElement` comment), so
+     * this silently no-ops only for rich text fields; the existing
+     * block-level scroll from `notifySelection` below still applies to
+     * those. Resolving through `findTopLevelRowAncestor` rather than a plain
      * `closest(ROW_SELECTOR)` is required for a field nested inside an
      * array (a Hero button's `label`, a FeatureGrid item's `title`) - the
      * nearest row there is that array's own, not the block's.
@@ -147,7 +149,22 @@ export const BlockHoverSync: UIFieldClientComponent = () => {
       const fullPath = fullPathFromFieldElementId(fieldEl.id)
       if (!fullPath) return
       const rowEl = findTopLevelRowAncestor(fieldEl)
-      if (!rowEl) return
+      if (!rowEl) {
+        // No block/array row ancestor - this may be a top-level document
+        // field (Post's title/summary/author/category/date/featuredImage),
+        // mirroring the opposite direction's own fallback
+        // (`block-field-sync/Component.tsx`'s `resolveFieldTarget`): a
+        // `blockId` that equals the field's own path, so the frontend's
+        // listener can tell the two conventions apart without a third
+        // message type.
+        if (!getField(fullPath)) return
+        postToLivePreviewIframe({
+          type: 'admin-field-focus',
+          blockId: fullPath,
+          fieldPath: fullPath,
+        })
+        return
+      }
       const rowId = parseRowId(rowEl)
       const blockId = resolveBlockId(rowEl)
       if (!rowId || !blockId) return

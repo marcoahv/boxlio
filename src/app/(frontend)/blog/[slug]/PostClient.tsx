@@ -6,9 +6,27 @@ import { Section, Container, Heading, Stack } from '@/components/primitives'
 import { PostPreview } from '@/components/PostPreview'
 import { getServerSideURL } from '@/utilities/getUrl'
 import { useScopedLivePreview } from '@/utilities/useScopedLivePreview'
+import { useBlockSyncListener } from '@/utilities/useBlockSyncListener'
 import { useIsLivePreviewActive } from '@/utilities/useIsLivePreviewActive'
+import { useEditableField } from '@/utilities/useEditableField'
 import { EditableFieldProvider } from '@/utilities/EditableFieldContext'
 import type { Post } from '@/payload-types'
+
+/**
+ * Its own component, not inlined in `PostClient`'s own render: `useEditableField`
+ * reads editability off `EditableFieldContext` via `useIsEditableField()`, which
+ * only sees a provider that's an actual JSX ancestor - a provider `PostClient`
+ * renders around this component's element, not one it merely calls before
+ * returning - same pattern as Footer's `FooterCopyrightSiteName`.
+ */
+function PostTitle({ title }: { title: string }) {
+  const titleField = useEditableField({ blockId: 'title', fieldPath: 'title', value: title })
+  return (
+    <Heading level={1} {...titleField.fieldProps}>
+      {titleField.content}
+    </Heading>
+  )
+}
 
 /**
  * Renders the parts of the post detail page that depend on the post's own
@@ -25,6 +43,7 @@ export function PostClient({ initialData }: { initialData: Post }) {
     serverURL: getServerSideURL(),
     depth: 2,
   })
+  useBlockSyncListener()
   const isEditable = useIsLivePreviewActive({ type: 'collection', collectionSlug: 'posts' })
 
   const breadcrumbs = [
@@ -40,10 +59,18 @@ export function PostClient({ initialData }: { initialData: Post }) {
       )}
       <Section surface={data.headerAppearance?.surface}>
         <Container className="ui-section-container">
-          <Stack gap="lg">
-            <Heading level={1}>{data.title}</Heading>
-            <PostPreview post={data} variant="header" showLink={false} imageSize="thumbnail" />
-          </Stack>
+          <EditableFieldProvider value={isEditable}>
+            <Stack gap="lg">
+              <PostTitle title={data.title} />
+              <PostPreview
+                post={data}
+                variant="header"
+                showLink={false}
+                imageSize="thumbnail"
+                isEditable={isEditable}
+              />
+            </Stack>
+          </EditableFieldProvider>
         </Container>
       </Section>
       {/* Width/spacing come from Settings (--rich-text-max-width/-space, via

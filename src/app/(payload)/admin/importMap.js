@@ -1,7 +1,5 @@
 import { InformationTabSaveButton as InformationTabSaveButton_73c91e755630cbf542d9772e5ef324ad } from '@/custom/information-tab-save/Component.tsx'
 import { SlugField as SlugField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
-import { BlockHoverSync as BlockHoverSync_b28876c82b76ef57e8b4e714b546038f } from '@/custom/block-hover-sync/Component.tsx'
-import { BlockFieldSync as BlockFieldSync_889957c96e94d2ba33c90cb871ee048b } from '@/custom/block-field-sync/Component.tsx'
 import { InformationTabEditAutoCollapse as InformationTabEditAutoCollapse_f2406d0d6e65832ffd2ea93c9e3783e9 } from '@/custom/information-tab-edit-autocollapse/Component.tsx'
 import { BlockEditLabel as BlockEditLabel_bd67362b14045b6c5f113a7578f45d34 } from '@/custom/block-edit-label/Component.tsx'
 import { MetaTitleComponent as MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
@@ -9,6 +7,8 @@ import { MetaDescriptionComponent as MetaDescriptionComponent_a8a977ebc872c5d5ea
 import { MetaImageComponent as MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { PreviewComponent as PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
 import { OverviewComponent as OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860 } from '@payloadcms/plugin-seo/client'
+import { BlockHoverSync as BlockHoverSync_b28876c82b76ef57e8b4e714b546038f } from '@/custom/block-hover-sync/Component.tsx'
+import { BlockFieldSync as BlockFieldSync_889957c96e94d2ba33c90cb871ee048b } from '@/custom/block-field-sync/Component.tsx'
 import { CheckboxError as CheckboxError_ee6ce6b6e2f37732d270daf4c46828ba } from '@/custom/error/Component.tsx'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -48,8 +48,6 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 export const importMap = {
   "@/custom/information-tab-save/Component.tsx#InformationTabSaveButton": InformationTabSaveButton_73c91e755630cbf542d9772e5ef324ad,
   "@payloadcms/next/client#SlugField": SlugField_2b8867833a34864a02ddf429b0728a40,
-  "@/custom/block-hover-sync/Component.tsx#BlockHoverSync": BlockHoverSync_b28876c82b76ef57e8b4e714b546038f,
-  "@/custom/block-field-sync/Component.tsx#BlockFieldSync": BlockFieldSync_889957c96e94d2ba33c90cb871ee048b,
   "@/custom/information-tab-edit-autocollapse/Component.tsx#InformationTabEditAutoCollapse": InformationTabEditAutoCollapse_f2406d0d6e65832ffd2ea93c9e3783e9,
   "@/custom/block-edit-label/Component.tsx#BlockEditLabel": BlockEditLabel_bd67362b14045b6c5f113a7578f45d34,
   "@payloadcms/plugin-seo/client#MetaTitleComponent": MetaTitleComponent_a8a977ebc872c5d5ea7ee689724c0860,
@@ -57,6 +55,8 @@ export const importMap = {
   "@payloadcms/plugin-seo/client#MetaImageComponent": MetaImageComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#PreviewComponent": PreviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
   "@payloadcms/plugin-seo/client#OverviewComponent": OverviewComponent_a8a977ebc872c5d5ea7ee689724c0860,
+  "@/custom/block-hover-sync/Component.tsx#BlockHoverSync": BlockHoverSync_b28876c82b76ef57e8b4e714b546038f,
+  "@/custom/block-field-sync/Component.tsx#BlockFieldSync": BlockFieldSync_889957c96e94d2ba33c90cb871ee048b,
   "@/custom/error/Component.tsx#CheckboxError": CheckboxError_ee6ce6b6e2f37732d270daf4c46828ba,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,

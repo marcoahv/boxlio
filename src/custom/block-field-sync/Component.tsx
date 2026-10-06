@@ -85,13 +85,30 @@ function fieldElementId(fullPath: string) {
  * right accordion but never find anything to scroll to or highlight.
  * `scope` keeps this from jumping to the wrong block's editor when a page
  * has more than one `RichTextBlock` - it's always the row `resolveFieldTarget`
- * already resolved (or `document.body` for a top-level field), and exactly
- * one `.rich-text-lexical` renders per row, so the first match is
- * unambiguous.
+ * already resolved, and exactly one `.rich-text-lexical` renders per row, so
+ * the first match is unambiguous there.
+ *
+ * That row-scoping guarantee breaks down for a top-level field
+ * (`scope: document.body`, e.g. Settings' `siteName`, Post's `title`/
+ * `summary`/`body`): `document.body` isn't "one row" with exactly one
+ * Lexical editor, it's the whole document, which can easily contain an
+ * unrelated richText field's own editor (Post's `body`) rendered elsewhere
+ * because ITS tab happens to be active. Applying the fallback there
+ * unconditionally let a currently-visible `body` editor get mistaken for
+ * `title`'s own (entirely absent) element whenever Content/Layout was the
+ * active tab - `fieldReached` read as true from the wrong match, so
+ * `expandTowardField`'s tab-switch fallback never ran, and the sidebar
+ * silently stayed on the wrong tab (confirmed live: switching INTO
+ * Content/Layout for `body` worked, switching INTO Information for `title`
+ * from Content/Layout did not - the asymmetry traces to this exact
+ * fallback). Scoped to the two cases that actually need it: a block row
+ * (never ambiguous, per the paragraph above) or the top-level `body` path
+ * itself - the one top-level field that genuinely is richText.
  */
 function findFieldElement(fullPath: string, scope: Element): HTMLElement | null {
   const byId = document.getElementById(fieldElementId(fullPath))
   if (byId) return byId
+  if (scope === document.body && fullPath !== 'body') return null
   return scope.querySelector<HTMLElement>('.rich-text-lexical')
 }
 
@@ -493,9 +510,19 @@ export const BlockFieldSync: UIFieldClientComponent = () => {
         // that very field mid-render and never recover it within the
         // timeout, so a genuine tab switch is only tried once most of the
         // budget (see TAB_SWITCH_RESERVE_MS) has already gone to giving the
-        // render cascade a realistic window to catch up first.
+        // render cascade a realistic window to catch up first - EXCEPT when
+        // `chain` is empty: there is then no row, no block accordion, no
+        // nested collapsible of any kind to still be rendering - either this
+        // is a top-level document field with no wrapper at all (Post's
+        // `title`/`summary`, `body`, Settings' `siteName`), or the field's
+        // own block row doesn't exist in the DOM yet because its tab isn't
+        // even active. Both cases have nothing to gain from waiting, so an
+        // empty chain tries the tab switch immediately rather than sitting
+        // through the same reserve a genuinely mid-render nested field needs.
         const canTryTab =
-          !fieldReached && !expandedSomething && Date.now() >= deadline - TAB_SWITCH_RESERVE_MS
+          !fieldReached &&
+          !expandedSomething &&
+          (chain.length === 0 || Date.now() >= deadline - TAB_SWITCH_RESERVE_MS)
         const switchedTab = canTryTab ? tryNextTab(tabScope, triedTabButtons) : false
 
         const didExpand = expandedAny || expandedSomething || switchedTab

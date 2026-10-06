@@ -121,9 +121,23 @@ export function useBlockSyncListener() {
           // this field is inline-editable (`useEditableField`/
           // `EditableRichText`), so this is a silent no-op for a field this
           // block doesn't expose that way.
-          const el = document.querySelector(
-            `[data-block-id="${CSS.escape(message.blockId)}"] [data-editable-field="${CSS.escape(message.fieldPath)}"]`,
-          )
+          //
+          // `blockId === fieldPath` is `block-hover-sync/Component.tsx`'s own
+          // signal for a top-level document field with no block wrapper at
+          // all (Post's title/summary/author/category/date/featuredImage) -
+          // there's no `[data-block-id]` to scope the lookup to, and the
+          // target may be click-to-edit (`data-editable-field`, title/
+          // summary) or hint-only, never editable itself
+          // (`data-information-tab-hint`, author/category/date/
+          // featuredImage - see `PostPreview.tsx`).
+          const el =
+            message.blockId === message.fieldPath
+              ? document.querySelector(
+                  `[data-editable-field="${CSS.escape(message.fieldPath)}"], [data-information-tab-hint="${CSS.escape(message.fieldPath)}"]`,
+                )
+              : document.querySelector(
+                  `[data-block-id="${CSS.escape(message.blockId)}"] [data-editable-field="${CSS.escape(message.fieldPath)}"]`,
+                )
           if (el) scrollWithinThisWindow(el)
           return
         }

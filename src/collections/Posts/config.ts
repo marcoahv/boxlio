@@ -251,24 +251,6 @@ export const Posts: CollectionConfig = {
                 },
               ],
             },
-            {
-              name: 'blockHoverSync',
-              type: 'ui',
-              admin: {
-                components: {
-                  Field: '@/custom/block-hover-sync/Component.tsx#BlockHoverSync',
-                },
-              },
-            },
-            {
-              name: 'blockFieldSync',
-              type: 'ui',
-              admin: {
-                components: {
-                  Field: '@/custom/block-field-sync/Component.tsx#BlockFieldSync',
-                },
-              },
-            },
           ],
         },
         {
@@ -276,6 +258,34 @@ export const Posts: CollectionConfig = {
           fields: [SEOField],
         },
       ],
+    },
+    // Siblings of the outer `tabs` field, not nested inside "Content /
+    // Layout" - Payload's TabsField unmounts every inactive tab's fields
+    // entirely, so a `ui` field placed inside one tab only exists in the
+    // DOM (and only runs its own message listener) while that exact tab is
+    // active. These two bridges need to react to messages regardless of
+    // which outer tab (Information/Content-Layout/SEO) the sidebar happens
+    // to be showing - e.g. a click on the iframe's Title (Information tab's
+    // own field) while the sidebar sits on Content / Layout - so they live
+    // here, outside every tab, where they mount unconditionally. Both
+    // render `null`; this is a pure placement change.
+    {
+      name: 'blockHoverSync',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/custom/block-hover-sync/Component.tsx#BlockHoverSync',
+        },
+      },
+    },
+    {
+      name: 'blockFieldSync',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/custom/block-field-sync/Component.tsx#BlockFieldSync',
+        },
+      },
     },
   ],
 }
