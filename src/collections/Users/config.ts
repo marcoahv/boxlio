@@ -17,8 +17,30 @@ export const Users: CollectionConfig = {
     // register once, or the project could never create its first user.
     create: async ({ req }) => {
       if (req.user) return true
+
+      // Fast-path guard, not the race fix itself: an already-initialized
+      // site (totalDocs > 0) is never eligible, regardless of whether the
+      // bootstrap-lock below has ever been claimed - without this, a site
+      // that already had real users before this collection existed would
+      // let the very next anonymous request claim an empty lock and
+      // self-register. This read can be stale under concurrent load; that's
+      // fine, because it only ever says yes to proceed toward the atomic
+      // check below, never the final word.
       const { totalDocs } = await req.payload.count({ collection: 'users' })
-      return totalDocs === 0
+      if (totalDocs > 0) return false
+
+      try {
+        // Atomically claim the bootstrap lock. MongoDB's unique index on
+        // `key` means only the first of any number of concurrent requests
+        // can insert this document; every later one throws a duplicate-key
+        // error here and is denied - closing the race the count() read
+        // above leaves open on its own. See
+        // blueprint/history/fixes/first-admin-bootstrap-race.md.
+        await req.payload.create({ collection: 'bootstrap-lock', data: {} })
+        return true
+      } catch {
+        return false
+      }
     },
     read: authenticated,
     update: authenticated,

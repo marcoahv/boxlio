@@ -10,6 +10,7 @@ import { livePreviewPath } from '@/utilities/livePreviewPath'
 
 import { Users } from './collections/Users/config'
 import { Media } from './collections/Media/config'
+import { BootstrapLock } from './collections/BootstrapLock/config'
 import { Pages } from '@/collections/Pages/config'
 import { Posts } from '@/collections/Posts/config'
 import { Settings } from '@/globals/Settings/config'
@@ -75,7 +76,7 @@ export default buildConfig({
           defaultFromName: process.env.EMAIL_FROM_NAME || SITE_NAME,
         })
       : undefined,
-  collections: [Users, Pages, Posts, Categories, Media],
+  collections: [Users, Pages, Posts, Categories, Media, BootstrapLock],
   globals: [Header, Settings, Footer],
   // Registered globally so collections can reference blocks by slug.
   // See src/blocks/registry.ts.
