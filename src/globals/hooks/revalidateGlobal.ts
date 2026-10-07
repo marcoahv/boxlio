@@ -1,5 +1,6 @@
 import { GlobalAfterChangeHook } from 'payload'
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { safeRevalidate } from '@/utilities/safeRevalidate'
 
 /**
  * Two calls, same reason as collections/Pages/hooks/revalidatePage.ts:
@@ -16,7 +17,9 @@ export const revalidateGlobal: GlobalAfterChangeHook = ({
   req: { payload },
   global: { slug },
 }) => {
-  payload.logger.info(`Revalidating ${slug}`)
-  revalidateTag(`global_${slug}`, 'max')
-  revalidatePath('/', 'layout')
+  safeRevalidate(`global ${slug}`, () => {
+    payload.logger.info(`Revalidating ${slug}`)
+    revalidateTag(`global_${slug}`, 'max')
+    revalidatePath('/', 'layout')
+  })
 }

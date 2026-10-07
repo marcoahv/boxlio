@@ -1,6 +1,7 @@
 import { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 import { Page } from '@/payload-types'
 import { revalidatePath, revalidateTag } from 'next/cache'
+import { safeRevalidate } from '@/utilities/safeRevalidate'
 
 /**
  * Two calls, because they clear two different caches:
@@ -18,12 +19,16 @@ const pathFor = (slug: string) => (slug === 'home' ? '/' : `/${slug}`)
 
 export const updatePage: CollectionAfterChangeHook<Page> = ({ doc, req: { payload } }) => {
   const path = pathFor(doc.slug)
-  payload.logger.info(`Revalidating page ${doc.slug} (${path})`)
-  revalidateTag(`page_${doc.slug}`)
-  revalidatePath(path)
+  safeRevalidate(`page ${doc.slug}`, () => {
+    payload.logger.info(`Revalidating page ${doc.slug} (${path})`)
+    revalidateTag(`page_${doc.slug}`)
+    revalidatePath(path)
+  })
 }
 
 export const deletePage: CollectionAfterDeleteHook<Page> = ({ doc }) => {
-  revalidateTag(`page_${doc.slug}`)
-  revalidatePath(pathFor(doc.slug))
+  safeRevalidate(`page ${doc.slug}`, () => {
+    revalidateTag(`page_${doc.slug}`)
+    revalidatePath(pathFor(doc.slug))
+  })
 }

@@ -3,11 +3,16 @@ import {
   CollectionAfterDeleteHook,
 } from 'payload'
 import { revalidateTag } from 'next/cache'
+import { safeRevalidate } from '@/utilities/safeRevalidate'
 
 export const revalidateCategories: CollectionAfterChangeHook = () => {
-  revalidateTag('blog', 'max')
+  safeRevalidate('categories', () => {
+    revalidateTag('blog', 'max')
+  })
 }
 
 export const deleteCategories: CollectionAfterDeleteHook = () => {
-  revalidateTag('blog', 'max')
+  safeRevalidate('categories', () => {
+    revalidateTag('blog', 'max')
+  })
 }
