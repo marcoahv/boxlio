@@ -73,6 +73,8 @@ export interface Config {
     table: TableBlock;
     accordion: AccordionBlock;
     stats: StatsBlock;
+    testimonials: TestimonialsBlock;
+    logoCloud: LogoCloudBlock;
   };
   collections: {
     users: User;
@@ -386,6 +388,39 @@ export interface StatsBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TestimonialsBlock".
+ */
+export interface TestimonialsBlock {
+  heading?: string | null;
+  items: {
+    quote: string;
+    author: string;
+    avatar?: (string | null) | Media;
+    id?: string | null;
+  }[];
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+  columns?: ('2' | '3' | '4') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'testimonials';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LogoCloudBlock".
+ */
+export interface LogoCloudBlock {
+  heading?: string | null;
+  items: {
+    logo: string | Media;
+    id?: string | null;
+  }[];
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'logoCloud';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -429,7 +464,17 @@ export interface Page {
    */
   featuredImage: string | Media;
   blocks?:
-    | (HeroBlock | FeatureGridBlock | CallToActionBlock | RichTextBlock | TableBlock | AccordionBlock | StatsBlock)[]
+    | (
+        | HeroBlock
+        | FeatureGridBlock
+        | CallToActionBlock
+        | RichTextBlock
+        | TableBlock
+        | AccordionBlock
+        | StatsBlock
+        | TestimonialsBlock
+        | LogoCloudBlock
+      )[]
     | null;
   /**
    * Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Content / Layout tab) above them for a heading.

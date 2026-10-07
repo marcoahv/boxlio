@@ -291,7 +291,7 @@ cleaned-up checkbox version before generating the project overview.
   - [x] 33a. **Accordion/FAQ + Stats** - two text-only array blocks; the
     Accordion is the first registry block with its own visitor-facing
     interactive state (editor-controlled "allow multiple open at once")
-  - [ ] 33b. **Testimonials + Logo Cloud** - two media-bearing array blocks
+  - [x] 33b. **Testimonials + Logo Cloud** - two media-bearing array blocks
     (quote/author/avatar; logo grid), reusing `MediaImage`
   - [ ] 33c. **Carousel** - client-interactive slider block (keyboard nav,
     optional autoplay); kept separate because its moving viewport complicates

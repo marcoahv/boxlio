@@ -9,6 +9,8 @@ import { RichTextBlock as RichTextBlockConfig } from './RichTextBlock/config'
 import { Table as TableConfig } from './Table/config'
 import { Accordion as AccordionConfig } from './Accordion/config'
 import { Stats as StatsConfig } from './Stats/config'
+import { Testimonials as TestimonialsConfig } from './Testimonials/config'
+import { LogoCloud as LogoCloudConfig } from './LogoCloud/config'
 
 import { Hero } from './Hero/Component'
 import { FeatureGrid } from './FeatureGrid/Component'
@@ -17,6 +19,8 @@ import { RichTextBlock } from './RichTextBlock/Component'
 import { Table } from './Table/Component'
 import { Accordion } from './Accordion/Component'
 import { Stats } from './Stats/Component'
+import { Testimonials } from './Testimonials/Component'
+import { LogoCloud } from './LogoCloud/Component'
 
 /**
  * The single place blocks are registered.
@@ -42,6 +46,8 @@ const rawBlockConfigs: Block[] = [
   TableConfig,
   AccordionConfig,
   StatsConfig,
+  TestimonialsConfig,
+  LogoCloudConfig,
 ]
 
 /** Payload block definitions. Registered globally, referenced by slug. */
@@ -69,6 +75,8 @@ export const blockComponents: Record<string, React.FC<any>> = {
   table: Table,
   accordion: Accordion,
   stats: Stats,
+  testimonials: Testimonials,
+  logoCloud: LogoCloud,
 }
 
 /** Every registered slug — hand to a `blocks` field's `blockReferences`. */
