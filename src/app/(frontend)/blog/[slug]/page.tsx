@@ -62,7 +62,7 @@ export default async function Page({ params }: PageProps) {
             <Heading>Related Posts</Heading>
             <CardContainer>
               {relatedPosts.docs.map((related) => (
-                <Card {...related} key={related.id} />
+                <Card {...related} key={related.id} titleSize={5} />
               ))}
             </CardContainer>
           </Container>

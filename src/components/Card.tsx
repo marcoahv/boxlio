@@ -2,7 +2,7 @@ import type { Category, Media, Post, User } from '@/payload-types'
 import Link from 'next/link'
 import { isDoc } from '@/utilities/isDoc'
 import { MediaImage } from '@/components/MediaImage'
-import { Heading } from '@/components/primitives'
+import { Heading, type HeadingProps } from '@/components/primitives'
 import { Calendar, Tag, User2 } from 'lucide-react'
 import type { CardVariant } from '@/components/CardContainer'
 
@@ -12,9 +12,11 @@ type CardProps = Pick<
 > & {
   variant?: CardVariant
   className?: string
+  /** Visual size for the title, when a caller needs it smaller than the card's semantic h3 (e.g. a related-posts rail). */
+  titleSize?: HeadingProps['size']
 }
 
-export const Card = ({ variant = 'default', className, ...post }: CardProps) => {
+export const Card = ({ variant = 'default', className, titleSize, ...post }: CardProps) => {
   const cardClasses = ['card', `card--${variant}`, className].filter(Boolean).join(' ')
   return (
     <Link className={cardClasses} href={'/blog/' + post.slug}>
@@ -30,7 +32,7 @@ export const Card = ({ variant = 'default', className, ...post }: CardProps) => 
           </div>
         )}
         <div className="card__content">
-          <Heading level={3}>{post.title}</Heading>
+          <Heading level={3} size={titleSize}>{post.title}</Heading>
           <div className="card__meta">
             {isDoc<User>(post.populatedAuthor) && (
               <span className="card__meta-item">
