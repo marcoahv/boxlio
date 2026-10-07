@@ -1,4 +1,5 @@
 import { type GlobalConfig } from 'payload'
+import { authenticated } from '@/access/authenticated'
 import { revalidateGlobal } from '@/globals/hooks/revalidateGlobal'
 import { isHexColor } from '@/utilities/color'
 import { WIDTH_OPTIONS, SPACING_OPTIONS } from '@/fields/appearance'
@@ -34,7 +35,7 @@ export const Settings: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req }) => Boolean(req.user),
+    update: authenticated,
   },
   hooks: {
     afterChange: [revalidateGlobal],

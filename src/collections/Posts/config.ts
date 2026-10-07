@@ -1,4 +1,5 @@
 import { type BlockSlug, type CollectionConfig, slugField } from 'payload'
+import { authenticated } from '@/access/authenticated'
 import { Post } from '@/payload-types'
 import {
   BlocksFeature,
@@ -32,9 +33,9 @@ export const Posts: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   fields: [
     {

@@ -3,6 +3,7 @@ import {
   type CollectionConfig,
   slugField,
 } from 'payload'
+import { authenticated } from '@/access/authenticated'
 import { SEOField } from '@/fields/seo/config'
 import { blockSlugs } from '@/blocks/registry'
 import { FeaturedPost } from './blogBlocks/FeaturedPost/config'
@@ -25,9 +26,9 @@ export const Pages: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   fields: [
     {

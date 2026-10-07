@@ -1,4 +1,5 @@
 import { type CollectionConfig, slugField } from 'payload'
+import { authenticated } from '@/access/authenticated'
 import { revalidateCategories, deleteCategories } from './hooks/revalidateCategories'
 
 export const Categories: CollectionConfig = {
@@ -9,9 +10,9 @@ export const Categories: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    create: authenticated,
+    update: authenticated,
+    delete: authenticated,
   },
   hooks: {
     afterChange: [revalidateCategories],

@@ -7,14 +7,6 @@
 > finding is `open` or `fixed`, then archives resolved findings with the work
 > and resets this file.
 
-### F-05 [P3] open - The `({ req }) => Boolean(req.user)` access predicate is now duplicated across 7 configs
-
-**File:** src/collections/Pages/config.ts:27-29, src/collections/Posts/config.ts, src/collections/Categories/config.ts, src/collections/Media/config.ts, src/globals/Header/config.ts, src/globals/Footer/config.ts, src/globals/Settings/config.ts
-**Found:** 2026-09-19 by /audit (scope: current; lens: quality)
-**Why it matters:** `fix/lock-down-access-control` repeats the identical one-line `({ req }) => Boolean(req.user)` check in five more configs, on top of the two (`Pages`, `Posts`) that already had it. Purely a maintainability observation, not a defect - the logic is correct everywhere it appears - but a shared `authenticated: Access` helper (e.g. `src/access/authenticated.ts`) would remove the duplication and give the project one place to change the rule later.
-**Suggested fix:** Extract `export const authenticated: Access = ({ req }) => Boolean(req.user)` and import it in all seven configs. Optional follow-up, not required for this fix.
-**Resolution:**
-
 ### F-06 [P3] unverified - Narrow bootstrap race on Users.access.create
 
 **File:** src/collections/Users/config.ts

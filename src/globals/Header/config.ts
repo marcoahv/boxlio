@@ -1,4 +1,5 @@
 import { type GlobalConfig } from 'payload'
+import { authenticated } from '@/access/authenticated'
 import { revalidateGlobal } from '@/globals/hooks/revalidateGlobal'
 import { headerAppearanceField } from '@/fields/appearance'
 import { linkField } from '@/fields/link'
@@ -10,7 +11,7 @@ export const Header: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req }) => Boolean(req.user),
+    update: authenticated,
   },
   hooks: {
     afterChange: [revalidateGlobal],
