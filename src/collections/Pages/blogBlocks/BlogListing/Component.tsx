@@ -50,7 +50,7 @@ export function BlogListing(
           <CardContainer>
             {blogs.docs
               .filter((post) => !post.featured)
-              .map((post) => <Card {...post} key={post.id} />)}
+              .map((post) => <Card {...post} key={post.id} titleSize={5} />)}
           </CardContainer>
           <Pagination
             totalPages={blogs.totalPages}
