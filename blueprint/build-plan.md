@@ -283,3 +283,16 @@ cleaned-up checkbox version before generating the project overview.
   (currently disabled for embedded blocks by design) and a new admin-side
   hover-detection mechanism for Lexical's own block rendering, since neither
   reuses the native `blocks`-field row convention feature 28 relies on
+- [ ] 33. **Common content blocks** - five more blocks on the shared registry
+  (`src/blocks/registry.ts`), each following the established contract:
+  Content/Layout admin tabs (31), `appearanceField()`, the automatic Edit
+  accordion (27) and `data-block-id` hover-sync marker (28), and per-block
+  `useEditableField` inline text editing (29a/29d)
+  - [x] 33a. **Accordion/FAQ + Stats** - two text-only array blocks; the
+    Accordion is the first registry block with its own visitor-facing
+    interactive state (editor-controlled "allow multiple open at once")
+  - [ ] 33b. **Testimonials + Logo Cloud** - two media-bearing array blocks
+    (quote/author/avatar; logo grid), reusing `MediaImage`
+  - [ ] 33c. **Carousel** - client-interactive slider block (keyboard nav,
+    optional autoplay); kept separate because its moving viewport complicates
+    both the hover-sync highlight and inline editing

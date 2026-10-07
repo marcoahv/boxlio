@@ -71,6 +71,8 @@ export interface Config {
     callToAction: CallToActionBlock;
     richText: RichTextBlock;
     table: TableBlock;
+    accordion: AccordionBlock;
+    stats: StatsBlock;
   };
   collections: {
     users: User;
@@ -342,6 +344,46 @@ export interface TableBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AccordionBlock".
+ */
+export interface AccordionBlock {
+  heading?: string | null;
+  items: {
+    question: string;
+    answer: string;
+    id?: string | null;
+  }[];
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+  /**
+   * When off, opening an item closes the others. When on, visitors can keep several answers open at the same time.
+   */
+  allowMultiple?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'accordion';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsBlock".
+ */
+export interface StatsBlock {
+  heading?: string | null;
+  items: {
+    /**
+     * The figure itself, e.g. "10k+", "99.9%" or "$2M".
+     */
+    value: string;
+    label: string;
+    id?: string | null;
+  }[];
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+  columns?: ('2' | '3' | '4') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stats';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -384,7 +426,9 @@ export interface Page {
    * Shown on preview cards and used as the social share (Open Graph) image when no SEO image is set.
    */
   featuredImage: string | Media;
-  blocks?: (HeroBlock | FeatureGridBlock | CallToActionBlock | RichTextBlock | TableBlock)[] | null;
+  blocks?:
+    | (HeroBlock | FeatureGridBlock | CallToActionBlock | RichTextBlock | TableBlock | AccordionBlock | StatsBlock)[]
+    | null;
   /**
    * Add, reorder, or omit Featured Post and Blog Listing. Add a Hero block (Content / Layout tab) above them for a heading.
    */

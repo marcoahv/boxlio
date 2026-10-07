@@ -1,0 +1,66 @@
+/* Accordion block.
+   @layer components, not @utility — see the note at the top of _section.css.
+
+   The panel opens by animating `grid-template-rows` from 0fr to 1fr rather
+   than transitioning a max-height guess: the single row resolves to the
+   content's own height, so an answer of any length opens to exactly the right
+   size — no magic number, and no clipping of a long answer.
+
+   `visibility` rather than the `hidden` attribute, because `display: none`
+   cannot be transitioned at all. Visibility still takes the collapsed panel
+   out of the accessibility tree AND out of tab order, which is what the
+   block's a11y contract actually requires; it just happens to be animatable
+   too. */
+
+@layer components {
+  .ui-accordion-item {
+    /* Declared here, on the element that contains BOTH the header's chevron
+       and the panel, so one override below reaches every animation in the
+       block. */
+    --ui-accordion-duration: 0.3s;
+
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .ui-accordion-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows var(--ui-accordion-duration) ease,
+      /* Held back until the collapse has finished, so the text doesn't blink
+         out of existence halfway through. Flipped immediately on open, below. */
+      visibility 0s linear var(--ui-accordion-duration);
+  }
+
+  .ui-accordion-panel[data-open='true'] {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition:
+      grid-template-rows var(--ui-accordion-duration) ease,
+      visibility 0s linear 0s;
+  }
+
+  /* The row's content has to be allowed to shrink below its natural height,
+     or `0fr` never actually reaches zero. This is also why the panel's
+     padding lives on this inner element and not on the grid container —
+     padding is unaffected by the row size, so a collapsed panel would
+     otherwise keep a visible strip of it. */
+  .ui-accordion-panel > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .ui-accordion-chevron {
+    transition: transform var(--ui-accordion-duration) ease;
+  }
+
+  /* One lever disables every animation in the block: the duration drives both
+     the row transition and the visibility delay that depends on it, so a
+     collapsed panel still disappears instantly instead of lingering. */
+  @media (prefers-reduced-motion: reduce) {
+    .ui-accordion-item {
+      --ui-accordion-duration: 0s;
+    }
+  }
+}

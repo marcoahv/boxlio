@@ -7,12 +7,16 @@ import { FeatureGrid as FeatureGridConfig } from './FeatureGrid/config'
 import { CallToAction as CallToActionConfig } from './CallToAction/config'
 import { RichTextBlock as RichTextBlockConfig } from './RichTextBlock/config'
 import { Table as TableConfig } from './Table/config'
+import { Accordion as AccordionConfig } from './Accordion/config'
+import { Stats as StatsConfig } from './Stats/config'
 
 import { Hero } from './Hero/Component'
 import { FeatureGrid } from './FeatureGrid/Component'
 import { CallToAction } from './CallToAction/Component'
 import { RichTextBlock } from './RichTextBlock/Component'
 import { Table } from './Table/Component'
+import { Accordion } from './Accordion/Component'
+import { Stats } from './Stats/Component'
 
 /**
  * The single place blocks are registered.
@@ -36,6 +40,8 @@ const rawBlockConfigs: Block[] = [
   CallToActionConfig,
   RichTextBlockConfig,
   TableConfig,
+  AccordionConfig,
+  StatsConfig,
 ]
 
 /** Payload block definitions. Registered globally, referenced by slug. */
@@ -61,6 +67,8 @@ export const blockComponents: Record<string, React.FC<any>> = {
   callToAction: CallToAction,
   richText: RichTextBlock,
   table: Table,
+  accordion: Accordion,
+  stats: Stats,
 }
 
 /** Every registered slug — hand to a `blocks` field's `blockReferences`. */
