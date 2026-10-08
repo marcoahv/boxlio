@@ -1,0 +1,107 @@
+/* Carousel block.
+   @layer components, not @utility — see the note at the top of _section.css.
+
+   Every slide is now a full Hero's worth of content, so its own
+   background/overlay/text-color styling reuses Hero's own `_hero.css`
+   classes directly (`.ui-hero-bg`, `.ui-hero-overlay`, `.ui-hero-content`,
+   ...) rather than duplicating equivalent rules here - this file only
+   holds what's genuinely Carousel-specific: the slide transitions, the
+   Previous/Next controls (which still need to read against an arbitrary
+   photo regardless of which slide's own overlay choice is active), and
+   the per-instance Width control. */
+
+@layer components {
+  /* Two transitions between slides, chosen per-block via the `transition`
+     field. Every slide stacks in the same box at once either way (see
+     Component.tsx's own note on why) rather than the instant-cut `hidden`
+     utility this used before either mode existed. One lever
+     (`--ui-carousel-duration`) disables both entirely under reduced
+     motion, same pattern `Accordion`'s own transition uses
+     (`_accordion.css`).
+
+     Fade (default): opacity crossfade. `visibility` is delayed the same
+     way Accordion's own panel delays it - taken out of the accessibility
+     tree and tab order only once a slide has fully faded out, not the
+     instant it stops being active, so the fade itself isn't visually cut
+     short.
+
+     Slide: every slide stays fully opaque/visible (nothing to crossfade -
+     only position moves) and is pushed sideways instead, by
+     `--ui-carousel-offset` (an inline custom property Component.tsx sets
+     per slide from `slideOffset()` - the signed, shortest-path distance
+     from the active slide, in slide-widths). The `[data-transition=
+     'slide']` rule comes after the Fade rules on purpose, at the same
+     specificity, so it wins the cascade and overrides their opacity/
+     visibility back to constant for every slide regardless of
+     `data-active`. `aria-hidden` (set in Component.tsx, not here) is what
+     keeps an off-screen slide out of the accessibility tree in this mode,
+     since `visibility` can't be used for that without also hiding the
+     slide mid-transition while it's still sliding across the screen. */
+  .ui-carousel-slide {
+    --ui-carousel-duration: 300ms;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--ui-carousel-duration) ease,
+      visibility 0s linear var(--ui-carousel-duration);
+  }
+
+  .ui-carousel-slide[data-active='true'] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity var(--ui-carousel-duration) ease,
+      visibility 0s linear 0s;
+  }
+
+  .ui-carousel-slide[data-transition='slide'] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(calc(var(--ui-carousel-offset, 0) * 100%));
+    transition: transform var(--ui-carousel-duration) ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ui-carousel-slide {
+      --ui-carousel-duration: 0s;
+    }
+  }
+
+  /* Fixed (not editor-configurable, unlike every slide's own overlay
+     choice) translucent backdrop for the nav buttons - they sit on top of
+     whatever the active slide is showing, which could be anything from a
+     plain Surface color to an arbitrary photo, so they need their own
+     guaranteed-legible treatment independent of it. Same token family as
+     Hero's own overlay tint. */
+  .ui-carousel-nav {
+    background-color: color-mix(in srgb, var(--color-overlay-tint-dark) 50%, transparent);
+    color: var(--color-on-overlay);
+    transition: background-color 150ms ease;
+  }
+
+  .ui-carousel-nav:hover {
+    background-color: color-mix(in srgb, var(--color-overlay-tint-dark) 70%, transparent);
+  }
+
+  /* Carousel is the first block with its own per-instance Width control -
+     every other block routes through .ui-section-container, which pins
+     EVERY `data-width` value to the sitewide Settings width regardless of
+     which one is actually set (see _section.css's own note - Header is
+     the only other place a `data-width` value is read literally, and only
+     because it skips that shared class too). 'Default' still tracks that
+     same sitewide value, so a Carousel left on its default setting matches
+     every other block's width unless an editor deliberately overrides it. */
+  .ui-carousel-container.ui-container[data-width='default'] {
+    max-width: var(--section-max-width);
+  }
+  .ui-carousel-container.ui-container[data-width='narrow'] {
+    max-width: 72rem;
+  }
+  .ui-carousel-container.ui-container[data-width='wide'] {
+    max-width: 144rem;
+  }
+  .ui-carousel-container.ui-container[data-width='full'] {
+    max-width: none;
+    padding-inline: 0;
+  }
+}

@@ -75,6 +75,7 @@ export interface Config {
     stats: StatsBlock;
     testimonials: TestimonialsBlock;
     logoCloud: LogoCloudBlock;
+    carousel: CarouselBlock;
   };
   collections: {
     users: User;
@@ -421,6 +422,61 @@ export interface LogoCloudBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CarouselBlock".
+ */
+export interface CarouselBlock {
+  items: {
+    heading: string;
+    subheading?: string | null;
+    mediaType?: ('image' | 'video') | null;
+    /**
+     * Shown beside the text (Split) or as a full-bleed background (Media Background).
+     */
+    image?: (string | null) | Media;
+    video?: (string | null) | Media;
+    videoLoop?: boolean | null;
+    /**
+     * Hides the player controls and autoplays the video muted instead, since a hidden-control video would otherwise have no way to start.
+     */
+    videoHideControls?: boolean | null;
+    links?:
+      | {
+          label: string;
+          url: string;
+          variant?: ('solid' | 'outline' | 'ghost') | null;
+          color?: ('primary' | 'secondary') | null;
+          id?: string | null;
+        }[]
+      | null;
+    layout?: ('textOnly' | 'split' | 'backgroundImage') | null;
+    surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+    headerPosition?: ('left' | 'right') | null;
+    align?: ('center' | 'left' | 'right') | null;
+    mediaFill?: ('contained' | 'stretch' | 'fullBleed') | null;
+    overlayCoverage?: ('full' | 'content') | null;
+    overlayColor?: ('dark' | 'light' | 'primary' | 'secondary') | null;
+    overlayOpacity?: ('none' | 'light' | 'medium' | 'strong' | 'solid') | null;
+    id?: string | null;
+  }[];
+  /**
+   * Fade crossfades between slides. Slide pushes the new one in from the side the visitor navigated toward.
+   */
+  transition?: ('fade' | 'slide') | null;
+  width?: ('narrow' | 'default' | 'wide' | 'full') | null;
+  /**
+   * Automatically advance to the next slide.
+   */
+  autoplay?: boolean | null;
+  /**
+   * Seconds each slide stays visible before advancing.
+   */
+  autoplayInterval?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'carousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -474,6 +530,7 @@ export interface Page {
         | StatsBlock
         | TestimonialsBlock
         | LogoCloudBlock
+        | CarouselBlock
       )[]
     | null;
   /**

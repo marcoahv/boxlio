@@ -15,3 +15,13 @@ export const CardRowLabel = () => {
   const customLabel = title || `Card ${String(rowNumber).padStart(2, '0')}`
   return <div>{customLabel}</div>
 }
+
+/** Same fallback pattern as `ArrayRowLabel`, reading `heading` instead of `label` - Carousel's own slides are headed by `heading` (required, mirroring Hero), not `label`. */
+export const HeadingRowLabel = ({ fallbackLabel = 'Slide' }: { fallbackLabel?: string }) => {
+  const {
+    data: { heading },
+    rowNumber,
+  } = useRowLabel<{ heading?: string }>()
+
+  return <div>{heading || `${fallbackLabel} ${String(rowNumber).padStart(2, '0')}`}</div>
+}
