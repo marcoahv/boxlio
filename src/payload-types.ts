@@ -448,16 +448,17 @@ export interface CarouselBlock {
           id?: string | null;
         }[]
       | null;
-    layout?: ('textOnly' | 'split' | 'backgroundImage') | null;
-    surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
-    headerPosition?: ('left' | 'right') | null;
-    align?: ('center' | 'left' | 'right') | null;
-    mediaFill?: ('contained' | 'stretch' | 'fullBleed') | null;
-    overlayCoverage?: ('full' | 'content') | null;
-    overlayColor?: ('dark' | 'light' | 'primary' | 'secondary') | null;
-    overlayOpacity?: ('none' | 'light' | 'medium' | 'strong' | 'solid') | null;
     id?: string | null;
   }[];
+  layout?: ('textOnly' | 'split' | 'backgroundImage') | null;
+  surface?: ('default' | 'inverse' | 'muted' | 'accent') | null;
+  headerPosition?: ('left' | 'right') | null;
+  align?: ('center' | 'left' | 'right') | null;
+  verticalAlign?: ('top' | 'center' | 'bottom') | null;
+  mediaFill?: ('contained' | 'stretch' | 'fullBleed') | null;
+  overlayCoverage?: ('full' | 'content') | null;
+  overlayColor?: ('dark' | 'light' | 'primary' | 'secondary') | null;
+  overlayOpacity?: ('none' | 'light' | 'medium' | 'strong' | 'solid') | null;
   /**
    * Fade crossfades between slides. Slide pushes the new one in from the side the visitor navigated toward.
    */

@@ -35,6 +35,33 @@ type SlideData = NonNullable<CarouselBlock['items']>[number]
 type SlideTransition = NonNullable<CarouselBlock['transition']>
 type SlideLink = NonNullable<SlideData['links']>[number]
 
+// Mapped rather than interpolated: Tailwind's scanner only emits classes it
+// finds as complete literal strings (see Stack.tsx's own note), so
+// `justify-${verticalAlign}` or `atMedium:items-${verticalAlign}` would
+// compile to nothing for 'top'/'bottom'.
+const VERTICAL_ALIGN_JUSTIFY = {
+  top: 'justify-start',
+  center: 'justify-center',
+  bottom: 'justify-end',
+} as const
+const VERTICAL_ALIGN_ITEMS = {
+  top: 'atMedium:items-start',
+  center: 'atMedium:items-center',
+  bottom: 'atMedium:items-end',
+} as const
+// Media fill: Stretch forces the row's own `atMedium:items-stretch` (see
+// below), which makes the text column's wrapper span the row's full height -
+// at that point the column itself has spare space, and it's this prop
+// (Stack's own `justify`, not a class string) that positions the
+// heading/subheading/buttons group within it. Without this, Stretch always
+// pinned that content to the top regardless of `verticalAlign`, since
+// Stack's own default `justify` is 'start'.
+const VERTICAL_ALIGN_STACK_JUSTIFY = {
+  top: 'start',
+  center: 'center',
+  bottom: 'end',
+} as const
+
 /**
  * One slide's own button, mirroring Hero's `HeroLinkButton` - its own
  * component so `useEditableField` is called at each button's own top
@@ -77,12 +104,15 @@ function CarouselSlideLinkButton({
 }
 
 /**
- * One slide - every field Hero (`src/blocks/Hero/config.ts`/`Component.tsx`)
- * exposes on a single instance, ported here rather than imported: Hero's
- * own file stays untouched (zero risk of regressing a shipped, independent
- * block), at the cost of duplicating its layout logic - a deliberate,
- * flagged tradeoff given the size of this change, not an oversight. See
- * current-feature.md's Notes for the AI.
+ * One slide - content (heading/subheading/media/buttons) is this slide's
+ * own; layout (Text-only/Split/Media Background, alignment, overlay, ...)
+ * is shared by the whole carousel and passed down from `Carousel`'s own
+ * props below, not read off `item`. Render logic is ported from Hero
+ * (`src/blocks/Hero/config.ts`/`Component.tsx`) rather than imported:
+ * Hero's own file stays untouched (zero risk of regressing a shipped,
+ * independent block), at the cost of duplicating its layout logic - a
+ * deliberate, flagged tradeoff given the size of this change, not an
+ * oversight. See current-feature.md's Notes for the AI.
  *
  * Deviations from Hero's own DOM, both deliberate:
  *  - No separate inner `<Container>` for the text/media row - Carousel's
@@ -110,6 +140,14 @@ function CarouselSlide({
   offset,
   instant,
   transition,
+  layout,
+  headerPosition,
+  mediaFill,
+  align,
+  verticalAlign,
+  overlayCoverage,
+  overlayColor,
+  overlayOpacity,
 }: {
   blockId?: string | null
   item: SlideData
@@ -119,24 +157,16 @@ function CarouselSlide({
   offset: number
   instant: boolean
   transition: SlideTransition
+  layout: CarouselBlock['layout']
+  headerPosition: CarouselBlock['headerPosition']
+  mediaFill: CarouselBlock['mediaFill']
+  align: CarouselBlock['align']
+  verticalAlign: CarouselBlock['verticalAlign']
+  overlayCoverage: CarouselBlock['overlayCoverage']
+  overlayColor: CarouselBlock['overlayColor']
+  overlayOpacity: CarouselBlock['overlayOpacity']
 }) {
-  const {
-    heading,
-    subheading,
-    image,
-    mediaType,
-    video,
-    videoLoop,
-    videoHideControls,
-    layout,
-    headerPosition,
-    mediaFill,
-    align,
-    overlayCoverage,
-    overlayColor,
-    overlayOpacity,
-    links,
-  } = item
+  const { heading, subheading, image, mediaType, video, videoLoop, videoHideControls, links } = item
 
   const headingField = useEditableField({
     blockId,
@@ -162,12 +192,19 @@ function CarouselSlide({
   const isMediaLeft = headerPosition === 'right'
   const hasSideMedia = hasImage || hasVideo
   const mediaFillMode = hasSideMedia ? (mediaFill ?? 'contained') : 'contained'
+  // Whether the text and media sit side by side in an atMedium:flex-row (vs.
+  // every other case, where the content div is flex-col and this is the only
+  // child). Full-bleed media is positioned separately (see
+  // `fullBleedMediaContent` below), so it's excluded here same as everywhere
+  // else this condition is checked.
+  const isRowLayout = hasSideMedia && mediaFillMode !== 'fullBleed'
   const mediaCover = mediaFillMode !== 'contained'
   const mediaRadius = mediaFillMode === 'fullBleed' ? 'none' : 'site'
   const mediaShadow = mediaFillMode === 'fullBleed' ? 'none' : 'site'
   const textAlign = align ?? 'left'
   const contentAlign = textAlign === 'center' ? 'center' : textAlign === 'right' ? 'end' : undefined
   const textAlignClass = textAlign === 'center' ? 'text-center' : textAlign === 'right' ? 'text-right' : ''
+  const resolvedVerticalAlign = verticalAlign ?? 'center'
   const overlayOverWholeImage = hasBackgroundMedia && overlayCoverage !== 'content'
   const overlayOverContentOnly = hasBackgroundMedia && overlayCoverage === 'content'
   const resolvedOverlayColor = overlayColor ?? 'dark'
@@ -179,7 +216,16 @@ function CarouselSlide({
   ]
     .filter(Boolean)
     .join(' ')
-  const textContentClassName = ['flex-1', hasSideMedia && isMediaLeft ? 'atMedium:pl-8' : '']
+  // `flex-1` only makes sense inside the row layout, where it shares the
+  // row's horizontal space with the media column - applied unconditionally,
+  // it stretches this Stack to the content div's full height even in the
+  // flex-col cases (Text-only, Media Background, Split + Full-bleed),
+  // leaving `justify-*` nothing to redistribute and making `verticalAlign`
+  // silently do nothing there.
+  const textContentClassName = [
+    isRowLayout ? 'flex-1' : '',
+    hasSideMedia && isMediaLeft ? 'atMedium:pl-8' : '',
+  ]
     .filter(Boolean)
     .join(' ')
   // Hero computes an equivalent `needsDarkOverlayText` for its own
@@ -189,7 +235,12 @@ function CarouselSlide({
   // its one shared outer Section instead.
 
   const textContent = (
-    <Stack gap="md" className={textContentClassName} align={contentAlign}>
+    <Stack
+      gap="md"
+      className={textContentClassName}
+      align={contentAlign}
+      justify={VERTICAL_ALIGN_STACK_JUSTIFY[resolvedVerticalAlign]}
+    >
       <Heading level={2} className={textAlignClass || undefined} {...headingField.fieldProps}>
         {headingField.content}
       </Heading>
@@ -349,13 +400,13 @@ function CarouselSlide({
           overlayOverContentOnly
             ? ['ui-hero-overlay-content', 'w-fit', overlayModifierClasses]
             : [],
-          hasSideMedia && mediaFillMode !== 'fullBleed'
+          isRowLayout
             ? [
                 'atMedium:flex-row atMedium:gap-16',
-                mediaFillMode === 'stretch' ? 'atMedium:items-stretch' : 'atMedium:items-center',
+                mediaFillMode === 'stretch' ? 'atMedium:items-stretch' : VERTICAL_ALIGN_ITEMS[resolvedVerticalAlign],
               ]
-            : ['items-center', contentAlign === 'end' ? 'justify-end' : contentAlign === 'center' ? 'justify-center' : 'justify-center'],
-          hasSideMedia && mediaFillMode !== 'fullBleed' && isMediaLeft ? ['atMedium:flex-row-reverse'] : [],
+            : ['items-center', VERTICAL_ALIGN_JUSTIFY[resolvedVerticalAlign]],
+          isRowLayout && isMediaLeft ? ['atMedium:flex-row-reverse'] : [],
           mediaFillMode === 'fullBleed'
             ? [`atMedium:w-1/2`, isMediaLeft ? 'atMedium:ml-auto' : 'atMedium:mr-auto']
             : [],
@@ -396,7 +447,23 @@ function CarouselSlide({
  * can't bring a non-active slide into view by itself.
  */
 export function Carousel(props: CarouselBlock) {
-  const { id, items, autoplay, autoplayInterval, width, transition } = props
+  const {
+    id,
+    items,
+    autoplay,
+    autoplayInterval,
+    width,
+    transition,
+    layout,
+    surface,
+    headerPosition,
+    mediaFill,
+    align,
+    verticalAlign,
+    overlayCoverage,
+    overlayColor,
+    overlayOpacity,
+  } = props
   const resolvedTransition: SlideTransition = transition === 'slide' ? 'slide' : 'fade'
   const baseId = useId()
   // `instant` holds the indices whose Slide-transition move should render
@@ -510,27 +577,25 @@ export function Carousel(props: CarouselBlock) {
   }
 
   // Mirrors exactly what a standalone Hero computes for itself from these
-  // same fields (see Hero/Component.tsx) - recomputed from whichever slide
-  // is currently active, since this outer Section is shared by all of
+  // same fields (see Hero/Component.tsx). Layout is shared by every slide
+  // now, so most of this comes straight from the block's own props - only
+  // whether the active slide's own image/video is actually present stays
+  // genuinely per-slide, since this outer Section is shared by all of
   // them. This is also the one element in the whole tree that's actually
   // the page's first-level Section (if Carousel is the first block) - see
   // CarouselSlide's own note on why the background/surface itself has to
   // live here, not on a per-slide element several layers deeper.
-  const activeIsBackgroundImage = activeItem?.layout === 'backgroundImage'
+  const isBackgroundImage = layout === 'backgroundImage'
   const activeHasBackgroundMedia =
-    activeIsBackgroundImage && (isDoc<Media>(activeItem?.image) || isDoc<Media>(activeItem?.video))
-  const activeMediaFillMode = activeItem?.mediaFill ?? 'contained'
-  const activeIsMediaLeft = activeItem?.headerPosition === 'right'
-  const activeSplitMediaSide =
-    activeItem?.layout === 'split' && activeMediaFillMode === 'fullBleed'
-      ? activeIsMediaLeft
-        ? 'left'
-        : 'right'
-      : undefined
-  const activeNeedsDarkOverlayText =
-    (activeItem?.overlayColor ?? 'dark') === 'light' &&
+    isBackgroundImage && (isDoc<Media>(activeItem?.image) || isDoc<Media>(activeItem?.video))
+  const mediaFillMode = mediaFill ?? 'contained'
+  const isMediaLeft = headerPosition === 'right'
+  const splitMediaSide =
+    layout === 'split' && mediaFillMode === 'fullBleed' ? (isMediaLeft ? 'left' : 'right') : undefined
+  const needsDarkOverlayText =
+    (overlayColor ?? 'dark') === 'light' &&
     activeHasBackgroundMedia &&
-    (activeItem?.overlayCoverage ?? 'full') !== 'content'
+    (overlayCoverage ?? 'full') !== 'content'
 
   // The region that actually holds the slides, nav controls, and live
   // region - identical markup either way, always inside Container so
@@ -560,6 +625,14 @@ export function Carousel(props: CarouselBlock) {
           offset={slideOffset(index, active.index, count)}
           instant={active.instant.has(index)}
           transition={resolvedTransition}
+          layout={layout}
+          headerPosition={headerPosition}
+          mediaFill={mediaFill}
+          align={align}
+          verticalAlign={verticalAlign}
+          overlayCoverage={overlayCoverage}
+          overlayColor={overlayColor}
+          overlayOpacity={overlayOpacity}
         />
       ))}
 
@@ -603,11 +676,11 @@ export function Carousel(props: CarouselBlock) {
   return (
     <Section
       blockId={id}
-      surface={activeItem?.surface}
-      className="ui-hero-section"
+      surface={surface}
+      spacing="none"
       hasBackgroundImage={activeHasBackgroundMedia}
-      splitMediaSide={activeSplitMediaSide}
-      hasDarkOverlayText={activeNeedsDarkOverlayText}
+      splitMediaSide={splitMediaSide}
+      hasDarkOverlayText={needsDarkOverlayText}
     >
       <Container width={width} className="ui-carousel-container">
         {viewport}

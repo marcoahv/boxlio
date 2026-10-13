@@ -33,19 +33,21 @@ const SERVER_URL = 'http://localhost:3000'
 
 // String ids, not populated Media docs - `isDoc` only needs to decide
 // whether a slide's image/video is an object to render, which is
-// orthogonal to these tests. Every slide is now a full Hero's worth of
-// fields (see Component.tsx's own note) - `layout: 'split'` plus an image
-// keeps these fixtures close to the block's defaults.
+// orthogonal to these tests. Every slide carries Hero's content fields
+// (see Component.tsx's own note); layout is shared by the whole block, not
+// per slide - `props.layout: 'split'` plus an image keeps these fixtures
+// close to the block's defaults.
 const items: CarouselBlock['items'] = [
-  { id: 's1', heading: 'First heading', layout: 'split', image: '000000000000000000000001' },
-  { id: 's2', heading: 'Second heading', layout: 'split', image: '000000000000000000000002' },
-  { id: 's3', heading: 'Third heading', layout: 'split', image: '000000000000000000000003' },
+  { id: 's1', heading: 'First heading', image: '000000000000000000000001' },
+  { id: 's2', heading: 'Second heading', image: '000000000000000000000002' },
+  { id: 's3', heading: 'Third heading', image: '000000000000000000000003' },
 ]
 
 const props: CarouselBlock = {
   id: 'carousel-1',
   blockType: 'carousel',
   items,
+  layout: 'split',
 }
 
 // Every slide stays mounted and stacked at once (see the Component's own
@@ -200,12 +202,9 @@ describe('Carousel slide content: every Hero field', () => {
   })
 
   it('Text-only layout renders no image even when one is set', () => {
-    const textOnly: CarouselBlock['items'] = [
-      { ...items[0], layout: 'textOnly' },
-      items[1],
-      items[2],
-    ]
-    const { container } = render(React.createElement(Carousel, { ...props, items: textOnly }))
+    // Layout is shared by the whole block now, not per slide - setting it
+    // on `props` affects every slide at once.
+    const { container } = render(React.createElement(Carousel, { ...props, layout: 'textOnly' }))
 
     expect(container.querySelector('img')).toBeNull()
   })
@@ -234,15 +233,93 @@ describe('Carousel slide content: every Hero field', () => {
     const fakeImage = { id: 'img1', url: '/fake.jpg', alt: '' } as unknown as NonNullable<
       CarouselBlock['items'][number]['image']
     >
-    const backgroundImage: CarouselBlock['items'] = [
-      { ...items[0], layout: 'backgroundImage', image: fakeImage },
-      items[1],
-      items[2],
-    ]
-    const { getByText } = render(React.createElement(Carousel, { ...props, items: backgroundImage }))
+    const backgroundImage: CarouselBlock['items'] = [{ ...items[0], image: fakeImage }, items[1], items[2]]
+    const { getByText } = render(
+      React.createElement(Carousel, { ...props, layout: 'backgroundImage', items: backgroundImage }),
+    )
 
     const slide = getByText('First heading').closest('[role="group"]') as HTMLElement
     expect(slide.querySelector('.ui-hero-bg')).toBeTruthy()
+  })
+})
+
+describe('Carousel vertical alignment', () => {
+  // The shared `verticalAlign` field drives different Tailwind classes
+  // depending on layout: `justify-*` for Text-only/Media Background (a
+  // flex-col box with one text child), `atMedium:items-*` for Split (a
+  // flex-row box whose cross-axis is vertical). Both layouts render this
+  // content div as the slide's only direct child, so it's reachable as
+  // `:scope > div` from the slide's own `[role="group"]` wrapper.
+  it('drives justify-* for Text-only layout, defaulting to center when unset', () => {
+    const { getByText } = render(React.createElement(Carousel, { ...props, layout: 'textOnly' }))
+    const slide = getByText('First heading').closest('[role="group"]') as HTMLElement
+    const content = slide.querySelector(':scope > div') as HTMLElement
+
+    expect(content.className).toContain('justify-center')
+  })
+
+  it('does not stretch the text block with flex-1 outside the row layout, so justify-* has room to move it', () => {
+    // Regression test for the reported "vertical alignment does not work"
+    // bug: `flex-1` used to apply to this Stack unconditionally, stretching
+    // it to the content div's full height in every layout (not just the
+    // flex-row Split case it was meant for) - leaving `justify-*` nothing to
+    // redistribute, so `verticalAlign` silently did nothing for Text-only,
+    // Media Background, and Split + Full-bleed, regardless of which value
+    // was selected.
+    const { getByText } = render(React.createElement(Carousel, { ...props, layout: 'textOnly' }))
+    const slide = getByText('First heading').closest('[role="group"]') as HTMLElement
+    const textStack = slide.querySelector(':scope > div > div') as HTMLElement
+
+    expect(textStack.className).not.toContain('flex-1')
+  })
+
+  it('moves the text block to justify-start when verticalAlign is Top, for Text-only layout', () => {
+    const { getByText } = render(
+      React.createElement(Carousel, { ...props, layout: 'textOnly', verticalAlign: 'top' }),
+    )
+    const slide = getByText('First heading').closest('[role="group"]') as HTMLElement
+    const content = slide.querySelector(':scope > div') as HTMLElement
+
+    expect(content.className).toContain('justify-start')
+  })
+
+  it('moves the text column to atMedium:items-end when verticalAlign is Bottom, for Split layout', () => {
+    const fakeImage = { id: 'img2', url: '/fake2.jpg', alt: '' } as unknown as NonNullable<
+      CarouselBlock['items'][number]['image']
+    >
+    const withImage: CarouselBlock['items'] = [{ ...items[0], image: fakeImage }, items[1], items[2]]
+    const { getByText } = render(
+      React.createElement(Carousel, { ...props, verticalAlign: 'bottom', items: withImage }),
+    )
+    const slide = getByText('First heading').closest('[role="group"]') as HTMLElement
+    const content = slide.querySelector(':scope > div') as HTMLElement
+
+    expect(content.className).toContain('atMedium:items-end')
+  })
+
+  it('positions the text group within the stretched text column when Media fill is Stretch', () => {
+    // Regression test: Media fill: Stretch forces the row's own
+    // `atMedium:items-stretch` (overriding `VERTICAL_ALIGN_ITEMS` entirely),
+    // which stretches the text column's wrapper to the row's full height -
+    // at that point Stack's own default `justify` ('start') pinned the
+    // heading/subheading/buttons group to the top regardless of
+    // `verticalAlign`. Fixed by giving the Stack its own `justify` prop too.
+    const fakeImage = { id: 'img3', url: '/fake3.jpg', alt: '' } as unknown as NonNullable<
+      CarouselBlock['items'][number]['image']
+    >
+    const withImage: CarouselBlock['items'] = [{ ...items[0], image: fakeImage }, items[1], items[2]]
+    const { getByText } = render(
+      React.createElement(Carousel, {
+        ...props,
+        mediaFill: 'stretch',
+        verticalAlign: 'bottom',
+        items: withImage,
+      }),
+    )
+    const slide = getByText('First heading').closest('[role="group"]') as HTMLElement
+    const textStack = slide.querySelector(':scope > div > div') as HTMLElement
+
+    expect(textStack.className).toContain('justify-end')
   })
 })
 
